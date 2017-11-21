@@ -68,6 +68,19 @@ Created a pull-request and pulled the changes back into the IVOA project.
     popd
 
 # -----------------------------------------------------
+# Set our local username and email.
+#[user@desktop]
+
+    pushd /var/local/projects/edinburgh
+        pushd lasair/github
+
+            git config user.name "Dave Morris"
+            git config user.email dmr@roe.ac.uk
+
+        popd
+    popd
+
+# -----------------------------------------------------
 # Sync our fork with our upstream.
 # https://help.github.com/articles/syncing-a-fork/
 #[user@desktop]
@@ -94,7 +107,16 @@ Created a pull-request and pulled the changes back into the IVOA project.
                 Already on 'master'
                 Your branch is up-to-date with 'origin/master'.
 
+            #
+            # Merge changes from upstream master.
+            git merge upstream/master
 
-            
+            #
+            # Check the local status.
+            git status
 
+            #
+            # Add and commit local changes.
+            git add .
+            git commit -m "Updated notes on upstream merge"
 
