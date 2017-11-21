@@ -30,4 +30,102 @@ Added initial notes and README files.
 
 Created a pull-request and pulled the changes back into the IVOA project.
 
+# -----------------------------------------------------
+# Clone to local machine.
+#[user@desktop]
+
+    pushd /var/local/projects/edinburgh
+
+        mkdir lasair
+        pushd lasair
+
+            git clone git@github.com:Zarquan/lasair.git github
+
+        popd
+    popd
+
+# -----------------------------------------------------
+# Add our upstream remote.
+# https://help.github.com/articles/configuring-a-remote-for-a-fork/
+#[user@desktop]
+
+    pushd /var/local/projects/edinburgh
+        pushd lasair/github
+
+            git remote -v
+
+                origin  git@github.com:Zarquan/lasair.git (fetch)
+                origin  git@github.com:Zarquan/lasair.git (push)
+
+            git remote add upstream https://github.com/lsst-uk/lasair.git
+
+            git remote -v
+
+                origin    git@github.com:Zarquan/lasair.git (fetch)
+                origin	  git@github.com:Zarquan/lasair.git (push)
+                upstream  https://github.com/lsst-uk/lasair.git (fetch)
+                upstream  https://github.com/lsst-uk/lasair.git (push)
+
+        popd
+    popd
+
+# -----------------------------------------------------
+# Set our local username and email.
+#[user@desktop]
+
+    pushd /var/local/projects/edinburgh
+        pushd lasair/github
+
+            git config user.name "Dave Morris"
+            git config user.email dmr@roe.ac.uk
+
+        popd
+    popd
+
+# -----------------------------------------------------
+# Sync our fork with our upstream.
+# https://help.github.com/articles/syncing-a-fork/
+#[user@desktop]
+
+    pushd /var/local/projects/edinburgh
+        pushd lasair/github
+
+            #
+            # Fetch the upstream changes
+            git fetch upstream
+            
+                remote: Counting objects: 16, done.
+                remote: Compressing objects: 100% (11/11), done.
+                remote: Total 16 (delta 1), reused 0 (delta 0), pack-reused 0
+                Unpacking objects: 100% (16/16), done.
+                From https://github.com/lsst-uk/lasair
+                 * [new branch]      master     -> upstream/master
+
+            #
+            # Change to the master branch.
+            git checkout master
+
+                M	doc/notes/dmr/20171121-github.txt
+                Already on 'master'
+                Your branch is up-to-date with 'origin/master'.
+
+            #
+            # Merge changes from upstream master.
+            git merge upstream/master
+
+            #
+            # Check the local status.
+            git status
+
+            #
+            # Add and commit local changes.
+            git add .
+            git commit -m "Updated notes on upstream merge"
+
+            #
+            # Push changes to our fork.
+            git push
+
+        popd
+    popd
 
