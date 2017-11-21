@@ -59,6 +59,8 @@ Created a pull-request and pulled the changes back into the IVOA project.
 
             git remote add upstream https://github.com/lsst-uk/lasair.git
 
+            git remote -v
+
                 origin    git@github.com:Zarquan/lasair.git (fetch)
                 origin	  git@github.com:Zarquan/lasair.git (push)
                 upstream  https://github.com/lsst-uk/lasair.git (fetch)
@@ -119,4 +121,11 @@ Created a pull-request and pulled the changes back into the IVOA project.
             # Add and commit local changes.
             git add .
             git commit -m "Updated notes on upstream merge"
+
+            #
+            # Push changes to our fork.
+            git push
+
+        popd
+    popd
 
