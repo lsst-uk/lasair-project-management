@@ -15,9 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.views.generic import TemplateView
 from lasair import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('', TemplateView.as_view(template_name='index.html')),
     path('candlist/', views.candlist, name='candlist'),
+    path('cand/<int:candid>/', views.cand, name='cand'),
+    path('admin/', admin.site.urls),
 ]
