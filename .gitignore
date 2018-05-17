@@ -25,7 +25,6 @@ _ignore_*
 
 # Settings files and compiled binaries
 settings.py
-wsgi.py
 
 # Symlinks and directories
 admin/
