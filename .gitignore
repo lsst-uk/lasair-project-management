@@ -1,0 +1,31 @@
+.metadata
+*~
+.DS_Store
+.svn
+_git*
+*.orig
+.coverage
+.noseids
+_ignore_*
+
+# Compiled python modules.
+*.pyc
+
+# C/C++ object files, static and shared libraries
+*.o
+*.a
+*.so
+
+# Setuptools distribution folder.
+/dist/
+
+# Python egg metadata, regenerated from source files by setuptools.
+/*.egg-info
+/*.egg
+
+# Settings files and compiled binaries
+settings.py
+wsgi.py
+
+# Symlinks and directories
+admin/
