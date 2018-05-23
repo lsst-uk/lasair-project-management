@@ -56,34 +56,4 @@ def cand(request, candid):
         prv_cands.append(row)
     message = 'hello'
 
-<<<<<<< HEAD
     return render_to_response('cand.html',{'cand': canddict, 'prv_cands': prv_cands, 'message': message})
-=======
-def cand(request, candid):
-    """Show a specific transient"""
-
-    cand = get_object_or_404(Candidates, candid=candid)
-
-
-    import sys
-    sys.path.append('/home/roy/ps1/code/utils/htm_utils/python/swig')
-    import htmCircle
-    import mysql.connector
-
-
-    radius_arcsec = 30.0
-    whereClause = htmCircle.htmCircleRegion(16, cand.ra, cand.decl, radius_arcsec)
-
-    msl = mysql.connector.connect(user='ztf', password='OPV537', host='lasair-db', database='ztf')
-    cursor = msl.cursor(buffered=True, dictionary=True)
-    query = ("SELECT * from candidates " + whereClause)
-    query = query.replace('htm16ID', 'htmid16')
-
-    prv_cands = []
-    cursor.execute(query)
-    for row in cursor:
-        prv_cands.append(row)
-    message = 'hello'
-
-    return render_to_response('cand.html',{'cand': cand, 'prv_cands': prv_cands, 'message': message})
->>>>>>> 884246911213fcba3063f05a2d72b89b5d3e544b

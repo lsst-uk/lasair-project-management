@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <h2>Candidate object</h2>
 <table border=1>
 {% for k,v in cand.items %}
@@ -15,17 +14,3 @@
     <li> <a href="/cand/{{ prv_cand.candid }}/">{{ prv_cand.candid }}</a></li>
 {% endfor %}
 </ul>
-=======
-<table border=1>
-Candid = {{ cand.candid }}<br/>
-RA = {{ cand.ra }}<br/>
-Dec = {{ cand.decl }}<br/>
--------------------<br/>
-
-{% for prv_cand in prv_cands %}
-    {{ prv_cand.candid }}<br/>
-    {{ prv_cand.ra }}<br/>
-    {{ prv_cand.decl }}<br/>
-{% endfor %}
-{{ message }}
->>>>>>> 884246911213fcba3063f05a2d72b89b5d3e544b
