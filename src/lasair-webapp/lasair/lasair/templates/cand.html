@@ -1,3 +1,21 @@
+<<<<<<< HEAD
+<h2>Candidate object</h2>
+<table border=1>
+{% for k,v in cand.items %}
+{% ifnotequal k "_state" %}
+    <tr><td>{{ k }}</td><td>{{ v }}</td></tr>
+{% endifnotequal %}
+{% endfor %}
+</table>
+
+<h2>Previous Candidates</h2>
+
+<ul>
+{% for prv_cand in prv_cands %}
+    <li> <a href="/cand/{{ prv_cand.candid }}/">{{ prv_cand.candid }}</a></li>
+{% endfor %}
+</ul>
+=======
 <table border=1>
 Candid = {{ cand.candid }}<br/>
 RA = {{ cand.ra }}<br/>
@@ -10,3 +28,4 @@ Dec = {{ cand.decl }}<br/>
     {{ prv_cand.decl }}<br/>
 {% endfor %}
 {{ message }}
+>>>>>>> 884246911213fcba3063f05a2d72b89b5d3e544b

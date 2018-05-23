@@ -1,9 +1,20 @@
+Query was:<br/>
+{{ message }}
+<hr/>
 <table border=1>
+<tr>
+<th></th>
+<th>RA</th>
+<th>Dec</th>
+<th>jd</th>
+<th>magpsf</th>
+</tr>
 {% for row in table %}<tr>
 <td><a href=/cand/{{ row.candid }}>link</a></td>
 <td>{{ row.ra }}</td>
 <td>{{ row.decl }}</td>
+<td>{{ row.jd }}</td>
+<td>{{ row.magpsf }}</td>
 </tr>
 {% endfor %}
 </table>
-{{ message }}

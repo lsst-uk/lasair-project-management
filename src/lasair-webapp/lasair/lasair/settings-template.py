@@ -75,6 +75,9 @@ WSGI_APPLICATION = 'lasair.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 # PUT THE REAL VALUES IN HERE!!! #########################
+READONLY_USER = 'username'
+READONLY_PASS = 'password'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', 
