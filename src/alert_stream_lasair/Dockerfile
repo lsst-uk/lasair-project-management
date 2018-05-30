@@ -14,14 +14,6 @@ ENV LD_LIBRARY_PATH /usr/local/lib
 RUN apt-get update
 RUN apt-get install swig -y
 
-# Added by kws - Compile the HTM library
-#WORKDIR /home/alert_stream/utils/htm
-#RUN ./configure
-#RUN make
-
-#WORKDIR /home/alert_stream/utils/htm/python
-#RUN build.sh
-
 # Pip installs.
 RUN pip install confluent-kafka
 RUN pip install avro-python3
@@ -35,6 +27,15 @@ RUN git clone https://github.com/ZwickyTransientFacility/ztf-avro-alert.git && c
 # Add code.
 RUN mkdir alert_stream
 ADD . /home/alert_stream
+
+# Added by kws - Compile the HTM library
+WORKDIR /home/alert_stream/utils/htm
+RUN ./configure
+RUN make
+WORKDIR /home/alert_stream/utils/htm/python
+RUN ./build.sh
+# *************************************
+
 ENV PYTHONPATH=$PYTHONPATH:/home/alert_stream/python
 
 WORKDIR /home/alert_stream

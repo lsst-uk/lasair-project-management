@@ -9,7 +9,7 @@ endif
 INCDIR  = ./include
 OBJ     = ./obj
 SRC     = trcomp.cpp
-SHELL   = /bin/csh
+SHELL   = /bin/bash
 APPS    = range2list fillout toid toname par xptest filter lookup
 
 CFLAGS  = @@CFLAGS##
