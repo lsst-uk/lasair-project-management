@@ -19,8 +19,9 @@ from django.views.generic import TemplateView
 from lasair import views
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='index.html')),
-    path('candlist/', views.candlist, name='candlist'),
-    path('cand/<int:candid>/', views.cand, name='cand'),
+#    path('', TemplateView.as_view(template_name='index.html')),
+    path('',                   views.index,    name='index'),
+    path('candlist/',          views.candlist, name='candlist'),
+    path('cand/<int:candid>/', views.cand,     name='cand'),
     path('admin/', admin.site.urls),
 ]

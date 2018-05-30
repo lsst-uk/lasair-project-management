@@ -5,6 +5,10 @@ from lasair.models import Candidates
 import lasair.settings
 import mysql.connector
 
+def index(request):
+    web_domain = lasair.settings.WEB_DOMAIN
+    return render_to_response('index.html', {'web_domain': web_domain})
+
 def candlist(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
