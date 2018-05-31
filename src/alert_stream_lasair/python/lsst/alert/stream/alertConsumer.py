@@ -52,6 +52,7 @@ class AlertConsumer(object):
         self.kafka_kwargs = kwargs
         if schema_files is not None:
             self.alert_schema = avroUtils.combineSchemas(schema_files)
+        self.raw_msg = None  # added by RDW to keep raw msg
 
     def __enter__(self):
         self.consumer = confluent_kafka.Consumer(**self.kafka_kwargs)
@@ -78,6 +79,7 @@ class AlertConsumer(object):
             if msg.error():
                 raise EopError(msg)
             else:
+                self.raw_msg = msg.value()   # added by RDW to keep raw msg
                 if verbose is True:
                     if decode is True:
                         return self.decodeMessage(msg)
@@ -90,6 +92,9 @@ class AlertConsumer(object):
             except AttributeError:
                 pass
         return
+
+    def raw_msg(self):
+        return self.raw_msg
 
     def decodeMessage(self, msg):
         """Decode Avro message according to a schema.

@@ -1,0 +1,20 @@
+# make sure docker d is running with "sudo dockerd"
+# topic name example ztf_20180520_programid1 
+
+# when the code changes
+docker build -t "ztf-listener" .
+
+# start the ingestion
+rm logs/ztf_20180520_programid1.log
+docker run -it --rm \
+    --mount type=bind,source=/home/roy/alert_stream/swig,target=/swig \
+    --mount type=bind,source=/data/ztf/logs,target=/logs \
+    --mount type=bind,source=/data/ztf/avros,target=/avros \
+    --mount type=bind,source=/data/ztf/stamps,target=/stamps \
+    ztf-listener python bin/ingestStream.py \
+    --avrodump \
+    --stampdump \
+    --logging DEBUG \
+    --group LASAIR \
+    --host epyc.astro.washington.edu \
+    --topic ztf_20180520_programid1
