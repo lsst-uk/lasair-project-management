@@ -7,7 +7,6 @@ docker build -t "ztf-listener" .
 # start the ingestion
 rm logs/ztf_20180520_programid1.log
 docker run -it --rm \
-    --mount type=bind,source=/home/roy/alert_stream/swig,target=/swig \
     --mount type=bind,source=/data/ztf/logs,target=/logs \
     --mount type=bind,source=/data/ztf/avros,target=/avros \
     --mount type=bind,source=/data/ztf/stamps,target=/stamps \
@@ -18,3 +17,6 @@ docker run -it --rm \
     --group LASAIR \
     --host epyc.astro.washington.edu \
     --topic ztf_20180520_programid1
+
+# 2018-05-31 KWS Removed this line. SWIG, HTM and the python module now built automatically.
+    --mount type=bind,source=/home/roy/alert_stream/swig,target=/swig \
