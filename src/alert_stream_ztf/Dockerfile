@@ -37,6 +37,6 @@ WORKDIR /home/alert_stream/utils/htm/python
 RUN ./build.sh
 # *************************************
 
-ENV PYTHONPATH=$PYTHONPATH:/home/alert_stream/python:/home/alert_stream/utils/htm/python
+ENV PYTHONPATH=$PYTHONPATH:/home/alert_stream/python:/home/alert_stream/utils/htm/python:.
 
 WORKDIR /home/alert_stream
