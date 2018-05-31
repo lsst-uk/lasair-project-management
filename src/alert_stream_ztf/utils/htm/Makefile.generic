@@ -7,7 +7,7 @@ CC       = cc
 endif
 
 INCDIR  = ./include
-OBJ     = ./obj
+OBJ     = ./objs
 SRC     = trcomp.cpp
 SHELL   = /bin/bash
 APPS    = range2list fillout toid toname par xptest filter lookup
