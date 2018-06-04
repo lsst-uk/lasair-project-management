@@ -24,23 +24,24 @@ def insert_sql(alert):
     names = []
     values = []
 
-    for packet in alert:
-        names.append('objectId')
-        values.append('"' + packet['objectId'] + '"')
-        for name,value in packet['candidate'].items():
+    names.append('objectId')
+    values.append('"' + alert['objectId'] + '"')
+    for name,value in alert['candidate'].items():
 
-            # Must not use 'dec' in mysql, so use 'decl' instead
-            if name == 'dec': 
-                name = 'decl'
-                dec = float(value)
-            if name == 'ra': 
-                ra = float(value)
+        # Must not use 'dec' in mysql, so use 'decl' instead
+        if name == 'dec': 
+            name = 'decl'
+            dec = float(value)
+        if name == 'ra': 
+            ra = float(value)
+        if name == 'rbversion':
+            continue
 
-            names.append(name)
-            if isinstance(value, basestring):
-                values.append('"' + value + '"')
-            else:
-                values.append(str(value))
+        names.append(name)
+        if isinstance(value, str):
+            values.append('"' + value + '"')
+        else:
+            values.append(str(value))
 
 # Compute the HTM ID for later cone searches
     try:
@@ -146,7 +147,9 @@ def parse_args():
 
 def main(args):
     # Configure consumer connection to Kafka broker
-    conf = {'bootstrap.servers': '{}:9092,{}:9093,{}:9094'.format(args.host,args.host,args.host),
+#    conf = {'bootstrap.servers': '{}:9092,{}:9093,{}:9094'.format(args.host,args.host,args.host),
+#            'default.topic.config': {'auto.offset.reset': 'smallest'}}
+    conf = {'bootstrap.servers': '{}:9092'.format(args.host,args.host,args.host),
             'default.topic.config': {'auto.offset.reset': 'smallest'}}
     if args.group:
         conf['group.id'] = args.group
@@ -188,7 +191,7 @@ def main(args):
             else:
                 for record in msg:
                     # Apply filter to each alert
-                    if args.stampdir:
+                    if args.stampdump:
                         candid = alert_filter(record, msl, '/stamps/' + args.topic)
                     else:
                         candid = alert_filter(record, msl)
@@ -196,6 +199,8 @@ def main(args):
         except alertConsumer.EopError as e:
             # Write when reaching end of partition
             logger.error(e.message)
+            logger.info("End of stream reached")
+            return
         except IndexError:
             logger.error('%% Data cannot be decoded\n')
         except UnicodeDecodeError:
@@ -204,14 +209,14 @@ def main(args):
             logger.error('%% Aborted by user\n')
             sys.exit()
 
-        if args.avros:
+        if args.avrodump:
             dir = '/avros/%s' % args.topic
             try:
                 os.makedirs(dir)
             except OSError:
                 pass
-            f = open('%s/%d.avro' % candid, 'w')
-            f.write(streamReader.raw_msg())
+            f = open('%s/%d.avro' % (dir, candid), 'wb')
+            f.write(streamReader.raw_msg)
             f.close()
     return
 

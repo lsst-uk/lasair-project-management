@@ -93,9 +93,6 @@ class AlertConsumer(object):
                 pass
         return
 
-    def raw_msg(self):
-        return self.raw_msg
-
     def decodeMessage(self, msg):
         """Decode Avro message according to a schema.
 
