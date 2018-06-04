@@ -22,8 +22,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'qw5pt$o)hc96f6h$z9#^_vy6p4%xegco=io5-%^bqb9+ota(px'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -75,6 +73,7 @@ WSGI_APPLICATION = 'lasair.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 # PUT THE REAL VALUES IN HERE!!! #########################
+DEBUG         = True
 WEB_DOMAIN    = 'lasair'
 READONLY_USER = 'username'
 READONLY_PASS = 'password'

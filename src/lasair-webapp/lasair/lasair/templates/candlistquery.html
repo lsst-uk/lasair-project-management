@@ -1,12 +1,28 @@
 <h2>Query the ZTF database</h2>
 
-Modify the query 
+Modify the query:
+<hr/>
 <form method="POST" action="/candlist/">
-<textarea rows="4" cols="50" name="query">
-SELECT * from candidates WHERE ra BETWEEN 180 AND 200 AND magpsf < 17
+SELECT<br/>
+<p>
+<textarea rows="1" cols="50" name="selected">
+*
 </textarea></br>
-<input type="submit" value="Submit">
-</form>
+<p>
+WHERE<br/>
+<p>
+<textarea rows="1" cols="50" name="where">
+magpsf < 13
+</textarea></br>
+<p>
+ORDER BY<br/>
+<p>
+<input name="order" type="text" value="ra"/><br/>
+<input type="hidden" name="page" value="{{ page }}"/><br/>
+<p>
+<input type="submit" value="Submit"/>
 
+</form>
+<hr/>
 For information on attributes that can be queried, see the 
 <a href= https://zwickytransientfacility.github.io/ztf-avro-alert/schema.html>ZTF schema</a>

@@ -1,20 +1,26 @@
-Query was:<br/>
-{{ message }}
+Query: {{ message }}
+<hr/>
+Showing results {{ ps }} to {{ pe }} of {{ nalert }}
+<form method="POST" action="/candlist/">
+<input type="hidden" name="selected" value="{{ selected }}"/>
+<input type="hidden" name="where"    value="{{ where }}"/>
+<input type="hidden" name="order"    value="{{ order }}"/>
+<input type="hidden" name="page"     value="{{ nextpage }}"/>
+<input type="submit" value="next page"/>
+</form>
 <hr/>
 <table border=1>
 <tr>
 <th></th>
-<th>RA</th>
-<th>Dec</th>
-<th>jd</th>
-<th>magpsf</th>
+{% for key, value in table.0.items %} 
+<th>{{ key }}</th>
+{% endfor %}
 </tr>
 {% for row in table %}<tr>
 <td><a href=/cand/{{ row.candid }}>link</a></td>
-<td>{{ row.ra }}</td>
-<td>{{ row.decl }}</td>
-<td>{{ row.jd }}</td>
-<td>{{ row.magpsf }}</td>
+{% for key, value in row.items %} 
+<td>{{ value }}</td>
+{% endfor %}
 </tr>
 {% endfor %}
 </table>
