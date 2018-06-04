@@ -28,3 +28,6 @@ settings.py
 
 # Symlinks and directories
 admin/
+
+# Swap files
+*.swp

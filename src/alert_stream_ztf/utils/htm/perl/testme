@@ -1,0 +1,47 @@
+#!/usr/local/bin/perl
+#
+
+use English;
+use strict qw(vars subs refs);
+
+use HTM;
+use DBI;
+
+# Connect to the database
+my $dbh=DBI->connect("dbi:mysql:wasp;host=waspdb");
+Exception->raise("Can't connect to waspdb: $DBI::errstr") unless $dbh;
+
+
+my $list;
+if(1) {
+    my $obj=new HTM::htmInterface(14, 5);
+    $list=$obj->circleRegion(56.000328, 27.653442, 510.37865003193);
+} else {
+    open(FILE, "<isct.ranges");
+    while(my $line=<FILE>) {
+	chomp($line);
+	my ($lo, $hi)=split(/\s+/, $line);
+	push(@$list, {'lo' => $lo, 'hi' => $hi});
+    }
+    close(FILE);
+}
+print STDERR "num ranges=", $#{@$list},"\n";
+
+my (@clauses, @singlets);
+foreach my $range (@$list) {
+    push(@singlets, $$range{'lo'}) if $$range{'lo'}==$$range{'hi'};
+    push(@clauses, "htm_id BETWEEN $$range{'lo'} AND $$range{'hi'}")
+	unless $$range{'lo'}==$$range{'hi'};
+#    print "$$range{'lo'} $$range{'hi'}\n";
+}
+my $query=join(" OR ", @clauses);
+$query.=" OR htm_id IN (".join(", ", @singlets).")"
+    if scalar(@singlets);
+$query="SELECT ra, declination FROM catalogue WHERE $query";
+print STDERR "$query\n";
+
+#
+my $rows=$dbh->selectall_arrayref($query);
+foreach my $row (@$rows) {
+    print join("  ", @$row), "\n";
+}
