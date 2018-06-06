@@ -118,6 +118,9 @@ def parse_args():
                         'Consumers in the same group will share messages '
                         '(i.e., only one consumer will receive a message, '
                         'as in a queue). Default is value of $HOSTNAME.')
+    parser.add_argument('--frombeginning', 
+                         help='Start from the beginning of the topic',
+                         action='store_true')
     parser.add_argument('--stampdump',
                         help='Write postage stamp to /stamps',
                         action='store_true')
@@ -126,14 +129,6 @@ def parse_args():
                         action='store_true')
     parser.add_argument('--logging', type=str,
                         help='Logging level: DEBUG, INFO, WARNING, ERROR, CRITICAL')
-
-#    avrogroup = parser.add_mutually_exclusive_group()
-#    avrogroup.add_argument('--decode', dest='avroFlag', action='store_true',
-#                           help='Decode from Avro format. (default)')
-#    avrogroup.add_argument('--decode-off', dest='avroFlag',
-#                           action='store_false',
-#                           help='Do not decode from Avro format.')
-#    parser.set_defaults(avroFlag=True)
 
     args = parser.parse_args()
     if args.logging:
@@ -175,7 +170,7 @@ def main(args):
     # Start consumer and print alert stream
     
     try:
-        streamReader = alertConsumer.AlertConsumer(args.topic, schema_files, **conf)
+        streamReader = alertConsumer.AlertConsumer(args.topic, args.frombeginning, schema_files, **conf)
         streamReader.__enter__()
     except alertConsumer.EopError as e:
         logging.error(e.message)

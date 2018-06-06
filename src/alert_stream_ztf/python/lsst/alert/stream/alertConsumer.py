@@ -33,6 +33,12 @@ class EopError(AlertError):
     def __str__(self):
         return self.message
 
+def set_offset_beginning(consumer, partitions):
+    # force-reset offsets when subscribing to a topic:
+    for part in partitions:
+        # -2 stands for beginning and -1 for end
+        part.offset = -2
+    consumer.assign(partitions)
 
 class AlertConsumer(object):
     """Creates an alert stream Kafka consumer for a given topic.
@@ -47,8 +53,9 @@ class AlertConsumer(object):
         Keyword arguments for configuring confluent_kafka.Consumer().
     """
 
-    def __init__(self, topic, schema_files=None, **kwargs):
+    def __init__(self, topic, frombeginning, schema_files=None, **kwargs):
         self.topic = topic
+        self.frombeginning = frombeginning
         self.kafka_kwargs = kwargs
         if schema_files is not None:
             self.alert_schema = avroUtils.combineSchemas(schema_files)
@@ -56,7 +63,10 @@ class AlertConsumer(object):
 
     def __enter__(self):
         self.consumer = confluent_kafka.Consumer(**self.kafka_kwargs)
-        self.consumer.subscribe([self.topic])
+        if self.frombeginning:
+            self.consumer.subscribe([self.topic], on_assign=set_offset_beginning)
+        else:
+            self.consumer.subscribe([self.topic])
         return self
 
     def __exit__(self, type, value, traceback):
