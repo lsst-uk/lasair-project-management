@@ -25,8 +25,21 @@ def candlist(request):
 
 # in mysql dec is a reserved word, we used decl in the database
         selected = selected.replace('dec,', 'decl,')
+        selectlist = selected.split(',')
+# if dec is in the list, change it to decl
+        try:
+            idx = selectlist.index('dec')
+            selectlist[idx] = 'decl'
+        except:
+            pass
+# make sure candid and objectId are in the select list
+        if not 'candid' in selectlist:
+            selectlist.append('candid')
+        if not 'objectId' in selectlist:
+            selectlist.append('objectId')
+        selected = ','.join(selectlist)
 
-        query = 'SELECT ' + selected.strip() + ' FROM candidates'
+        query = 'SELECT ' + selected + ' FROM candidates'
         if len(where.strip()) > 0:
             query += ' WHERE ' + where.strip()
         if len(order.strip()) > 0:
