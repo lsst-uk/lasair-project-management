@@ -24,23 +24,24 @@ def insert_sql(alert):
     names = []
     values = []
 
-    for packet in alert:
-        names.append('objectId')
-        values.append('"' + packet['objectId'] + '"')
-        for name,value in packet['candidate'].items():
+    names.append('objectId')
+    values.append('"' + alert['objectId'] + '"')
+    for name,value in alert['candidate'].items():
 
-            # Must not use 'dec' in mysql, so use 'decl' instead
-            if name == 'dec': 
-                name = 'decl'
-                dec = float(value)
-            if name == 'ra': 
-                ra = float(value)
+        # Must not use 'dec' in mysql, so use 'decl' instead
+        if name == 'dec': 
+            name = 'decl'
+            dec = float(value)
+        if name == 'ra': 
+            ra = float(value)
+        if name == 'rbversion':
+            continue
 
-            names.append(name)
-            if isinstance(value, basestring):
-                values.append('"' + value + '"')
-            else:
-                values.append(str(value))
+        names.append(name)
+        if isinstance(value, str):
+            values.append('"' + value + '"')
+        else:
+            values.append(str(value))
 
 # Compute the HTM ID for later cone searches
     try:
@@ -117,6 +118,9 @@ def parse_args():
                         'Consumers in the same group will share messages '
                         '(i.e., only one consumer will receive a message, '
                         'as in a queue). Default is value of $HOSTNAME.')
+    parser.add_argument('--frombeginning', 
+                         help='Start from the beginning of the topic',
+                         action='store_true')
     parser.add_argument('--stampdump',
                         help='Write postage stamp to /stamps',
                         action='store_true')
@@ -125,14 +129,6 @@ def parse_args():
                         action='store_true')
     parser.add_argument('--logging', type=str,
                         help='Logging level: DEBUG, INFO, WARNING, ERROR, CRITICAL')
-
-#    avrogroup = parser.add_mutually_exclusive_group()
-#    avrogroup.add_argument('--decode', dest='avroFlag', action='store_true',
-#                           help='Decode from Avro format. (default)')
-#    avrogroup.add_argument('--decode-off', dest='avroFlag',
-#                           action='store_false',
-#                           help='Do not decode from Avro format.')
-#    parser.set_defaults(avroFlag=True)
 
     args = parser.parse_args()
     if args.logging:
@@ -146,7 +142,9 @@ def parse_args():
 
 def main(args):
     # Configure consumer connection to Kafka broker
-    conf = {'bootstrap.servers': '{}:9092,{}:9093,{}:9094'.format(args.host,args.host,args.host),
+#    conf = {'bootstrap.servers': '{}:9092,{}:9093,{}:9094'.format(args.host,args.host,args.host),
+#            'default.topic.config': {'auto.offset.reset': 'smallest'}}
+    conf = {'bootstrap.servers': '{}:9092'.format(args.host,args.host,args.host),
             'default.topic.config': {'auto.offset.reset': 'smallest'}}
     if args.group:
         conf['group.id'] = args.group
@@ -172,7 +170,7 @@ def main(args):
     # Start consumer and print alert stream
     
     try:
-        streamReader = alertConsumer.AlertConsumer(args.topic, schema_files, **conf)
+        streamReader = alertConsumer.AlertConsumer(args.topic, args.frombeginning, schema_files, **conf)
         streamReader.__enter__()
     except alertConsumer.EopError as e:
         logging.error(e.message)
@@ -188,7 +186,7 @@ def main(args):
             else:
                 for record in msg:
                     # Apply filter to each alert
-                    if args.stampdir:
+                    if args.stampdump:
                         candid = alert_filter(record, msl, '/stamps/' + args.topic)
                     else:
                         candid = alert_filter(record, msl)
@@ -196,6 +194,8 @@ def main(args):
         except alertConsumer.EopError as e:
             # Write when reaching end of partition
             logger.error(e.message)
+            logger.info("End of stream reached")
+            return
         except IndexError:
             logger.error('%% Data cannot be decoded\n')
         except UnicodeDecodeError:
@@ -204,14 +204,14 @@ def main(args):
             logger.error('%% Aborted by user\n')
             sys.exit()
 
-        if args.avros:
+        if args.avrodump:
             dir = '/avros/%s' % args.topic
             try:
                 os.makedirs(dir)
             except OSError:
                 pass
-            f = open('%s/%d.avro' % candid, 'w')
-            f.write(streamReader.raw_msg())
+            f = open('%s/%d.avro' % (dir, candid), 'wb')
+            f.write(streamReader.raw_msg)
             f.close()
     return
 
