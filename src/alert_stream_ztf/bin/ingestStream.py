@@ -176,6 +176,7 @@ def main(args):
         logging.error(e.message)
         sys.exit()
 
+    nalert = 0
     while True:
         try:
 #            msg = streamReader.poll(decode=args.avroFlag)
@@ -190,11 +191,12 @@ def main(args):
                         candid = alert_filter(record, msl, '/stamps/' + args.topic)
                     else:
                         candid = alert_filter(record, msl)
+                    nalert += 1
 
         except alertConsumer.EopError as e:
             # Write when reaching end of partition
             logger.error(e.message)
-            logger.info("End of stream reached")
+            logger.info("End of stream reached after %d alerts" % nalert)
             return
         except IndexError:
             logger.error('%% Data cannot be decoded\n')
