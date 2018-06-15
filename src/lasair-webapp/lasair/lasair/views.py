@@ -5,6 +5,14 @@ from lasair.models import Candidates
 import lasair.settings
 import mysql.connector
 
+def connect_db():
+    msl = mysql.connector.connect(
+        user    =lasair.settings.READONLY_USER,
+        password=lasair.settings.READONLY_PASS,
+        host    =lasair.settings.DATABASES['default']['HOST'],
+        database='ztf')
+    return msl
+
 def index(request):
     web_domain = lasair.settings.WEB_DOMAIN
     return render_to_response('index.html', {'web_domain': web_domain})
@@ -51,12 +59,7 @@ def candlist(request):
         if len(where.strip()) > 0:
             countquery += ' WHERE ' + where.strip()
 
-        msl = mysql.connector.connect(
-            user    =lasair.settings.READONLY_USER,
-            password=lasair.settings.READONLY_PASS,
-            host    =lasair.settings.DATABASES['default']['HOST'],
-            database='ztf')
-
+        msl = connect_db()
         cursor = msl.cursor(buffered=True, dictionary=True)
         cursor.execute(countquery)
         nalert = 0
@@ -91,11 +94,7 @@ def cand(request, candid):
     radius_arcsec = 30.0
     whereClause = htmCircle.htmCircleRegion(16, cand.ra, cand.decl, radius_arcsec)
 
-    msl = mysql.connector.connect(
-        user    =lasair.settings.READONLY_USER,
-        password=lasair.settings.READONLY_PASS,
-        host    =lasair.settings.DATABASES['default']['HOST'],
-        database='ztf')
+    msl = connect_db()
     cursor = msl.cursor(buffered=True, dictionary=True)
     query = ("SELECT * from candidates " + whereClause)
     query = query.replace('htm16ID', 'htmid16')
@@ -108,3 +107,18 @@ def cand(request, candid):
     message = 'hello'
 
     return render_to_response('cand.html',{'cand': canddict, 'prv_cands': prv_cands, 'message': message})
+
+def show_object(request, objectId):
+    """Show a specific object, with all its candidates"""
+    msl = connect_db()
+    cursor = msl.cursor(buffered=True, dictionary=True)
+    query = ('SELECT * from candidates WHERE objectId = "' + objectId + '" ORDER BY jd')
+    cands = []
+    cursor.execute(query)
+    for row in cursor:
+        cands.append(row)
+    message = 'Got %d candidates' % len(cands)
+    return render_to_response('show_object.html',{'objectId':objectId, 'cands': cands, 'message': message})
+
+
+
