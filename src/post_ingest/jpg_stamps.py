@@ -1,11 +1,23 @@
 import os, sys
 from astropy.io import fits
 from PIL import Image
+import numpy
 
 def open_fits(filename):
     data = fits.getdata(filename)
     img = Image.fromarray(data)
-    return img.convert('L')
+    y=numpy.asarray(img.getdata(),dtype=numpy.float64).reshape((img.size[1],img.size[0]))
+    y = numpy.abs(y)
+#    y = numpy.sqrt(y)
+    med = numpy.median(y)
+    mymin = 0
+    mymax = 3*med
+#    print '%.1f %s' % (med, filename)
+    y = (y-mymin)*255/(mymax-mymin)
+    y = numpy.maximum(y, 0)
+    y = numpy.minimum(y, 255)
+    y=numpy.asarray(y,dtype=numpy.uint8)
+    return Image.fromarray(y,mode='L')
 
 def convert_fits(dirfits, dirjpg, name):
     t = name.split('_')
