@@ -1,4 +1,7 @@
 <h2>Candidate object</h2>
+
+This candidate is part of object <a href="/object/{{ cand.objectid }}/">{{ cand.objectid }}</a>.<br/>
+<img src=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg><br/>
 <table border=1>
 {% for k,v in cand.items %}
 {% ifnotequal k "_state" %}
@@ -6,11 +9,3 @@
 {% endifnotequal %}
 {% endfor %}
 </table>
-
-<h2>Previous Candidates</h2>
-
-<ul>
-{% for prv_cand in prv_cands %}
-    <li> <a href="/cand/{{ prv_cand.candid }}/">{{ prv_cand.candid }}</a></li>
-{% endfor %}
-</ul>

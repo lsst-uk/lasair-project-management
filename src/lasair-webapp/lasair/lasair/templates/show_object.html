@@ -42,9 +42,18 @@
 </tr>
 </table>
 
+<table>
+{% for cand in cands %}
+<tr><td>
+<img src=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg width="200%"><br/>
+</td></tr>
+{% endfor %}
+</table>
+
+
 <script type="text/javascript" src="//aladin.u-strasbg.fr/AladinLite/api/v2/latest/aladin.min.js" charset="utf-8"></script>
 <script type="text/javascript">
-    var aladin = A.aladin('#aladin-lite-div', {survey: "P/DSS2/color", fov:0.05, target: "300.1, 20.1"});
+    var aladin = A.aladin('#aladin-lite-div', {survey: "P/DSS2/color", fov:0.04, target: "{{ cands.0.ra }}, {{ cands.0.decl }}"});
     $('input[name=survey]').change(function() {
         aladin.setImageSurvey($(this).val());
 });
