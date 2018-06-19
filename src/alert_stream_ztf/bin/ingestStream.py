@@ -122,8 +122,7 @@ def parse_args():
                          help='Start from the beginning of the topic',
                          action='store_true')
     parser.add_argument('--stampdump',
-                        help='Write postage stamp to /stamps',
-                        action='store_true')
+                        help='Write postage stamp to /stamps/<dir>')
     parser.add_argument('--avrodump', 
                         help='Write each avro alert to a file in /avros',
                         action='store_true')
@@ -188,7 +187,7 @@ def main(args):
                 for record in msg:
                     # Apply filter to each alert
                     if args.stampdump:
-                        candid = alert_filter(record, msl, '/stamps/' + args.topic)
+                        candid = alert_filter(record, msl, '/stamps/' + args.stampdump)
                     else:
                         candid = alert_filter(record, msl)
                     nalert += 1
