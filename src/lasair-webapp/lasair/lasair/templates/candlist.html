@@ -1,29 +1,48 @@
 {% extends "base.html" %}
 {% block content %}
-    Query: {{ message }}
-    <hr/>
-    Showing results {{ ps }} to {{ pe }} of {{ nalert }}
-    <form method="POST" action="/candlist/">
-    <input type="hidden" name="selected" value="{{ selected }}"/>
-    <input type="hidden" name="where"    value="{{ where }}"/>
-    <input type="hidden" name="order"    value="{{ order }}"/>
-    <input type="hidden" name="page"     value="{{ nextpage }}"/>
-    <input type="submit" value="next page"/>
-    </form>
-    <hr/>
-    <table border=1>
-    <tr>
-    <th></th>
-    {% for key, value in table.0.items %} 
-    <th>{{ key }}</th>
-    {% endfor %}
-    </tr>
-    {% for row in table %}<tr>
-    <td><a href=/object/{{ row.objectId }}>link</a></td>
-    {% for key, value in row.items %} 
-    <td>{{ value }}</td>
-    {% endfor %}
-    </tr>
-    {% endfor %}
-    </table>
+
+            <div class="row">
+                    <div class="col-sm">
+              <div class="alert alert-primary" role="alert">
+               <p> Showing results for query:</p>
+              <samp>{{message}}</samp>
+                    </div>		
+                </div>
+                <div class="row">
+                     <div class="col-sm">	
+                          <table class="table">
+                              <tr>
+                              <th></th>
+                              {% for key, value in table.0.items %} 
+                              <th>{{ key }}</th>
+                              {% endfor %}
+                              </tr>
+                              {% for row in table %}<tr>
+                              <td><a href=/object/{{ row.objectId }}>link</a></td>
+                              {% for key, value in row.items %} 
+                              <td>{{ value }}</td>
+                              {% endfor %}
+                              </tr>
+                              {% endfor %}
+                              </table>
+                    </div>
+                </div>
+          <div class="row">
+              <div class="col-sm-6">
+              {{ ps }}-{{ pe }} / {{ nalert }}
+              </div>
+              <div class="col-sm-6">
+                      <form method="POST" action="/candlist/">
+                          <div class ="form-group">
+                  <input type="hidden" name="selected" value="{{ selected }}"/>
+                             <input type="hidden" name="where"    value="{{ where }}"/>
+                              <input type="hidden" name="order"    value="{{ order }}"/>
+                          <input type="hidden" name="page"     value="{{ nextpage }}"/>
+                          btn btn-primary<input class="btn btn-primary" type="submit" value="next page"/>
+                             </div>
+                   </form>
+       
+              </div>
+          </div>
+
 {% endblock %}
