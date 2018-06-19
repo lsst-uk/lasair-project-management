@@ -1,29 +1,45 @@
-<h2>Query the ZTF database</h2>
+{% extends "base.html" %}
+{% block content %}
 
-Modify the query:
-<hr/>
-<form method="POST" action="/candlist/">
-SELECT<br/>
-<p>
-<textarea rows="1" cols="50" name="selected">
-*
-</textarea></br>
-<p>
-WHERE<br/>
-<p>
-<textarea rows="2" cols="50" name="where">
-magpsf < 13 
-and rb >= 0.65 and nbad = 0 and fwhm <= 5 and elong <= 1.2 and abs(magdiff) <= 0.1
-</textarea></br>
-<p>
-ORDER BY<br/>
-<p>
-<input name="order" type="text" value="ra"/><br/>
-<input type="hidden" name="page" value="{{ page }}"/><br/>
-<p>
-<input type="submit" value="Submit"/>
+<div class="row">
+        <div class="col-sm">
+                <h3>Query the ZTF database</h3>
+        </div>		
+</div>
+<div class="row">
+        <div class="col-sm">
+            Modify the values below to Query the ZTF database. For information on attributes that can be queried, see the 
+            <a href= https://zwickytransientfacility.github.io/ztf-avro-alert/schema.html>ZTF schema.</a>
+            </div>		
+        </div>
 
-</form>
-<hr/>
-For information on attributes that can be queried, see the 
-<a href= https://zwickytransientfacility.github.io/ztf-avro-alert/schema.html>ZTF schema</a>
+<div class="row">
+        <div class="col-sm">
+                <form method="POST" action="/candlist/">
+                    {% csrf_token %} 
+                    <div class ="form-group">
+                        <label for="select">SELECT</label>
+                        <textarea class="form-control" rows="1" cols="50" name="selected" id="SELECT">*</textarea>
+                    </div>
+                    <div class ="form-group">
+                            <label for="where">WHERE</label>
+                            <textarea class="form-control" rows="2" cols="50" name="where" id="where">
+                            magpsf < 13 
+                            and rb >= 0.65 and nbad = 0 and fwhm <= 5 and elong <= 1.2 and abs(magdiff) <= 0.1
+                            </textarea>
+                    </div>
+                    <div class ="form-group">
+                            <label for="orderby">ORDER BY</label>
+                            <input id="orderby" class="form-control" name="order" type="text" value="ra"/><br/>
+                            <input class="form-control" type="hidden" name="page" value="{{ page }}"/><br/>
+                    </div>
+                    
+                <input type="submit" value="Submit" class="btn btn-primary"/>
+           
+                </form>
+        </div>		
+</div>
+
+
+
+{% endblock %}
