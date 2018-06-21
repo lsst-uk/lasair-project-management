@@ -11,8 +11,40 @@
 <title>Lasair Transients and Variables*</title>
 </head>
 <body>
-	<div class="container-fluid" id="content">
-            {% block content %}{% endblock %}
+	<div class="container-fluid 
+	header" id="content">
+		<div class="row ">
+				<div class="col-sm-3">
+					<img src={% static "img/lasair-font.png" %} class="lasair-logo">
+				
+				  </div>
+				  <div class="col-sm-9 caption">
+						A broker for astronomers studying transients and variables, a collaboration of Queen's University, Belfast and Royal Observatory, Edinburgh. <br>
+						<i>In Irish and Scottish Gaelic, Lasair means Flame, Flash</i>
+				  </div>
+		</div>
+		<div class="row content">
+			<div class="col-sm-2">
+				<nav class="nav flex-column menu">
+						<a class="nav-link active" href="/">Home</a>
+						<a class="nav-link disabled" href="#">About Lasair</a>
+						<a class="nav-link" href="/candlist">Query ZTF</a>
+						<a class="nav-link disabled" href="#">Coverage</a>
+						<a class="nav-link disabled" href="#">Jupyter</a>
+						<a class="nav-link disabled" href="#">Contact</a>
+				</nav>
+			</div>
+			<div class="col-sm-6 ">
+				{% block content %}{% endblock %}
+			</div>
+	</div>
+	<div class="row footer">
+			<div class="col-sm">
+			<img src={% static "img/uoe.png" %}  class="logo-uoe">
+			<img src={% static "img/qub.png" %} class="logo-qub">
+			<img src={% static "img/lsst.png" %}  class="logo-lsst">
+			<img src={% static "img/ztf.png" %} class="logo-ztf">
+	</div></div>
 	</div>
 </body>
 </html>

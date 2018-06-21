@@ -2,6 +2,61 @@
     margin: 20px;
 }
 
-.row{
+/* .row{
     margin: 10px;
+} */
+
+.logo-uoe{
+    width:5%; 
+    margin:10px;
 }
+.logo-qub{
+    margin:10px;
+    margin-top:20px;
+    width:10%; 
+}
+
+.logo-lsst{
+    width: 10%
+}
+
+.logo-ztf{
+    margin:10px;
+    width:8%;
+}
+
+.footer{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    background-color: 	#bbded6;
+    /* background-color:#dfe6ea; */
+}
+
+
+.header{
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0px;
+    /* background-color:#dfe6ea; */
+    background-color:	#bbded6;
+    height: 180px;
+
+}
+
+.lasair-logo{
+    /* width:350px;  */
+    width:90%;
+    margin:20px;
+}
+
+.content{
+    margin-top:100px;
+    /* background: #deeaff; */
+}
+
+.caption{
+    margin-top: 4%;
+}
+
