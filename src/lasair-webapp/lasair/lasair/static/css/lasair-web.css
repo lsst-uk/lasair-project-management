@@ -7,22 +7,23 @@
 } */
 
 .logo-uoe{
-    width:5%; 
-    margin:10px;
+    width:4%; 
+    margin:5px;
 }
 .logo-qub{
     margin:10px;
     margin-top:20px;
-    width:10%; 
+    width:6%; 
 }
 
 .logo-lsst{
-    width: 10%
+    margin-top:10px;
+    width: 7%
 }
 
 .logo-ztf{
     margin:10px;
-    width:8%;
+    width:5%;
 }
 
 .footer{
@@ -31,6 +32,7 @@
     bottom: 0;
     background-color: 	#bbded6;
     /* background-color:#dfe6ea; */
+    height:9%;
 }
 
 
@@ -41,7 +43,7 @@
     margin: 0px;
     /* background-color:#dfe6ea; */
     background-color:	#bbded6;
-    height: 180px;
+    height: 16%;
 
 }
 
@@ -52,7 +54,7 @@
 }
 
 .content{
-    margin-top:100px;
+    margin-top:40px;
     /* background: #deeaff; */
 }
 
