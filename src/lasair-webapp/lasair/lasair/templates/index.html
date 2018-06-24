@@ -2,15 +2,20 @@
 {% load staticfiles%}
 {% block content %}
 
-
-
-		<div class="row">
-			<div class="col-sm">
-				<ul>
-				<!-- <li>Click here to query <a href=/candlist>Lasair's ZTF candidates</a></li> -->
-				<li><a href=http://www.ztf.caltech.edu/>Information about ZTF</a></li>
-				</ul>
-			</div>
-		</div>
+<div class="row">
+	<div class="col-sm">
+<p>
+Lasair is a prototype of a broker for <a href=https://www.lsst.org/>LSST</a>, 
+and is currently ingesting and presenting alerts from the public stream of the
+<a href=http://www.ztf.caltech.edu>ZTF</a> survey.
+</p><p>
+You can query the alerts by selecting "Query ZTF" at the left, 
+you can see the coverage of the ZTF survey each night,
+and you can -- with a login -- query the database through a <a href= http://jupyter.org/>Jupyter</a> notebook interface.
+</p><p>
+Questions and enquiries, please click "Contact".
+</p>
+	</div>
+</div>
 
 {% endblock %}

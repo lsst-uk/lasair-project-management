@@ -13,40 +13,39 @@
 <title>Lasair Transients and Variables*</title>
 </head>
 <body>
-	<div class="container-fluid 
-	header" id="content">
-		<div class="row ">
-				<div class="col-sm-3">
-					<img src={% static "img/lasair-font.png" %} class="lasair-logo">
-				
-				  </div>
-				  <div class="col-sm-9 caption">
-						A broker for astronomers studying transients and variables, a collaboration of Queen's University, Belfast and Royal Observatory, Edinburgh. <br>
-						<i>In Irish and Scottish Gaelic, Lasair means Flame, Flash</i>
-				  </div>
+<div class="container-fluid">
+	<div class="row header align-items-center">
+		<div class="col-sm">
+			<img src={% static "img/lasair-font.png" %} class="lasair-logo">
 		</div>
-		<div class="row content">
-			<div class="col-sm-1">
-				<nav class="nav flex-column menu">
-						<a class="nav-link active" href="/">Home</a>
-						<a class="nav-link disabled" href="#">About Lasair</a>
-						<a class="nav-link" href="/candlist">Query ZTF</a>
-						<a class="nav-link disabled" href="#">Coverage</a>
-						<a class="nav-link disabled" href="#">Jupyter</a>
-						<a class="nav-link disabled" href="#">Contact</a>
-				</nav>
-			</div>
-			<div class="col-sm-10 ">
-				{% block content %}{% endblock %}
-			</div>
+		<div class="col-sm">
+A broker for astronomers studying transients and variables, a collaboration of the 
+<a href=https://www.ed.ac.uk/>University of Edinburgh</a> and 
+<a href=http://www.qub.ac.uk/>Queen's University, Belfast</a>.
+		</div>
+		<div class="col-sm">
+<a href=http://www.roe.ac.uk/ifa/wfau/><img src={% static "img/uoe.png" %} width=70></a>
+<a href=https://star.pst.qub.ac.uk/wiki/doku.php/public/research_areas/supernovae/start><img src={% static "img/qub.png" %} width=100></a>
+<a href=https://www.lsst.org/><img src={% static "img/lsst.png" %} width=80></a>
+<a href=http://www.ztf.caltech.edu/><img src={% static "img/ztf.png" %} width=70></a>
+		</div>
 	</div>
-	<div class="row footer">
-			<div class="col-sm">
-			<img src={% static "img/uoe.png" %}  class="logo-uoe">
-			<img src={% static "img/qub.png" %} class="logo-qub">
-			<img src={% static "img/lsst.png" %}  class="logo-lsst">
-			<img src={% static "img/ztf.png" %} class="logo-ztf">
-	</div></div>
+
+	<div class="row content">
+		<div class="col-sm-2">
+   			<nav class="nav flex-column menu">
+	   			<a class="nav-link active" href="/">Home</a>
+	   			<a class="nav-link" href="/candlist">Query ZTF</a>
+	   			<a class="nav-link" href="/coverage">Coverage</a>
+				<a class="nav-link" href="/jupyter">Jupyter</a>
+				<a class="nav-link" href="/contact"" href="#">Contact</a>
+			</nav>
+		</div>
+
+		<div class="col-sm-10 ">
+			{% block content %}{% endblock %}
+		</div>
 	</div>
+</div>
 </body>
 </html>

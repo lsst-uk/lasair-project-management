@@ -1,50 +1,30 @@
 .container-fluid{
-    margin: 20px;
+    margin: 0px;
 }
 
 /* .row{
     margin: 10px;
 } */
 
-.logo-uoe{
-    width:4%; 
-    margin:5px;
-}
-.logo-qub{
-    margin:10px;
-    margin-top:20px;
-    width:6%; 
+.nav-link{
+    margin:auto;
+    margin-top:2px;
+    background-color: 	#fcfcfc;
+    width: 100px;
 }
 
-.logo-lsst{
-    margin-top:10px;
-    width: 7%
+.nav-link:hover { 
+    background-color: #bbded6;
 }
-
-.logo-ztf{
-    margin:10px;
-    width:5%;
-}
-
-.footer{
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    background-color: 	#bbded6;
-    /* background-color:#dfe6ea; */
-    height:9%;
-}
-
 
 .header{
-    position: absolute;
+    /*position: absolute;*/
     left: 0;
     top: 0;
     margin: 0px;
-    /* background-color:#dfe6ea; */
-    /*background-color:	#bbded6;*/
+    /*background-color:#dfe6ea;*/
+    background-color:	#bbded6;
     height: 16%;
-
 }
 
 .lasair-logo{
@@ -56,7 +36,7 @@
 .content{
     margin-top:40px;
     margin-bottom:10px;
-    /* background: #deeaff; */
+    background: #ffffff;
 }
 
 .caption{

@@ -23,5 +23,8 @@ urlpatterns = [
     path('candlist/',               views.candlist, name='candlist'),
     path('cand/<int:candid>/',      views.cand,     name='cand'),
     path('object/<slug:objectId>/', views.show_object,   name='show_object'),
+    path('coverage/',               views.coverage, name='coverage'),
+    path('jupyter',  TemplateView.as_view(template_name='jupyter.html')),
+    path('contact',  TemplateView.as_view(template_name='contact.html')),
     path('admin/', admin.site.urls),
 ]
