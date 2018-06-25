@@ -15,7 +15,8 @@ def connect_db():
 
 def index(request):
     web_domain = lasair.settings.WEB_DOMAIN
-    return render_to_response('index.html', {'web_domain': web_domain})
+    n_candidates = int(open('/mnt/lasair-head-data/ztf/number_candidates.txt').read())
+    return render_to_response('index.html', {'web_domain': web_domain, 'n_candidates':n_candidates})
 
 def candlist(request):
     perpage = 100
