@@ -120,5 +120,29 @@ def show_object(request, objectId):
     message = 'Got %d candidates' % len(cands)
     return render_to_response('show_object.html',{'objectId':objectId, 'cands': cands, 'message': message})
 
+def coverage(request):
+    return render_to_response('coverage.html')
+#   the below should do it once matplotlib is installed
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+    from matplotlib.figure import Figure
 
+    from astropy.table import Table
+    ralist = np.array([100.0, 120.0])
+    delist = np.array([20.0, 30.0])
+    t = Table([ralist, delist], names=('RA', 'Dec'))
+    import astropy.coordinates as coord
+    import astropy.units as u
+    ra = coord.Angle(t['RA']*u.degree)
+    ra = ra.wrap_at(180*u.degree)
+    dec = coord.Angle(t['Dec']*u.degree)
+    fig = Figure(facecolor='white')
 
+    ax = fig.add_subplot(111, projection="mollweide")
+    ax.grid()
+    ax.scatter(ra.radian, dec.radian)
+
+    canvas=FigureCanvas(fig)
+    response=HttpResponse(content_type='image/png')
+    canvas.print_png(response)
+    return response

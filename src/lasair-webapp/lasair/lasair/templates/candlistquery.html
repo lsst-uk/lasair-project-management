@@ -1,28 +1,58 @@
-<h2>Query the ZTF database</h2>
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+        <div class="col-sm">
+                <h3>Query the ZTF database</h3>
+        </div>		
+</div>
+<div class="row">
+        <div class="col-sm">
+<p>
+The form below is a builder for SELECT queries on the ZTF database of candidate alerts. 
+The attributes that can be queried are listed in the
+<a href= https://zwickytransientfacility.github.io/ztf-avro-alert/schema.html>ZTF schema.</a>
+For each observing field of the survey and each of the g and r filters, 
+ZTF will only issue candidate alerts when it has 
+built up a <i>reference image</i> of that field with that filter, by stacking 15 good images. 
+Once that is in place, each fresh image is subtracted from the reference, 
+and any 5-sigma difference generates a candidate alert. 
+When a candidate is within 1.5 arcseconds of a previous candidate, it gets the same <i>objectId</i>. Thus a light curve can be obtained from all the candidates that have a given objectId.
+More details of the processing pipeline are available 
+<a href=http://web.ipac.caltech.edu/staff/fmasci/ztf/ztf_pipelines_deliverables.pdf>here</a>. 
 
-Modify the query:
-<hr/>
-<form method="POST" action="/candlist/">
-SELECT<br/>
-<p>
-<textarea rows="1" cols="50" name="selected">
-*
-</textarea></br>
-<p>
-WHERE<br/>
-<p>
-<textarea rows="1" cols="50" name="where">
-magpsf < 13
-</textarea></br>
-<p>
-ORDER BY<br/>
-<p>
-<input name="order" type="text" value="ra"/><br/>
-<input type="hidden" name="page" value="{{ page }}"/><br/>
-<p>
-<input type="submit" value="Submit"/>
 
-</form>
-<hr/>
-For information on attributes that can be queried, see the 
-<a href= https://zwickytransientfacility.github.io/ztf-avro-alert/schema.html>ZTF schema</a>
+Further cuts can be made to remove spurious candidates, as illustrated in the prefilled
+SELECT criterion below -- where it says "rb &gt;= 0.65 and nbad = 0 and fwhm <= 5 and elong &lt;= 1.2 and abs(magdiff) &lt;= 0.1"
+
+</p>
+            </div>		
+        </div>
+
+<div class="row">
+        <div class="col-sm">
+                <form method="POST" action="/candlist/">
+                    {% csrf_token %} 
+                    <input type="submit" value="Submit Query" class="btn btn-primary"/>
+                    <div class ="form-group">
+                        <label for="select">SELECT</label>
+                        <textarea class="form-control" rows="1" cols="50" name="selected" id="SELECT">*</textarea>
+                    </div>
+                    <div class ="form-group">
+                            <label for="where">WHERE</label>
+<textarea class="form-control" rows="2" cols="50" name="where" id="where">
+magpsf < 15 
+and rb >= 0.65 and nbad = 0 and fwhm <= 5 and elong <= 1.2 and abs(magdiff) <= 0.1
+</textarea>
+                    </div>
+                    <div class ="form-group">
+                            <label for="orderby">ORDER BY</label>
+                            <input id="orderby" class="form-control" name="order" type="text" value="ra"/><br/>
+                            <input class="form-control" type="hidden" name="page" value="{{ page }}"/><br/>
+                    </div>
+                </form>
+        </div>		
+</div>
+
+
+
+{% endblock %}

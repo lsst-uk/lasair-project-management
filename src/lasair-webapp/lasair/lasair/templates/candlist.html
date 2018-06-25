@@ -1,26 +1,55 @@
-Query: {{ message }}
-<hr/>
-Showing results {{ ps }} to {{ pe }} of {{ nalert }}
-<form method="POST" action="/candlist/">
-<input type="hidden" name="selected" value="{{ selected }}"/>
-<input type="hidden" name="where"    value="{{ where }}"/>
-<input type="hidden" name="order"    value="{{ order }}"/>
-<input type="hidden" name="page"     value="{{ nextpage }}"/>
-<input type="submit" value="next page"/>
-</form>
-<hr/>
-<table border=1>
-<tr>
-<th></th>
-{% for key, value in table.0.items %} 
-<th>{{ key }}</th>
-{% endfor %}
-</tr>
-{% for row in table %}<tr>
-<td><a href=/cand/{{ row.candid }}>link</a></td>
-{% for key, value in row.items %} 
-<td>{{ value }}</td>
-{% endfor %}
-</tr>
-{% endfor %}
-</table>
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row">
+	<div class="col-sm">
+		<div class="alert alert-primary" role="alert">
+			<p> Showing results for query:</p>
+			<small><samp>{{message}}</samp></small>
+		</div>		
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-sm-4">
+		Showing results {{ ps }}-{{ pe }} of  {{ nalert }}
+	</div>
+	<div class="col-sm-8">
+		<form method="POST" action="/candlist/">
+		<div class ="form-group">
+			<input type="hidden" name="selected" value="{{ selected }}"/>
+			<input type="hidden" name="where"    value="{{ where }}"/>
+			<input type="hidden" name="order"    value="{{ order }}"/>
+			<input type="hidden" name="page"     value="{{ nextpage }}"/>
+			<input class="btn btn-primary" type="submit" value="next page"/>
+		</div>
+		</form>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-sm">	
+		<table class="table">
+		<tr>
+		{% for key, value in table.0.items %} 
+		<th>{{ key }}</th>
+		{% endfor %}
+		</tr>
+		{% for row in table %}<tr>
+		{% for key, value in row.items %} 
+			{% if key == "objectId" %}
+				<td><a href=/object/{{ row.objectId }}>{{ value }}</a></td>
+			{% elif key == "fid" %}
+				<td>{% if value == 1 %}g{% else %}r{% endif %}</td>
+			{% else %}
+				<td>{{ value }}</td>
+			{% endif %}
+		{% endfor %}
+		</tr>
+		{% endfor %}
+		</table>
+	</div>
+</div>
+
+
+{% endblock %}
