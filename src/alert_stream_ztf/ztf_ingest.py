@@ -6,17 +6,11 @@
 # 0 15 * * * /home/roy/lasair/src/alert_stream_ztf/ztf_ingest.py
 
 import os
-from time import gmtime, strftime
-from datetime import date
-
-g = gmtime()
-topic  = 'ztf_' + strftime("%Y%m%d", g) + '_programid1'
-
-d0 = date(2017, 1, 1)
-d1 = date(g.tm_year, g.tm_mon, g.tm_mday)
-nid = (d1 - d0).days
+import date_nid
+nid  = date_nid.nid_now()
+date = date_nid.nid_to_date(nid)
+topic  = 'ztf_' + date + '_programid1'
 print "Topic is %s, nid is %d" % (topic, nid)
-
 
 cmd = 'docker run --rm '
 cmd += '--mount type=bind,source=/data/ztf/logs,target=/logs '
@@ -37,4 +31,8 @@ os.system(tail)
 
 cmd = 'mkdir /data/ztf/stamps/jpg/%d; /home/roy/anaconda2/bin/python lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid, nid)
 os.system(cmd)
+
+cmd = '/home/roy/anaconda2/bin/python lasair/src/post_ingest/get_number_candidates.py'
+os.system(cmd)
+
 os.system('date')
