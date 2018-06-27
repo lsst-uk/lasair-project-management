@@ -4,6 +4,7 @@ from django.template.context_processors import csrf
 from lasair.models import Candidates
 import lasair.settings
 import mysql.connector
+import json
 
 def connect_db():
     msl = mysql.connector.connect(
@@ -119,29 +120,34 @@ def show_object(request, objectId):
     for row in cursor:
         cands.append(row)
     message = 'Got %d candidates' % len(cands)
-    return render_to_response('show_object.html',{'objectId':objectId, 'cands': cands, 'message': message})
+    json_data = json.dumps(cands)
+    return render_to_response('show_object.html',{'objectId':objectId, 'cands': cands,'json_cands':json_data, 'message': message})
 
 def coverage(request):
-    return render_to_response('coverage.html')
 #   the below should do it once matplotlib is installed
     import matplotlib.pyplot as plt
+
     from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
     from matplotlib.figure import Figure
+    import numpy as np
 
-    from astropy.table import Table
-    ralist = np.array([100.0, 120.0])
-    delist = np.array([20.0, 30.0])
-    t = Table([ralist, delist], names=('RA', 'Dec'))
-    import astropy.coordinates as coord
-    import astropy.units as u
-    ra = coord.Angle(t['RA']*u.degree)
-    ra = ra.wrap_at(180*u.degree)
-    dec = coord.Angle(t['Dec']*u.degree)
+#    from astropy.table import Table
+
+    ralist = np.array([100.0, 80.0]) / 57.0
+    delist = np.array([20.0, 30.0]) / 57.0
+#    t = Table([ralist, delist], names=('RA', 'Dec'))
+#    import astropy.coordinates as coord
+#    import astropy.units as u
+#    ra = coord.Angle(t['RA']*u.degree)
+#    ra = ra.wrap_at(180*u.degree)
+#    dec = coord.Angle(t['Dec']*u.degree)
+
     fig = Figure(facecolor='white')
+    return render_to_response('coverage.html')
 
     ax = fig.add_subplot(111, projection="mollweide")
     ax.grid()
-    ax.scatter(ra.radian, dec.radian)
+    ax.scatter(ralist, declist)
 
     canvas=FigureCanvas(fig)
     response=HttpResponse(content_type='image/png')

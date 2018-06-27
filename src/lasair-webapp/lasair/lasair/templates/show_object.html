@@ -1,6 +1,7 @@
 {% extends "base.html"%}
+{% load staticfiles%}
 {% block content %}
-
+<script type="text/javascript" src="{% static "/js/lc.js" %}" ></script>
 <div class="row">
 	<div class="col-sm">
 		<h3>Object {{ objectId }}</h3>
@@ -59,6 +60,13 @@
     $('input[name=survey]').change(function() {
         aladin.setImageSurvey($(this).val());
 });
+
+	var data = "{{ json_cands }}";
+	var data = data.replace(/&quot;/g,'"');
+	var json_data = JSON.parse(data);
+	//console.log(json_data);
+	plotlc(json_data);
+
 </script>
 {% endblock %}
 
