@@ -1,11 +1,36 @@
 {% extends "base.html"%}
 {% block content %}
+<link rel="stylesheet" href="//aladin.u-strasbg.fr/AladinLite/api/v2/latest/aladin.min.css" />
+<script type="text/javascript" src="//code.jquery.com/jquery-1.12.1.min.js" charset="utf-8"></script>
+
 <div class="row">
 	<h3>ZTF coverage</h3>
+Each ZTF field is shows the number of alerts found between the specified dates. The area of each square is proportional
+to the number of alerts, with red for r-filter and green for g-filter. The special date "today" means the current UTC date.
 </div>
 <div class="row">
-	<div class="col-sm">
-	Coverage maps of ZTF (under construction)
-	</div>
+	<form class="form-inline" method="POST" action="/coverage/">
+
+	<label>From&nbsp;&nbsp;</label> <input class="form-control" size="9" name="date1" type="text" value="{{ date1 }}"/>
+
+	<label>&nbsp;&nbsp;To&nbsp;&nbsp;<label/> <input class="form-control" size="9" name="date2" type="text" value="{{ date2 }}"/>
+
+	<input type="submit" value="Map Coverage Query" class="btn btn-primary"/>
+        </form>
 </div>
+
+
+<div class="row">
+    <div id="aladin-lite-div" style="width:600px;height:600px;"></div>
+</div>
+
+<script type="text/javascript" src="//aladin.u-strasbg.fr/AladinLite/api/v2/latest/aladin.min.js"></script>
+<script src="/lasair/static/js/coverage.js"></script>
+<script>
+$(document).ready(function() {
+    setupAladin();
+    queryCoverage({{ nid1 }}, {{ nid2 }});
+    drawMarkers();
+});
+</script>
 {% endblock %}

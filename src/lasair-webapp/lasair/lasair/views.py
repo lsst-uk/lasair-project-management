@@ -123,33 +123,18 @@ def show_object(request, objectId):
     json_data = json.dumps(cands)
     return render_to_response('show_object.html',{'objectId':objectId, 'cands': cands,'json_cands':json_data, 'message': message})
 
+from lasair import date_nid
 def coverage(request):
-#   the below should do it once matplotlib is installed
-    import matplotlib.pyplot as plt
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        date1 = request.POST['date1'].strip()
+        date2 = request.POST['date2'].strip()
+        if date1 == 'today': date1 = date_nid.nid_to_date(date_nid.nid_now())
+        if date2 == 'today': date2 = date_nid.nid_to_date(date_nid.nid_now())
+    else:
+        date1 = '20180528'
+        date2 = date_nid.nid_to_date(date_nid.nid_now())
 
-    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-    from matplotlib.figure import Figure
-    import numpy as np
-
-#    from astropy.table import Table
-
-    ralist = np.array([100.0, 80.0]) / 57.0
-    delist = np.array([20.0, 30.0]) / 57.0
-#    t = Table([ralist, delist], names=('RA', 'Dec'))
-#    import astropy.coordinates as coord
-#    import astropy.units as u
-#    ra = coord.Angle(t['RA']*u.degree)
-#    ra = ra.wrap_at(180*u.degree)
-#    dec = coord.Angle(t['Dec']*u.degree)
-
-    fig = Figure(facecolor='white')
-    return render_to_response('coverage.html')
-
-    ax = fig.add_subplot(111, projection="mollweide")
-    ax.grid()
-    ax.scatter(ralist, declist)
-
-    canvas=FigureCanvas(fig)
-    response=HttpResponse(content_type='image/png')
-    canvas.print_png(response)
-    return response
+    nid1 = date_nid.date_to_nid(date1)
+    nid2 = date_nid.date_to_nid(date2)
+    return render_to_response('coverage.html',{'nid1':nid1, 'nid2': nid2, 'date1':date1, 'date2':date2})
