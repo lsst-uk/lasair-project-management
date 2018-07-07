@@ -23,7 +23,7 @@ def coverageAjax(request, nid1, nid2):
         dict = {'queryType': 'dateRange', 'nid1':nid1, 'nid2':nid2}
         query = "SELECT candidates.field,fid,fields.ra,fields.decl,COUNT(*) AS n "
         query += "FROM candidates INNER JOIN fields ON candidates.field=fields.field "
-        query += "WHERE nid BETWEEN %d AND %d  " % (nid1, nid2)
+        query += "WHERE nid BETWEEN %d AND %d  " % (nid1, nid2+1)
         query += "GROUP BY candidates.field,fid"
 
     else:              # all dates
