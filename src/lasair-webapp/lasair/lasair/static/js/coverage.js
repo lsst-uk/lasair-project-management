@@ -1,5 +1,5 @@
 var aladin;
-var q = {};
+var storedData = {};
 var maxn;
 
 function setupAladin(){
@@ -32,11 +32,11 @@ function handleCoverage(data){
     if('result' in data) {
         console.log("Found " + data.result.length + " entries")
     }
-    q = data;
+    storedData = data;
     maxn = 0;
-    for(var k=0; k<q.result.length; k++){
-        if(q.result[k].n > maxn){
-            maxn = q.result[k].n;
+    for(var k=0; k<storedData.result.length; k++){
+        if(storedData.result[k].n > maxn){
+            maxn = storedData.result[k].n;
         }
     }
 }
@@ -51,12 +51,12 @@ function drawPlate(overlay, ra, de, size){
     ])]); 
 }
 
-function drawMarkers(data){
-    console.log("drawMarkers with " + q.result.length);
+function drawMarkers(){
+    console.log("drawMarkers with " + storedData.result.length);
     var overlay = A.graphicOverlay({color: '#ff0000', lineWidth: 2});
     aladin.addOverlay(overlay);
-    for(var k=0; k<q.result.length; k++){
-        row = q.result[k];
+    for(var k=0; k<storedData.result.length; k++){
+        row = storedData.result[k];
         if(row.fid == 1){
             drawPlate(overlay, row.ra, row.dec, 3.0*Math.sqrt(row.n/maxn));
         }
@@ -64,10 +64,24 @@ function drawMarkers(data){
 
     var overlay = A.graphicOverlay({color: '#00ff00', lineWidth: 2});
     aladin.addOverlay(overlay);
-    for(var k=0; k<q.result.length; k++){
-        row = q.result[k];
+    for(var k=0; k<storedData.result.length; k++){
+        row = storedData.result[k];
         if(row.fid == 2){
             drawPlate(overlay, row.ra, row.dec, 3.0*Math.sqrt(row.n/maxn));
         }
     }
+}
+
+function writeTable(){
+    html = "<table <table id=fields_table class='table'>";
+    html += "<thead><tr><th>RA</th><th>Dec</th><th>Filter</th><th>Ncandidate</th></tr></thead><tbody>";
+    for(var k=0; k<storedData.result.length; k++){
+        row = storedData.result[k];
+        if(row.fid == 1) {tok = 'r';}
+        else             {tok = 'g';}
+        html += "<tr><td>" + row.ra + "</td><td>" +  row.dec + "</td><td>" + tok + "</td><td>" +row.n + "</td></tr>";
+    }
+    html += "</tbody></table>";
+    document.getElementById('coverageTable').innerHTML = html;
+    $("#fields_table").tablesorter(); 
 }
