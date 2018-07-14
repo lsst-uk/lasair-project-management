@@ -34,8 +34,9 @@ def insert_sql(alert):
             dec = float(value)
         if name == 'ra': 
             ra = float(value)
-        if name == 'rbversion':
-            continue
+
+        if name == 'rbversion': continue
+        if name == 'dsnrms':    continue
 
         names.append(name)
         if isinstance(value, str):
