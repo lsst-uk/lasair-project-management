@@ -29,10 +29,13 @@ os.system(cmd)
 tail = 'tail -2 /data/ztf/logs/' + topic + '.log'
 os.system(tail)
 
-cmd = 'mkdir /data/ztf/stamps/jpg/%d; /home/roy/anaconda2/bin/python lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid, nid)
+cmd = 'mkdir /data/ztf/stamps/jpg/%d; /home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid, nid)
 os.system(cmd)
 
-cmd = '/home/roy/anaconda2/bin/python lasair/src/post_ingest/get_number_candidates.py'
+cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/watch_lists.py %d' % nid
+os.system(cmd)
+
+cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/get_number_candidates.py'
 os.system(cmd)
 
 os.system('date')

@@ -17,6 +17,19 @@ import settings
 import logging
 logger = logging.getLogger('ztf_ingestion')
 
+wanted_attributes = [
+'objectId', 'jd', 'fid', 'pid', 'diffmaglim', 'pdiffimfilename', 'programpi',
+'programid', 'candid', 'isdiffpos', 'tblid', 'nid', 'rcid', 'field', 'xpos',
+'ypos', 'ra', 'decl', 'magpsf', 'sigmapsf', 'chipsf', 'magap', 'sigmagap', 'distnr',
+'magnr', 'sigmagnr', 'chinr', 'sharpnr', 'sky', 'magdiff', 'fwhm', 'classtar', 'mindtoedge',
+'magfromlim', 'seeratio', 'aimage', 'bimage', 'aimagerat', 'bimagerat', 'elong', 'nneg',
+'nbad', 'rb', 'ssdistnr', 'ssmagnr', 'ssnamenr', 'sumrat', 'magapbig', 'sigmagapbig',
+'ranr', 'decnr', 'sgmag1', 'srmag1', 'simag1', 'szmag1', 'sgscore1', 'distpsnr1', 'ndethist',
+'ncovhist', 'jdstarthist', 'jdendhist', 'scorr', 'tooflag', 'objectidps1', 'objectidps2',
+'sgmag2', 'srmag2', 'simag2', 'szmag2', 'sgscore2', 'distpsnr2', 'objectidps3', 'sgmag3',
+'srmag3', 'simag3', 'szmag3', 'sgscore3', 'distpsnr3', 'nmtchps', 'rfid', 'jdstartref',
+'jdendref', 'nframesref', 'htmid16']
+
 def insert_sql(alert):
     """ Creates an insert sql statement for insering the canditate info
         Stamps and prv_candidates are discarded
@@ -35,14 +48,12 @@ def insert_sql(alert):
         if name == 'ra': 
             ra = float(value)
 
-        if name == 'rbversion': continue
-        if name == 'dsnrms':    continue
-
-        names.append(name)
-        if isinstance(value, str):
-            values.append('"' + value + '"')
-        else:
-            values.append(str(value))
+        if name in wanted_attributes:
+            names.append(name)
+            if isinstance(value, str):
+                values.append('"' + value + '"')
+            else:
+                values.append(str(value))
 
 # Compute the HTM ID for later cone searches
     try:
