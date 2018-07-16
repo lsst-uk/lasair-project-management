@@ -5,8 +5,8 @@ var maxn;
 function setupAladin(){
     console.log("Setting up Aladin");
     var fov = 180;   // field of view in degrees
-    aladin = $.aladin('#aladin-lite-div', {survey: "P/Mellinger/color", zoom: fov, showGotoControl: false});
-    aladin.gotoRaDec(285.0, 30.0)
+    aladin = $.aladin("#aladin-lite-div", {survey: "P/Mellinger/color", zoom: fov, showGotoControl: false});
+    aladin.gotoRaDec(285.0, 30.0);
 
 //    aladin.setProjection("aitoff");    
     aladin.setProjection("sinus");    
@@ -16,7 +16,7 @@ function queryCoverage(passnid1, passnid2) {
     nid1 = passnid1;
     nid2 = passnid2;
 
-    jsonurl = '/coverageAjax/' + nid1 + '/' + nid2 + '/'
+    jsonurl = "/coverageAjax/" + nid1 + "/" + nid2 + "/";
     console.log("Fetching coverage info " + jsonurl);
     $.ajax({
         dataType: "json",
@@ -29,8 +29,8 @@ function queryCoverage(passnid1, passnid2) {
 }
 
 function handleCoverage(data){
-    if('result' in data) {
-        console.log("Found " + data.result.length + " entries")
+    if("result" in data) {
+        console.log("Found " + data.result.length + " entries");
     }
     storedData = data;
     maxn = 0;
@@ -53,7 +53,7 @@ function drawPlate(overlay, ra, de, size){
 
 function drawMarkers(){
     console.log("drawMarkers with " + storedData.result.length);
-    var overlay = A.graphicOverlay({color: '#ff0000', lineWidth: 2});
+    var overlay = A.graphicOverlay({color: "#ff0000", lineWidth: 2});
     aladin.addOverlay(overlay);
     for(var k=0; k<storedData.result.length; k++){
         row = storedData.result[k];
@@ -62,7 +62,7 @@ function drawMarkers(){
         }
     }
 
-    var overlay = A.graphicOverlay({color: '#00ff00', lineWidth: 2});
+    var overlay = A.graphicOverlay({color: "#00ff00", lineWidth: 2});
     aladin.addOverlay(overlay);
     for(var k=0; k<storedData.result.length; k++){
         row = storedData.result[k];
@@ -72,16 +72,22 @@ function drawMarkers(){
     }
 }
 
-function writeTable(){
-    html = "<table <table id=fields_table class='table'>";
+function writeCoverageTable(){
+    var total = 0;
+    for(var k=0; k<storedData.result.length; k++){
+        total += storedData.result[k].n;
+    }
+    console.log("candidates: " + total);
+    html  = "Total candidate alerts = " + total;
+    html += "<table id=fields_table class='table'>";
     html += "<thead><tr><th>RA</th><th>Dec</th><th>Filter</th><th>Ncandidate</th></tr></thead><tbody>";
     for(var k=0; k<storedData.result.length; k++){
         row = storedData.result[k];
-        if(row.fid == 1) {tok = 'r';}
-        else             {tok = 'g';}
+        if(row.fid == 1) {tok = "r";}
+        else             {tok = "g";}
         html += "<tr><td>" + row.ra + "</td><td>" +  row.dec + "</td><td>" + tok + "</td><td>" +row.n + "</td></tr>";
     }
     html += "</tbody></table>";
-    document.getElementById('coverageTable').innerHTML = html;
+    document.getElementById("coverageTable").innerHTML = html;
     $("#fields_table").tablesorter(); 
 }
