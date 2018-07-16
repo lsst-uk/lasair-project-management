@@ -24,20 +24,20 @@ to the number of alerts, with red for r-filter and green for g-filter. The speci
     <div id="aladin-lite-div" style="width:700px;height:700px;background-color:black;"></div>
 </div>
 
-ZTF fields and number of candidates. To sort, click the column headings:
+ZTF fields and number of candidates. To sort, click the column headings.<hr/>
 <div class="row">
     <div id="coverageTable"></div>
 </div>
 
 <script type="text/javascript" src="//aladin.u-strasbg.fr/AladinLite/api/v2/latest/aladin.min.js"></script>
-<script type="text/javascript" src="/lasair/static/js/jquery.tablesorter.min.js" %}" ></script>
-<script src="/lasair/static/js/coverage.js"></script>
+<script type="text/javascript" src="/lasair/static/js/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="/lasair/static/js/coverage.js"></script>
 <script>
 $(document).ready(function() {
     setupAladin();
     queryCoverage({{ nid1 }}, {{ nid2 }});
     drawMarkers();
-    writeTable();
+    writeCoverageTable();
 });
 </script>
 {% endblock %}
