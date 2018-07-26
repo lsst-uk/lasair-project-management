@@ -26,6 +26,14 @@
 		</div>
 	</div>
 
+{% if user.is_authenticated %}
+Logged in as {{ user.get_username }}
+(<a href=/accounts/logout>Logout</a>)
+{% else %}
+<a href=/accounts/login>Login</a>
+{% endif %}
+
+
 	<div class="row content">
 		<div class="col-sm-2">
    			<nav class="nav flex-column menu">
@@ -33,6 +41,7 @@
 	   			<a class="nav-link" href="/candlist">Query ZTF</a>
 	   			<a class="nav-link" href="/coverage">Coverage</a>
 				<a class="nav-link" href="/jupyter">Jupyter</a>
+<!--				<a class="nav-link" href="/watchlist">Watchlists</a> -->
 				<a class="nav-link" href="/release">Release Notes</a>
 				<a class="nav-link" href="/contact">Contact</a>
 			</nav>

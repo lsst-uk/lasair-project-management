@@ -10,7 +10,7 @@ to the number of alerts, with red for r-filter and green for g-filter. The speci
 </div>
 <div class="row">
 	<form class="form-inline" method="POST" action="/coverage/">
-
+        {% csrf_token %}
 	<label>From&nbsp;&nbsp;</label> <input class="form-control" size="9" name="date1" type="text" value="{{ date1 }}"/>
 
 	<label>&nbsp;&nbsp;To&nbsp;&nbsp;<label/> <input class="form-control" size="9" name="date2" type="text" value="{{ date2 }}"/>
