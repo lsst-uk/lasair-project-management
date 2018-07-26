@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.template.context_processors import csrf
 from lasair.models import Candidates
@@ -17,7 +17,7 @@ def connect_db():
 def index(request):
     web_domain = lasair.settings.WEB_DOMAIN
     n_candidates = int(open('/mnt/lasair-head-data/ztf/number_candidates.txt').read())
-    return render_to_response('index.html', {'web_domain': web_domain, 'n_candidates':n_candidates})
+    return render(request, 'index.html', {'web_domain': web_domain, 'n_candidates':n_candidates})
 
 def candlist(request):
     perpage = 100
@@ -76,10 +76,10 @@ def candlist(request):
         for row in cursor:
             queryset.append(row)
 
-        return render_to_response('candlist.html',
+        return render(request, 'candlist.html',
             {'table': queryset, 'nalert': nalert, 'nextpage': page+1, 'ps':ps, 'pe':pe,  'selected':selected, 'where':where, 'order':order, 'message': message})
     else:
-        return render_to_response('candlistquery.html', {})
+        return render(request, 'candlistquery.html', {})
 
 def cand(request, candid):
     """Show a specific transient"""
@@ -108,7 +108,7 @@ def cand(request, candid):
             prv_cands.append(row)
     message = 'hello'
 
-    return render_to_response('cand.html',{'cand': canddict, 'prv_cands': prv_cands, 'message': message})
+    return render(request, 'cand.html',{'cand': canddict, 'prv_cands': prv_cands, 'message': message})
 
 def show_object(request, objectId):
     """Show a specific object, with all its candidates"""
@@ -121,7 +121,7 @@ def show_object(request, objectId):
         cands.append(row)
     message = 'Got %d candidates' % len(cands)
     json_data = json.dumps(cands)
-    return render_to_response('show_object.html',{'objectId':objectId, 'cands': cands,'json_cands':json_data, 'message': message})
+    return render(request, 'show_object.html',{'objectId':objectId, 'cands': cands,'json_cands':json_data, 'message': message})
 
 from lasair import date_nid
 def coverage(request):
@@ -137,4 +137,12 @@ def coverage(request):
 
     nid1 = date_nid.date_to_nid(date1)
     nid2 = date_nid.date_to_nid(date2)
-    return render_to_response('coverage.html',{'nid1':nid1, 'nid2': nid2, 'date1':date1, 'date2':date2})
+    return render(request, 'coverage.html',{'nid1':nid1, 'nid2': nid2, 'date1':date1, 'date2':date2})
+
+
+def watchlists_home(request):
+    return render(request, 'watchlists_home.html',{})
+
+def show_watchlist(request, wl_id):
+    return render(request, 'show_watchlist.html',{})
+

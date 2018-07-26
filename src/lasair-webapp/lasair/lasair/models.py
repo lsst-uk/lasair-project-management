@@ -91,3 +91,16 @@ class Candidates(models.Model):
         db_table = 'candidates'
         app_label = 'Candidates'
 
+#Class Watchlists(model.Model):
+#    wl_id               = models.AutoField(primary_key=True)
+#    userid              = models.IntegerField(blank=True, null=True)
+#    watchlist_name      = models.CharField(max_length=256)
+#    slug                = models.CharField(max_length=256)
+#    description         = models.TextField()
+#    active              = models.BinaryField()
+#    pre_selection_where = models.CharField(max_length=4096)
+#
+#    class Meta:
+#        managed = False
+#        app_label = 'Watchlists'
+    
