@@ -19,13 +19,17 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 from lasair import views, services
 
+from django.contrib import admin
+#admin.autodiscover()
+
 urlpatterns = [
     path('',                        views.index,    name='index'),
     path('candlist/',               views.candlist, name='candlist'),
     path('cand/<int:candid>/',      views.cand,     name='cand'),
     path('object/<slug:objectId>/', views.show_object,   name='show_object'),
-#    path('watchlist/',              views.watchlists_home,     name='watchlists_home'),
-#    path('watchlist/<int:wl_id>/',  views.show_watchlist,     name='show_watchlist'),
+    path('conesearch/',             views.conesearch, name='conesearch'),
+    path('watchlist/',              views.watchlists_home,     name='watchlists_home'),
+    path('watchlist/<int:wl_id>/',  views.show_watchlist,     name='show_watchlist'),
     path('coverage/',               views.coverage, name='coverage'),
     path('jupyter',  TemplateView.as_view(template_name='jupyter.html')),
     path('release',  TemplateView.as_view(template_name='release.html')),

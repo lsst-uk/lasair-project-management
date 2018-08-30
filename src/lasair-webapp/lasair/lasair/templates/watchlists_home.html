@@ -1,0 +1,70 @@
+{% extends "base.html"%}
+{% block content %}
+
+<div class="row">
+<div class="col-sm">
+<hr/>
+<h3>My Watchlists</h3>
+Your current watchlists are listed below, and there is a form to create a new one. Click on the name for more information and crossmatching.
+<table class="table table-bordered" style="width:60%">
+  <thead>
+    <tr>
+      <th style="width:20%">Name</th>
+      <th class="width:50%">Description</th>
+      <th class="width:10%">Radius</th>
+      <th class="width:20%"></th>
+    </tr>
+  </thead>
+{% for wl in my_watchlists %}
+<tr><td><b><a href=/watchlist/{{ wl.wl_id }}>{{ wl.name }}</a></b></td>
+<td>{{ wl.description }}</td>
+<td> {{ wl.radius }} arcsec </td>
+<td><form method="POST"  action="/watchlist/">
+{% csrf_token %}
+<input type="hidden" name="delete" value="{{ wl.wl_id }}">
+<input type="submit" value="(delete)">
+</form>
+</td></tr>
+{% endfor %}
+</table>
+</div>
+</div>
+<!-- Message: {{ message }} -->
+<script>
+function exposeDiv(id) {
+    obj = document.getElementById(id);
+    if(obj.style.display == "none") {
+        obj.style.display = "block";
+    } else {
+        obj.style.display = "none";
+    }
+}
+</script>
+<a href=javascript:exposeDiv('new_watchlist');>Create new watchlist</a><br/>
+<div id="new_watchlist" style="display:none" class="row">
+<div class="col-sm-6">
+<form method="POST"  action="/watchlist/">
+{% csrf_token %}
+<table width=400>
+<tr><td>Name:</td><td> <input name="name"></td></tr>
+
+<tr><td>Description:</td><td> <textarea name="description" rows=3 cols=40></textarea></td></tr>
+
+<tr><td>default radius (arcsec):</td><td> <input name="radius"></td></tr>
+<tr colspan="2"><td>
+
+Paste here the list of sources to be watched, as comma-separated values 
+<b>ID, RA, Dec</b> with RA and Dec in decimal degrees:</td><td>
+<textarea name="objects" rows="9" cols="50"></textarea></td></tr>
+<tr><td>
+
+<input type="submit" class="button" style="color: blue; background-color: #EEEEFF;" value=" Create watchlist ">
+</td></tr>
+</table>
+</form>
+</div>
+<div class="col-sm-6">
+</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,33 @@
+return render(request, 'conesearch.html',{'ra':ra, 'dec':dec, 'radius':radius, 'hits': hits, 'message': message})
+
+{% extends "base.html"%}
+{% block content %}
+
+<div class="row">
+<div class="col-sm">
+<hr/>
+<h3>Cone Search</h3>
+Enter RA and Dec in decimal degrees, and radius in arcseconds, to search for
+objects in ZTF in that cone.
+<table class="table table-bordered" style="width:60%">
+<form method="POST"  action="/conesearch/">
+{% csrf_token %}
+<tr><td>RA:</td><td> <input name="ra" value={{ ra }}></td></tr>
+<tr><td>Dec:</td><td> <input name="dec" value={{ dec }}></td></tr>
+<tr><td>Radius:</td><td> <input name="radius" value={{ radius }}></td></tr>
+<tr><td><input type="submit" class="button" style="color: blue; background-color: #EEEEFF;" value="Run Cone Search"></td></tr>
+</td></tr>
+</form>
+</table>
+
+<table class="table table-bordered" style="width:60%">
+<tr><th>ZTF object</th><th>RA</th><th>Dec</th><th>Arcsec</th></tr>
+{% for k,v in hitdict.items %}
+<tr><td><a href=/object/{{ k }}>{{ k }}</a></td><td>{{ v.0 }}</td><td>{{ v.1 }}</td><td>{{ v.2|floatformat:1 }}</td></tr>
+{% endfor %}
+</table>
+</div>
+</div>
+
+{% endblock %}
+

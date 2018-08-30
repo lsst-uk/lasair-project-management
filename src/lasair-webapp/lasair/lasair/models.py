@@ -91,16 +91,79 @@ class Candidates(models.Model):
         db_table = 'candidates'
         app_label = 'Candidates'
 
-#Class Watchlists(model.Model):
-#    wl_id               = models.AutoField(primary_key=True)
-#    userid              = models.IntegerField(blank=True, null=True)
-#    watchlist_name      = models.CharField(max_length=256)
-#    slug                = models.CharField(max_length=256)
-#    description         = models.TextField()
-#    active              = models.BinaryField()
-#    pre_selection_where = models.CharField(max_length=4096)
-#
+# A watchlist is owned by a user and given a name and description
+# Only active watchlists are run against the realtime ingestion
+# The prequel_where can be used to select which candidates are compared with the watchlist
+from django.contrib.auth.models import User
+#class Watchlists(models.Model):
+#    wl_id         = models.AutoField(primary_key=True)
+#    user          = models.ForeignKey(User, on_delete=models.CASCADE)
+#    name          = models.CharField(max_length=256)
+#    description   = models.TextField()
+#    active        = models.BinaryField()
+#    prequel_where = models.CharField(max_length=4096)
 #    class Meta:
 #        managed = False
+#        db_table = 'watchlists'
 #        app_label = 'Watchlists'
-    
+#        unique_together = (("user", "name"),)
+
+# Each watchlist has a number of cones (name/ra/decl/radius)
+#class Watchlist_cones(models.Model):
+#    cone_id      = models.AutoField(primary_key=True)
+#    wl_id        = models.ForeignKey('Watchlists', on_delete=models.CASCADE)
+#    name         = models.CharField(max_length=32)
+#    ra           = models.FloatField()
+#    decl         = models.FloatField()
+#    radius       = models.FloatField()
+
+# When a watchlist is run against the database, ZTF candidates may be matched to cones
+# We also keep the objectId of that candidate and distance from the cone center
+# If the same run happens again, that candidate will not go in again to the same watchlist.
+#class Watchlist_hits(models.Model):
+#    hit_id       = models.AutoField(primary_key=True)
+#    candid       = models.BigIntegerField()
+#    wl_id        = models.ForeignKey('Watchlists', on_delete=models.CASCADE)
+#    cone_id      = models.ForeignKey('Watchlist_cones', on_delete=models.CASCADE)
+#    objectId     = models.CharField(db_column='objectId', max_length=16, blank=True, null=True)
+#    arcsec       = models.FloatField()
+#    class Meta:
+#        unique_together = (("candid", "wl_id"),)
+
+
+
+class WatchlistCones(models.Model):
+    cone_id = models.AutoField(primary_key=True)
+    wl      = models.ForeignKey('Watchlists', models.DO_NOTHING, blank=True, null=True)
+    name    = models.CharField(max_length=32, blank=True, null=True)
+    ra      = models.FloatField(blank=True, null=True)
+    decl    = models.FloatField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'watchlist_cones'
+
+class WatchlistHits(models.Model):
+    candid   = models.BigIntegerField(primary_key=True)
+    wl       = models.ForeignKey('Watchlists', models.DO_NOTHING)
+    cone     = models.ForeignKey(WatchlistCones, models.DO_NOTHING, blank=True, null=True)
+    objectid = models.CharField(db_column='objectId', max_length=16, blank=True, null=True)  # Field name made lowercase.
+    arcsec   = models.FloatField(blank=True, null=True)
+
+    class Meta:
+        managed         = False
+        db_table        = 'watchlist_hits'
+        unique_together = (('candid', 'wl'),)
+
+class Watchlists(models.Model):
+    wl_id         = models.AutoField(primary_key=True)
+    user          = models.ForeignKey(User, models.DO_NOTHING, db_column='user', blank=True, null=True)
+    name          = models.CharField(max_length=256, blank=True, null=True)
+    description   = models.CharField(max_length=4096, blank=True, null=True)
+    active        = models.IntegerField(blank=True, null=True)
+    prequel_where = models.CharField(max_length=4096, blank=True, null=True)
+    radius        = models.FloatField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'watchlists'

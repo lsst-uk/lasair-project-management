@@ -1,10 +1,12 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.template.context_processors import csrf
+from django.db import connection
 from lasair.models import Candidates
 import lasair.settings
 import mysql.connector
 import json
+import math
 
 def connect_db():
     msl = mysql.connector.connect(
@@ -110,6 +112,32 @@ def cand(request, candid):
 
     return render(request, 'cand.html',{'cand': canddict, 'prv_cands': prv_cands, 'message': message})
 
+def distance(ra1, de1, ra2, de2):
+    dra = (ra1 - ra2)*math.cos(de1*math.pi/180)
+    dde = (de1 - de2)
+    return math.sqrt(dra*dra + dde*dde)
+
+def conesearch(request):
+    message = ''
+    if request.method == 'POST':
+        ra     = float(request.POST['ra'])
+        dec    = float(request.POST['dec'])
+        radius = float(request.POST['radius'])
+        dra = radius/(3600*math.cos(dec*math.pi/180))
+        dde = radius/3600
+        cursor = connection.cursor()
+        cursor.execute('SELECT objectId,ra,decl FROM candidates WHERE ra BETWEEN %f and %f AND decl BETWEEN %f and %f' % (ra-dra, ra+dra, dec-dde, dec+dde))
+        hits = cursor.fetchall()
+        hitdict = {}
+        for hit in hits:
+            d = distance(ra, dec, hit[1], hit[2]) * 3600.0
+            if d < radius:
+                hitdict[hit[0]] = (hit[1], hit[2], d)
+        
+        return render(request, 'conesearch.html',{'ra':ra, 'dec':dec, 'radius':radius, 'hitdict': hitdict, 'message': message})
+    else:
+        return render(request, 'conesearch.html',{})
+
 def show_object(request, objectId):
     """Show a specific object, with all its candidates"""
     msl = connect_db()
@@ -140,9 +168,77 @@ def coverage(request):
     return render(request, 'coverage.html',{'nid1':nid1, 'nid2': nid2, 'date1':date1, 'date2':date2})
 
 
+from lasair.models import Watchlists, WatchlistCones, WatchlistHits
+
 def watchlists_home(request):
-    return render(request, 'watchlists_home.html',{})
+    if not request.user.is_authenticated:
+        message = "Please log in to use the Watchlist functionality"
+        return render(request, 'watchlists_home.html',{'message': message})
+
+    message = ''
+    if request.method == 'POST':
+        delete      = request.POST.get('delete')
+        if delete == None:
+            name        = request.POST.get('name')
+            description = request.POST.get('description')
+            d_radius    = request.POST.get('radius')
+            try:
+                default_radius      = float(d_radius)
+            except:
+                message += 'Cannot parse default radius %s\n' % d_radius
+
+            cone_list = []
+            for line in request.POST.get('objects').split('\n'):
+                tok = line.split(',')
+                try:
+                    if len(tok) >= 3:
+                        objectId = tok[0].strip()
+                        ra       = float(tok[1])
+                        dec      = float(tok[2])
+                        cone_list.append([objectId, ra, dec])
+                except:
+                    message += "Bad line: %s\n" % line
+            if len(message) == 0:
+                wl = Watchlists(user=request.user, name=name, description=description, active=0, prequel_where='', radius=default_radius)
+                wl.save()
+                for cone in cone_list:
+                    wlc = WatchlistCones(wl=wl, name=cone[0], ra=cone[1], decl=cone[2])
+                    wlc.save()
+                message = 'Watchlist created successfully'
+        else:
+            wl_id = int(delete)
+            watchlist = get_object_or_404(Watchlists, wl_id=wl_id)
+            message = 'Watchlist %s deleted successfully' % watchlist.name
+            watchlist.delete()
+
+    my_watchlists = Watchlists.objects.filter(user=request.user)
+    return render(request, 'watchlists_home.html',{'my_watchlists': my_watchlists, 'message': message})
 
 def show_watchlist(request, wl_id):
-    return render(request, 'show_watchlist.html',{})
+    message = ''
+    watchlist = get_object_or_404(Watchlists, wl_id=wl_id)
+    if request.method == 'POST':
+        if 'name' in request.POST:
+            watchlist.name        = request.POST.get('name')
+            watchlist.description = request.POST.get('description')
+            watchlist.active      = request.POST.get('active')
+            watchlist.radius      = request.POST.get('radius')
+            watchlist.save()
+            message = "watchlist edited"
+        else:
+            message = "watchlist crossmatched"
+
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM watchlist_cones AS c LEFT JOIN watchlist_hits AS h ON c.cone_id = h.cone_id WHERE c.wl_id=%d ORDER BY h.objectId DESC' % wl_id)
+    cones = cursor.fetchall()
+    conelist = []
+    for c in cones:
+        d = {'name':c[2], 'ra'  :c[3], 'decl' :c[4]}
+        if c[6]:
+            d['objectId'] = c[7]
+            d['arcsec']   = c[8]
+        conelist.append(d)
+    count = len(conelist)
+    
+    return render(request, 'show_watchlist.html',{'watchlist':watchlist, 'conelist':conelist, 'count':count, 'message':message})
 
