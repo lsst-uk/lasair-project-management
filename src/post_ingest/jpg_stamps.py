@@ -2,6 +2,7 @@ import os, sys
 from astropy.io import fits
 from PIL import Image
 import numpy
+import os.path
 
 def open_fits(filename):
     data = fits.getdata(filename)
@@ -26,6 +27,8 @@ def convert_fits(dirfits, dirjpg, name):
     file_scimref = '%s/%s_%s_targ_scimref.fits.gz' % (dirfits, t[0], t[1])
     file_refmsci = '%s/%s_%s_targ_refmsci.fits.gz' % (dirfits, t[0], t[1])
     file_jpg     = '%s/%s.jpg' % (dirjpg, t[0])
+    if os.path.isfile(file_jpg):
+        return 0
     
     border = 5
     size = 63
@@ -42,6 +45,7 @@ def convert_fits(dirfits, dirjpg, name):
     new.paste(diff, (2*size+3*border,border))
     
     new.save(file_jpg, 'jpeg')
+    return 1
 
 def main():
     if len(sys.argv) < 2:
@@ -49,9 +53,12 @@ def main():
         sys.exit()
     dirfits = sys.argv[1]
     dirjpg  = sys.argv[2]
+    day_total = 0
+    run_total = 0
     for file in os.listdir(dirfits):
         if file.endswith('_targ_sci.fits.gz'):
-            convert_fits(dirfits, dirjpg, file)
-
+            day_total += 1
+            run_total += convert_fits(dirfits, dirjpg, file)
+    print 'Tried %d stamps, Made %d jpegs' % (day_total, run_total)
 
 main()
