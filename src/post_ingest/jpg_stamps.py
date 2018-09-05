@@ -8,6 +8,7 @@ def open_fits(filename):
     data = fits.getdata(filename)
     img = Image.fromarray(data)
     y=numpy.asarray(img.getdata(),dtype=numpy.float64).reshape((img.size[1],img.size[0]))
+    numpy.seterr(invalid='ignore')
     y = numpy.abs(y)
 #    y = numpy.sqrt(y)
     med = numpy.median(y)

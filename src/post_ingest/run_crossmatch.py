@@ -56,12 +56,13 @@ def run_watchlist(wl_id, delete_old=True):
         cursor2.execute(query2)
         for row in cursor2:
             objectId = row['objectId']
+            ndethist = row['ndethist']
             arcsec = 3600*distance(myRA, myDecl, row['ra'], row['decl'])
             if arcsec > wl_radius:
                 continue
     
-            query3 = 'INSERT INTO watchlist_hits (wl_id, cone_id, objectId, arcsec) '
-            query3 += 'VALUES (%d, %d, "%s", %f)' % (wl_id, cone_id, objectId, arcsec)
+            query3 = 'INSERT INTO watchlist_hits (wl_id, cone_id, objectId, ndethist, arcsec) '
+            query3 += 'VALUES (%d, %d, "%s", %d, %f)' % (wl_id, cone_id, objectId, ndethist, arcsec)
             print(query3)
             try:
                 cursor3.execute(query3)
@@ -71,6 +72,7 @@ def run_watchlist(wl_id, delete_old=True):
                     'wl_id':wl_id, 
                     'myObject':myObject, 
                     'objectId':objectId, 
+                    'ndethist':ndethist, 
                     'arcsec':arcsec
                 })
             except:

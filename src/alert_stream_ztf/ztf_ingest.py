@@ -3,7 +3,7 @@
 # Sucks in the alerts and puts them in the database
 # Converts the FITS to jpegs in the "post ingest" phase
 # crontab entry is
-# 0 15 * * * /home/roy/lasair/src/alert_stream_ztf/ztf_ingest.py
+# 0/15 * * * * /home/roy/lasair/src/alert_stream_ztf/ztf_ingest.py
 
 import os
 import date_nid
