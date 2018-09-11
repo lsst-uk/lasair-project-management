@@ -30,7 +30,7 @@ def run_watchlist(wl_id, delete_old=True):
     for watchlist in cursor:
         wl_name   = watchlist['name']
         wl_radius = watchlist['radius']
-    print "Running Watchlist '%s' at radius %.1f" % (wl_name, wl_radius)
+    print ("Running Watchlist '%s' at radius %.1f" % (wl_name, wl_radius))
     
     # clean out previous hits
     if delete_old:
@@ -80,11 +80,11 @@ def run_watchlist(wl_id, delete_old=True):
     return newhitlist
 
 if __name__ == "__main__":
-    if sys.argv < 1:
+    if len(sys.argv) < 1:
         print("usage: python run_crossmatch.py wl_id")
         sys.exit(1)
     wl_id = int(sys.argv[1])
 # run the crossmatch for this watchlist
     hitlist = run_watchlist(wl_id)
     for hit in hitlist:
-        print str(hit)
+        print (str(hit))
