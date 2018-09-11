@@ -30,6 +30,11 @@ wanted_attributes = [
 'srmag3', 'simag3', 'szmag3', 'sgscore3', 'distpsnr3', 'nmtchps', 'rfid', 'jdstartref',
 'jdendref', 'nframesref', 'htmid16']
 
+import time
+time_insert = 0.0
+time_stamp  = 0.0
+time_fetch  = 0.0
+
 def insert_sql(alert):
     """ Creates an insert sql statement for insering the canditate info
         Stamps and prv_candidates are discarded
@@ -96,10 +101,13 @@ def alert_filter(alert, msl, stampdir=None):
     """Filter to apply to each alert.
        See schemas: https://github.com/ZwickyTransientFacility/ztf-avro-alert
     """
+    global time_insert
+    global time_stamp
     candid = 0
     data = msg_text(alert)
     if data:  # Write your condition statement here
 
+        t = time.time()
         query = insert_sql(data)
         logger.debug(query)
 
@@ -112,11 +120,15 @@ def alert_filter(alert, msl, stampdir=None):
             msl.commit()
         except mysql.connector.Error as err:
             logger.error("Database insert failed: %s" % str(err))
+        time_insert += time.time() - t
 
+        t = time.time()
         if stampdir:  # Collect all postage stamps
             write_stamp_file( alert.get('cutoutDifference'), stampdir)
             write_stamp_file( alert.get('cutoutTemplate'),   stampdir)
             write_stamp_file( alert.get('cutoutScience'),    stampdir)
+        time_stamp += time.time() - t
+
     return candid
 
 def parse_args():
@@ -152,6 +164,7 @@ def parse_args():
     return args
 
 def main(args):
+    global time_fetch
     # Configure consumer connection to Kafka broker
 #    conf = {'bootstrap.servers': '{}:9092,{}:9093,{}:9094'.format(args.host,args.host,args.host),
 #            'default.topic.config': {'auto.offset.reset': 'smallest'}}
@@ -191,7 +204,9 @@ def main(args):
     while True:
         try:
 #            msg = streamReader.poll(decode=args.avroFlag)
+            t = time.time()
             msg = streamReader.poll(decode=True)
+            time_fetch += time.time() - t
 
             if msg is None:
                 continue
@@ -239,5 +254,8 @@ if __name__ == "__main__":
     fh.setFormatter(formatter)
     logger.addHandler(fh)
     logger.info("starting ingestion")
+    t = time.time()
     main(args)
-    logger.info("main has terminated")
+    time_total = time.time() - t
+    logger.info("main has terminated: insert time %f, stampfile time %f, fetch time %f" % (time_insert, time_stamp, time_fetch))
+    logger.info("Run time %f" % time_total)
