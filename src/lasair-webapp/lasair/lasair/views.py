@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.template.context_processors import csrf
 from django.db import connection
+from django.db.models import Q
 from lasair.models import Candidates
 import lasair.settings
 import mysql.connector
@@ -171,12 +172,8 @@ def coverage(request):
 from lasair.models import Watchlists, WatchlistCones, WatchlistHits
 
 def watchlists_home(request):
-    if not request.user.is_authenticated:
-        message = "Please log in to use the Watchlist functionality"
-        return render(request, 'watchlists_home.html',{'message': message})
-
     message = ''
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.is_authenticated:
         delete      = request.POST.get('delete')
         if delete == None:
             name        = request.POST.get('name')
@@ -197,7 +194,7 @@ def watchlists_home(request):
                         dec      = float(tok[2])
                         cone_list.append([objectId, ra, dec])
                 except:
-                    message += "Bad line: %s\n" % line
+                    message += "Bad line %d: %s\n" % (len(cone_list), line)
             if len(message) == 0:
                 wl = Watchlists(user=request.user, name=name, description=description, active=0, prequel_where='', radius=default_radius)
                 wl.save()
@@ -208,25 +205,45 @@ def watchlists_home(request):
         else:
             wl_id = int(delete)
             watchlist = get_object_or_404(Watchlists, wl_id=wl_id)
-            message = 'Watchlist %s deleted successfully' % watchlist.name
-            watchlist.delete()
+            if request.user == watchlist.user:
+                watchlist.delete()
+                message = 'Watchlist %s deleted successfully' % watchlist.name
 
-    my_watchlists = Watchlists.objects.filter(user=request.user)
-    return render(request, 'watchlists_home.html',{'my_watchlists': my_watchlists, 'message': message})
+    if request.user.is_authenticated:
+        my_watchlists    = Watchlists.objects.filter(user=request.user)
+        other_watchlists = Watchlists.objects.filter(~Q(user=request.user))
+    else:
+        my_watchlists    = None
+        other_watchlists = Watchlists.objects.all()
+
+    return render(request, 'watchlists_home.html',
+        {'my_watchlists': my_watchlists, 
+        'other_watchlists': other_watchlists, 
+        'authenticated': request.user.is_authenticated,
+        'message': message})
 
 def show_watchlist(request, wl_id):
     message = ''
     watchlist = get_object_or_404(Watchlists, wl_id=wl_id)
-    if request.method == 'POST':
+
+    is_owner = request.user.is_authenticated and request.user == watchlist.user
+
+    if request.method == 'POST' and is_owner:
         if 'name' in request.POST:
             watchlist.name        = request.POST.get('name')
             watchlist.description = request.POST.get('description')
-            watchlist.active      = request.POST.get('active')
+            if request.POST.get('active'):
+                watchlist.active  = 1
+            else:
+                watchlist.active  = 0
             watchlist.radius      = request.POST.get('radius')
             watchlist.save()
-            message = "watchlist edited"
+            message += 'watchlist updated'
         else:
-            message = "watchlist crossmatched"
+            import os
+            cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair-dev/src/post_ingest/run_crossmatch.py %d' % wl_id
+            os.system(cmd)
+            message += 'watchlist crossmatched'
 
     cursor = connection.cursor()
     cursor.execute('SELECT * FROM watchlist_cones AS c LEFT JOIN watchlist_hits AS h ON c.cone_id = h.cone_id WHERE c.wl_id=%d ORDER BY h.objectId DESC' % wl_id)
@@ -237,8 +254,14 @@ def show_watchlist(request, wl_id):
         if c[6]:
             d['objectId'] = c[7]
             d['arcsec']   = c[8]
+            d['ndethist'] = c[9]
         conelist.append(d)
     count = len(conelist)
     
-    return render(request, 'show_watchlist.html',{'watchlist':watchlist, 'conelist':conelist, 'count':count, 'message':message})
+    return render(request, 'show_watchlist.html',{
+        'watchlist':watchlist, 
+        'conelist' :conelist, 
+        'count'    :count, 
+        'is_owner' :is_owner,
+        'message'  :message})
 
