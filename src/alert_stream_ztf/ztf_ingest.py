@@ -5,7 +5,9 @@
 # crontab entry is
 # 0/15 * * * * /home/roy/lasair/src/alert_stream_ztf/ztf_ingest.py
 
-import os
+import os,sys
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
+
 import date_nid
 nid  = date_nid.nid_now()
 date = date_nid.nid_to_date(nid)

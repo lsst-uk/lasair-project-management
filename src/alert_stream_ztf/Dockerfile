@@ -30,13 +30,14 @@ RUN mkdir alert_stream
 ADD . /home/alert_stream
 
 # Added by kws - Compile the HTM library
-WORKDIR /home/alert_stream/utils/htm
+ADD . /home/alert_stream/common/htm
+WORKDIR /home/alert_stream/common/htm
 RUN ./configure
 RUN make
-WORKDIR /home/alert_stream/utils/htm/python
+WORKDIR /home/alert_stream/common/htm/python
 RUN ./build.sh
 # *************************************
 
-ENV PYTHONPATH=$PYTHONPATH:/home/alert_stream/python:/home/alert_stream/utils/htm/python:.
+ENV PYTHONPATH=$PYTHONPATH:/home/alert_stream/python:/home/alert_stream/common:/home/alert_stream/common/htm/python:.
 
 WORKDIR /home/alert_stream

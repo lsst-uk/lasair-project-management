@@ -1,4 +1,9 @@
 #!/home/roy/anaconda2/bin/python
+
+import sys
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
+
+
 from subprocess import Popen, PIPE
 import logging
 import date_nid
