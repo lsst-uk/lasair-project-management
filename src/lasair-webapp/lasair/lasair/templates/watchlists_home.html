@@ -2,34 +2,24 @@
 {% block content %}
 
 <div class="row">
-<div class="col-sm">
-<hr/>
-<h3>My Watchlists</h3>
-Your current watchlists are listed below, and there is a form to create a new one. Click on the name for more information and crossmatching.
-<table class="table table-bordered" style="width:60%">
-  <thead>
-    <tr>
-      <th style="width:20%">Name</th>
-      <th class="width:50%">Description</th>
-      <th class="width:10%">Radius</th>
-      <th class="width:20%"></th>
-    </tr>
-  </thead>
-{% for wl in my_watchlists %}
-<tr><td><b><a href=/watchlist/{{ wl.wl_id }}>{{ wl.name }}</a></b></td>
-<td>{{ wl.description }}</td>
-<td> {{ wl.radius }} arcsec </td>
-<td><form method="POST"  action="/watchlist/">
-{% csrf_token %}
-<input type="hidden" name="delete" value="{{ wl.wl_id }}">
-<input type="submit" value="(delete)">
-</form>
-</td></tr>
-{% endfor %}
-</table>
-</div>
-</div>
-<!-- Message: {{ message }} -->
+<p>
+A watchlist is a set of points in the sky, together with a radius in arcseconds. It is assumed to be a list of "interesting" sources, so that any transient that falls within the radius of one of the sources might indicate activity of that source. Each user of the Lasair system has their own set of watchlists, and can be alerted when a ZTF transient is coincident with a watchlist source.
+</p><p>
+You can create a watchlist of sources by preparing a text file, where each comma-separated 
+line has an identifier for the source, then the RA and Dec
+in decimal degrees. One way to do this is with 
+<a href=http://vizier.u-strasbg.fr/viz-bin/VizieR>Vizier</a> and a spreadsheet program such as Excel or Numbers. 
+Here is <a href=/lasair/static/BLLac.csv>an example of the CSV data</a>. The 42 entries are <i>BL Lac candidates for TeV observations (Massaro+, 2013)</i>
+</p><p>
+An "Active" watchlist is one that is compared immediately when new ZTF candidates 
+are ingested, with an alert sent immediately to the owner of the watchlist. 
+(This feature is not yet implemented).
+</p>
+
+
+
+
+{% if authenticated %}
 <script>
 function exposeDiv(id) {
     obj = document.getElementById(id);
@@ -40,9 +30,14 @@ function exposeDiv(id) {
     }
 }
 </script>
-<a href=javascript:exposeDiv('new_watchlist');>Create new watchlist</a><br/>
-<div id="new_watchlist" style="display:none" class="row">
-<div class="col-sm-6">
+
+    <div class="col-md-12">
+<button style="color: blue; background-color: #EEEEFF;" onclick="exposeDiv('new_watchlist');">Create new watchlist</button>
+        <div style="height: 1px;">
+        </div>
+<br/>
+    </div>
+    <div id="new_watchlist" style="display:none" class="col-sm-6">
 <form method="POST"  action="/watchlist/">
 {% csrf_token %}
 <table width=400>
@@ -58,13 +53,75 @@ Paste here the list of sources to be watched, as comma-separated values
 <textarea name="objects" rows="9" cols="50"></textarea></td></tr>
 <tr><td>
 
-<input type="submit" class="button" style="color: blue; background-color: #EEEEFF;" value=" Create watchlist ">
+<input type="submit" class="button" style="color: blue; background-color: #EEEEFF;" value="Submit form">
 </td></tr>
 </table>
 </form>
+    </div>
+
+<div class="row">
+{{ message }}
+<hr/>
+
+    <div class="col-xs-6">
+<h3>My Watchlists</h3>
+Your current watchlists are listed below. Click "Create new watchlist" 
+above to make a new one. Click on the name of the watchlist for more information and crossmatching.
+<table class="table table-bordered" style="width:70%">
+  <thead>
+    <tr>
+      <th style="width:10%">Name</th>
+      <th class="width:70%">Description</th>
+      <th class="width:5%">Radius</th>
+      <th class="width:5%">Active</th>
+      <th class="width:10%"></th>
+    </tr>
+  </thead>
+{% for wl in my_watchlists %}
+<tr><td><b><a href=/watchlist/{{ wl.wl_id }}>{{ wl.name }}</a></b></td>
+<td>{{ wl.description }}</td>
+<td> {{ wl.radius }} arcsec </td>
+<td> {% if wl.active == 1 %}&#x2714;{% endif %} </td>
+<td><form method="POST"  action="/watchlist/">
+{% csrf_token %}
+<input type="hidden" name="delete" value="{{ wl.wl_id }}">
+<input type="submit" value="(delete)">
+</form>
+</td></tr>
+{% endfor %}
+</table>
+    </div>
+
+{% else %}
+To create your own watchlists, you must log in.
+{% endif %}
 </div>
-<div class="col-sm-6">
-</div>
+
+<div class="row">
+    <div class="col-xs-6">
+<h3>Other Watchlists</h3>
+Watchlists created by other users are listed below. Click on the name of 
+the watchlist for more information and crossmatching.
+<table class="table table-bordered" style="width:70%">
+  <thead>
+    <tr>
+      <th style="width:10%">Name</th>
+      <th style="width:20%">Owner</th>
+      <th class="width:60%">Description</th>
+      <th class="width:5%">Radius</th>
+      <th class="width:5%">Active</th>
+    </tr>
+  </thead>
+{% for wl in other_watchlists %}
+<tr><td><b><a href=/watchlist/{{ wl.wl_id }}>{{ wl.name }}</a></b></td>
+<td>{{ wl.user.first_name }} {{ wl.user.last_name }}</td>
+<td>{{ wl.description }}</td>
+<td> {{ wl.radius }} arcsec </td>
+<td> {% if wl.active == 1 %}&#x2714;{% endif %} </td>
+</tr>
+{% endfor %}
+</table>
+    </div>
 </div>
 
 {% endblock %}
