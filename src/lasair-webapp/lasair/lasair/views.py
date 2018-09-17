@@ -152,7 +152,7 @@ def show_object(request, objectId):
     json_data = json.dumps(cands)
     return render(request, 'show_object.html',{'objectId':objectId, 'cands': cands,'json_cands':json_data, 'message': message})
 
-from lasair import date_nid
+import date_nid
 def coverage(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
