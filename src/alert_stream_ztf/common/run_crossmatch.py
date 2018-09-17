@@ -1,7 +1,5 @@
 import sys
 import math
-
-sys.path.append('../alert_stream_ztf/common')
 import settings
 
 sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
@@ -14,11 +12,13 @@ def distance(ra1, de1, ra2, de2):
 
 # setup database connection
 import mysql.connector
-msl = mysql.connector.connect(\
-            user    =settings.DB_USER_WRITE, \
-            password=settings.DB_PASS_WRITE, \
-            host    =settings.DB_HOST, \
-            database='ztf')
+config = {
+    'user'    :settings.DB_USER_WRITE,
+    'password': settings.DB_PASS_WRITE,
+    'host'    : settings.DB_HOST,
+    'database': 'ztf'
+}
+msl = mysql.connector.connect(**config)
 
 def run_watchlist(wl_id, delete_old=True):
 # runs the crossmatch of a given watchlist with all the candidates
@@ -65,19 +65,19 @@ def run_watchlist(wl_id, delete_old=True):
     
             query3 = 'INSERT INTO watchlist_hits (wl_id, cone_id, objectId, ndethist, arcsec) '
             query3 += 'VALUES (%d, %d, "%s", %d, %f)' % (wl_id, cone_id, objectId, ndethist, arcsec)
-            print(query3)
+#            print(query3)
             try:
                 cursor3.execute(query3)
                 msl.commit()
                 newhitlist.append({
-                    'userId':userId, 
                     'wl_id':wl_id, 
-                    'myObject':myObject, 
+                    'cone_id':cone_id, 
+                    'name':name, 
                     'objectId':objectId, 
                     'ndethist':ndethist, 
                     'arcsec':arcsec
                 })
-            except:
+            except mysql.connector.errors.IntegrityError:
                 pass  # this objectId is already recorded as a hit for this watchlist
     return newhitlist
 
@@ -88,5 +88,4 @@ if __name__ == "__main__":
     wl_id = int(sys.argv[1])
 # run the crossmatch for this watchlist
     hitlist = run_watchlist(wl_id)
-    for hit in hitlist:
-        print (str(hit))
+    print('Found %d matches' % len(hitlist))

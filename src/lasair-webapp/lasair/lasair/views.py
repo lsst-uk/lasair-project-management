@@ -241,7 +241,9 @@ def show_watchlist(request, wl_id):
             message += 'watchlist updated'
         else:
             import os
-            cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair-dev/src/post_ingest/run_crossmatch.py %d' % wl_id
+#            from run_crossmatch import run_watchlist
+#            hitlist = run_watchlist(wl_id)
+            cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair-dev/src/alert_stream_ztf/common/run_crossmatch.py %d' % wl_id
             os.system(cmd)
             message += 'watchlist crossmatched'
 
