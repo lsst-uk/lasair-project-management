@@ -35,7 +35,7 @@ time_insert = 0.0
 time_stamp  = 0.0
 time_fetch  = 0.0
 
-def insert_sql(alert):
+def insert_sql_candidate(alert):
     """ Creates an insert sql statement for insering the canditate info
         Stamps and prv_candidates are discarded
     """
@@ -73,6 +73,10 @@ def insert_sql(alert):
 # and here is the SQL
     return 'INSERT INTO candidates \n(%s) \nVALUES \n(%s)' % (','.join(names), ','.join(values))
 
+def update_sql_object(alert):
+    """ The SQL to make the object stale so that it will get recomputed
+    """
+
 def msg_text(message):
     """Remove postage stamp cutouts from an alert message.
     """
@@ -108,18 +112,27 @@ def alert_filter(alert, msl, stampdir=None):
     if data:  # Write your condition statement here
 
         t = time.time()
-        query = insert_sql(data)
+# insert the candidate record
+        objectId = data['objectId']
+        query  = insert_sql_candidate(data)
+        query2 = 'DELETE FROM objects WHERE objectId="%s"' % objectId
+        query3 = 'INSERT INTO objects (objectId, stale) VALUES ("%s", 1)' % objectId
         logger.debug(query)
-
-        candid = alert.get('candid')
-        logger.info('inserted %d' % candid)
-
+        logger.debug(query2)
+        logger.debug(query3)
         try:
             cursor = msl.cursor(buffered=True)
             cursor.execute(query)
+            cursor.execute(query2)
+            cursor.execute(query3)
             msl.commit()
         except mysql.connector.Error as err:
             logger.error("Database insert failed: %s" % str(err))
+
+        candid = alert.get('candid')
+        logger.debug('inserted %d' % candid)
+
+
         time_insert += time.time() - t
 
         t = time.time()

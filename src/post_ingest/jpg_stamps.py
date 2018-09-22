@@ -3,6 +3,7 @@ from astropy.io import fits
 from PIL import Image
 import numpy
 import os.path
+import time
 
 def open_fits(filename):
     data = fits.getdata(filename)
@@ -56,10 +57,13 @@ def main():
     dirjpg  = sys.argv[2]
     day_total = 0
     run_total = 0
+    t = time.time()
     for file in os.listdir(dirfits):
         if file.endswith('_targ_sci.fits.gz'):
             day_total += 1
             run_total += convert_fits(dirfits, dirjpg, file)
-    print 'Tried %d stamps, Made %d jpegs' % (day_total, run_total)
+    print('------------  JPG STAMPS ----------')
+    print('Tried %d stamps, Made %d jpegs' % (day_total, run_total))
+    print('Time %.1f seconds' % (time.time() - t))
 
 main()

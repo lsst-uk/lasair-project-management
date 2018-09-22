@@ -13,4 +13,5 @@ for row in cursor:
     break
 f = open('/data/ztf/number_candidates.txt', 'w')
 print>>f, n
+print('------------- NUMBER OF CANDIDATES -------------')
 print('Number of candidates = %d' % n)

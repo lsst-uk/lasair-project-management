@@ -34,8 +34,8 @@ os.system(tail)
 cmd = 'mkdir /data/ztf/stamps/jpg/%d; /home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid, nid)
 os.system(cmd)
 
-#cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/watch_lists.py %d' % nid
-#os.system(cmd)
+cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/update_objects.py'
+os.system(cmd)
 
 cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/get_number_candidates.py'
 os.system(cmd)
