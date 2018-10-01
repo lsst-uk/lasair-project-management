@@ -47,14 +47,14 @@ Watchlist has {{ count }} sources under watch.
 
 
 <table border=1>
-<tr><th colspan=3>Watchlist</th><th colspan=2>Crossmatch</th></tr>
+<tr><th colspan=3>Watchlist</th><th colspan=3>Crossmatch ZTF</th></tr>
 <tr>
 <th>Object</th>
 <th>RA</th>
 <th>Dec</th>
 <th>objectId</th>
-<!-- <th>candidates</th> -->
-<th>arcsec</th>
+<th>candidates</th>
+<th>mag range</th>
 </tr>
 {% for c in conelist %}
 <tr>
@@ -62,8 +62,8 @@ Watchlist has {{ count }} sources under watch.
 <td>{{ c.ra }}</td>
 <td>{{ c.decl }}</td>
 <td><a href=/object/{{ c.objectId }}/>{{ c.objectId }}</a></td>
-<!-- <td>{{ c.ndethist }}</td> -->
-<td>{{ c.arcsec }}</td>
+<td>{% if c.ncand %}{{ c.ncand }}{% endif %}</td>
+<td>{{ c.range|floatformat:1 }}</td>
 </tr>
 {% endfor %}
 </table>

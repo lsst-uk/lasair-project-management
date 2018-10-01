@@ -91,46 +91,39 @@ class Candidates(models.Model):
         db_table = 'candidates'
         app_label = 'Candidates'
 
+class Objects(models.Model):
+    primaryid = models.AutoField(db_column='primaryId', primary_key=True)  # Field name made lowercase.
+    objectid = models.CharField(db_column='objectId', unique=True, max_length=16, blank=True, null=True)  # Field name made lowercase.
+    ncand = models.IntegerField()
+    ramean = models.FloatField()
+    rastd = models.FloatField()
+    decmean = models.FloatField()
+    decstd = models.FloatField()
+    maggmin = models.FloatField()
+    maggmax = models.FloatField()
+    maggmedian = models.FloatField()
+    maggmean = models.FloatField()
+    magrmin = models.FloatField()
+    magrmax = models.FloatField()
+    magrmedian = models.FloatField()
+    magrmean = models.FloatField()
+    latestmag = models.FloatField()
+    jdmin = models.FloatField()
+    jdmax = models.FloatField()
+
+    class Meta:
+        managed = False
+        db_table = 'objects'
+
+
 # A watchlist is owned by a user and given a name and description
 # Only active watchlists are run against the realtime ingestion
 # The prequel_where can be used to select which candidates are compared with the watchlist
 from django.contrib.auth.models import User
-#class Watchlists(models.Model):
-#    wl_id         = models.AutoField(primary_key=True)
-#    user          = models.ForeignKey(User, on_delete=models.CASCADE)
-#    name          = models.CharField(max_length=256)
-#    description   = models.TextField()
-#    active        = models.BinaryField()
-#    prequel_where = models.CharField(max_length=4096)
-#    class Meta:
-#        managed = False
-#        db_table = 'watchlists'
-#        app_label = 'Watchlists'
-#        unique_together = (("user", "name"),)
-
-# Each watchlist has a number of cones (name/ra/decl/radius)
-#class Watchlist_cones(models.Model):
-#    cone_id      = models.AutoField(primary_key=True)
-#    wl_id        = models.ForeignKey('Watchlists', on_delete=models.CASCADE)
-#    name         = models.CharField(max_length=32)
-#    ra           = models.FloatField()
-#    decl         = models.FloatField()
-#    radius       = models.FloatField()
 
 # When a watchlist is run against the database, ZTF candidates may be matched to cones
 # We also keep the objectId of that candidate and distance from the cone center
 # If the same run happens again, that candidate will not go in again to the same watchlist.
-#class Watchlist_hits(models.Model):
-#    hit_id       = models.AutoField(primary_key=True)
-#    candid       = models.BigIntegerField()
-#    wl_id        = models.ForeignKey('Watchlists', on_delete=models.CASCADE)
-#    cone_id      = models.ForeignKey('Watchlist_cones', on_delete=models.CASCADE)
-#    objectId     = models.CharField(db_column='objectId', max_length=16, blank=True, null=True)
-#    arcsec       = models.FloatField()
-#    class Meta:
-#        unique_together = (("candid", "wl_id"),)
-
-
 
 class WatchlistCones(models.Model):
     cone_id = models.AutoField(primary_key=True)
