@@ -28,7 +28,11 @@ wanted_attributes = [
 'ncovhist', 'jdstarthist', 'jdendhist', 'scorr', 'tooflag', 'objectidps1', 'objectidps2',
 'sgmag2', 'srmag2', 'simag2', 'szmag2', 'sgscore2', 'distpsnr2', 'objectidps3', 'sgmag3',
 'srmag3', 'simag3', 'szmag3', 'sgscore3', 'distpsnr3', 'nmtchps', 'rfid', 'jdstartref',
-'jdendref', 'nframesref', 'htmid16']
+'jdendref', 'nframesref', 
+'rbversion', 'dsnrms', 'ssnrms', 'dsdiff', 'magzpsci', 'magzpsciunc', 'magzpscirms',
+'nmatches', 'clrcoeff', 'clrcounc', 'zpclrcov', 'zpmed', 'clrmed', 'clrrms', 'neargaia',
+'neargaiabright', 'maggaia', 'maggaiabright', 'exptime',
+'htmid16']
 
 import time
 time_insert = 0.0
