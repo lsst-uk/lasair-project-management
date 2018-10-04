@@ -12,10 +12,11 @@
 
 <div class="row">
 	<div class="col-sm-4">
-		Showing results {{ ps }}-{{ pe }} of  {{ nalert }}
+		Showing results {{ ps }}-{{ pe }} <!-- of  {{ nalert }} -->
 	</div>
 	<div class="col-sm-8">
 		<form method="POST" action="/candlist/">
+                {% csrf_token %}
 		<div class ="form-group">
 			<input type="hidden" name="selected" value="{{ selected }}"/>
 			<input type="hidden" name="where"    value="{{ where }}"/>

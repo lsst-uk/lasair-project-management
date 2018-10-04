@@ -60,24 +60,26 @@ def candlist(request):
         query += ' LIMIT %d OFFSET %d' % (perpage, page*perpage)
         message = query
 
-        countquery = 'SELECT COUNT(*) AS c FROM candidates'
-        if len(where.strip()) > 0:
-            countquery += ' WHERE ' + where.strip()
-
+        nalert = 0
         msl = connect_db()
         cursor = msl.cursor(buffered=True, dictionary=True)
-        cursor.execute(countquery)
-        nalert = 0
-        for row in cursor:
-            nalert = int(row['c'])
 
-        if nalert < pe: 
-            pe = nalert
+#        countquery = 'SELECT COUNT(*) AS c FROM candidates'
+#        if len(where.strip()) > 0:
+#            countquery += ' WHERE ' + where.strip()
+
+#        cursor.execute(countquery)
+#        for row in cursor:
+#            nalert = int(row['c'])
+
+#        if nalert < pe: 
+#            pe = nalert
 
         cursor.execute(query)
         queryset = []
         for row in cursor:
             queryset.append(row)
+            nalert += 1
 
         return render(request, 'candlist.html',
             {'table': queryset, 'nalert': nalert, 'nextpage': page+1, 'ps':ps, 'pe':pe,  'selected':selected, 'where':where, 'order':order, 'message': message})
@@ -248,16 +250,40 @@ def show_watchlist(request, wl_id):
             message += 'watchlist crossmatched'
 
     cursor = connection.cursor()
-    cursor.execute('SELECT * FROM watchlist_cones AS c LEFT JOIN watchlist_hits AS h ON c.cone_id = h.cone_id WHERE c.wl_id=%d ORDER BY h.objectId DESC' % wl_id)
+#    cursor.execute('SELECT * FROM watchlist_cones AS c LEFT JOIN watchlist_hits AS h ON c.cone_id = h.cone_id WHERE c.wl_id=%d ORDER BY h.objectId DESC' % wl_id)
+    cursor.execute('SELECT * FROM watchlist_cones AS c LEFT JOIN watchlist_hits AS h ON c.cone_id = h.cone_id LEFT JOIN objects on h.objectId = objects.objectId WHERE c.wl_id=%d ' % wl_id)
     cones = cursor.fetchall()
     conelist = []
     for c in cones:
         d = {'name':c[2], 'ra'  :c[3], 'decl' :c[4]}
-        if c[6]:
+        if c[7]:
             d['objectId'] = c[7]
             d['arcsec']   = c[8]
-            d['ndethist'] = c[9]
+            if c[13]:
+                d['ncand'] = c[13]
+                if c[19]: 
+                    grange = c[19] - c[18] 
+                else: grange = 0.0
+                if c[23]: 
+                    rrange = c[23] - c[22] 
+                else: rrange = 0.0
+                if grange > rrange:
+                    d['range'] = grange
+                else:
+                    d['range'] = rrange
         conelist.append(d)
+
+    def first(d):
+        if 'objectId' in d: 
+            if 'ncand' in d:
+                return '%04d%s' % (d['ncand'], d['objectId'])
+            else:
+                return '0000%s' % d['objectId']
+        else:
+            return '000000000'
+
+    conelist.sort(reverse=True, key=first)
+
     count = len(conelist)
     
     return render(request, 'show_watchlist.html',{

@@ -102,6 +102,8 @@ var radecr = {x:rra, y: rdec,
 Plotly.plot(radec_div, [radecg, radecr], {
 	margin: { t: 0 },
 	showlegend: false,
+        width: 370,
+        height: 285,
 	shapes: [
         {
             type: 'circle',
@@ -121,3 +123,4 @@ Plotly.plot(radec_div, [radecg, radecr], {
 );
 
 }
+
