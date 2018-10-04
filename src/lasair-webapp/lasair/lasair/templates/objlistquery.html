@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+        <div class="col-sm">
+                <h3>Query the ZTF object database</h3>
+        </div>		
+</div>
+<div class="row">
+        <div class="col-sm">
+<p>
+The form below is a builder for SELECT queries on the ZTF database of objects. 
+The attributes that can be queried are listed below.
+<table border=1 cellpadding=4>
+<tr><td>ncand</td><td> number of candidates that cite this object</td></tr>
+<tr><td>ramean, decmean</td><td> mean and std dev of position in degrees</td></tr>
+<tr><td>rastd, decstd</td><td> std dev of ra and dec in arcseconds</td></tr>
+<tr><td>maggmin, maggmax, maggmedian, maggmean</td><td> min, max, median, mean of g light curve (99 if none)</td></tr>
+<tr><td>magrmin, magrmax, magrmedian, magrmean</td><td> min, max, median, mean of r light curve (99 if none)</td></tr>
+<tr><td>latestgmag, latestrmag</td><td> latest magnitude in g and r</td></tr>
+<tr><td>jdmin, jdmax</td><td> min, max epoch of the candidates that cite this object</td></tr>
+</table>
+            </div>		
+        </div>
+
+<div class="row">
+        <div class="col-sm">
+                <form method="POST" action="/objlist/">
+                    {% csrf_token %} 
+                    <input type="submit" value="Submit Query" class="btn btn-primary"/>
+                    <div class ="form-group">
+                        <label for="select">SELECT</label>
+                        <textarea class="form-control" rows="1" cols="50" name="selected" id="SELECT">maggmean, latestgmag, ncand</textarea>
+                    </div>
+                    <div class ="form-group">
+                            <label for="where">FROM objects WHERE</label>
+<textarea class="form-control" rows="2" cols="50" name="where" id="where">
+maggmean - latestgmag &gt; 2 and maggmean &lt;&gt; 99
+</textarea>
+                    </div>
+                    <div class ="form-group">
+                            <label for="orderby">ORDER BY</label>
+                            <input id="orderby" class="form-control" name="order" type="text" value="ncand DESC"/><br/>
+                            <input class="form-control" type="hidden" name="page" value="{{ page }}"/><br/>
+                    </div>
+                </form>
+        </div>		
+</div>
+
+
+
+{% endblock %}
