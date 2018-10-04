@@ -31,13 +31,17 @@ def make_object(objectId, candlist, debug=False):
     magg = []
     magr = []
     jd   = []
+    latestgmag = latestrmag = 99
     for cand in candlist:
         ra.append(cand['ra'])
         dec.append(cand['decl'])
         jd.append(cand['jd'])
-        if cand['fid'] == 1: magg.append(cand['magpsf'])
-        else:                magr.append(cand['magpsf'])
-        latestmag = cand['magpsf']
+        if cand['fid'] == 1: 
+            magg.append(cand['magpsf'])
+            latestgmag = cand['magpsf']
+        else:
+            magr.append(cand['magpsf'])
+            latestrmag = cand['magpsf']
 
     if len(magg) > 0:
         maggmin = np.min(magg)
@@ -59,13 +63,13 @@ def make_object(objectId, candlist, debug=False):
     attributes += 'ramean, rastd, decmean, decstd,'
     attributes += 'maggmin, maggmax, maggmedian, maggmean,'
     attributes += 'magrmin, magrmax, magrmedian, magrmean,'
-    attributes += 'latestmag, jdmin, jdmax'
+    attributes += 'latestgmag, latestrmag, jdmin, jdmax'
 
     values  = '"%s", %d, 0, ' % (objectId, ncand)
-    values += '%.3f, %.3f, %.3f, %.3f, ' % (np.mean(ra), np.std(ra), np.mean(dec), np.std(dec))
+    values += '%.7f, %.3f, %.7f, %.3f, ' % (np.mean(ra), 3600*np.std(ra), np.mean(dec), 3600*np.std(dec))
     values += '%.3f, %.3f, %.3f, %.3f, ' % (maggmin, maggmax, maggmedian, maggmean)
     values += '%.3f, %.3f, %.3f, %.3f, ' % (magrmin, magrmax, magrmedian, magrmean)
-    values += '%.3f, %.3f, %.3f '        % (latestmag, np.min(jd), np.max(jd))
+    values += '%.3f, %.3f, %.5f, %.5f '  % (latestgmag, latestrmag, np.min(jd), np.max(jd))
     
     query = 'REPLACE INTO objects (' + attributes + ') VALUES (' + values + ')'
     if debug: print(query)
@@ -74,7 +78,7 @@ def make_object(objectId, candlist, debug=False):
     msl.commit()
     return 1
 
-def update_objects(debug=False):
+def update_objects(new = False, debug=False):
     t = time.time()
     cursor  = msl.cursor(buffered=True, dictionary=True)
     n = 0
@@ -84,15 +88,19 @@ def update_objects(debug=False):
     candlist = []
     ntotalcand = nupdate = ndelete = 0
     while(1):
-        ncand = 0
-        query =  'SELECT objectId,ra,decl,jd,fid,magpsf FROM candidates NATURAL JOIN objects '
-        query += 'WHERE stale=1 ORDER BY objectId LIMIT %d OFFSET %d' % (nbatch, k*nbatch)
+        if new:
+            query =  'SELECT objectId,ra,decl,jd,fid,magpsf FROM candidates '
+            query += 'ORDER BY objectId LIMIT %d OFFSET %d' % (nbatch, k*nbatch)
+        else:
+            query =  'SELECT objectId,ra,decl,jd,fid,magpsf FROM candidates NATURAL JOIN objects '
+            query += 'WHERE stale=1 ORDER BY objectId LIMIT %d OFFSET %d' % (nbatch, k*nbatch)
         if debug:
             print(query)
         cursor.execute(query)
+        ncand = 0
         for cand in cursor:
-            ncand += 1
             ntotalcand += 1
+            ncand += 1
             objectId = cand['objectId']
             if oldObjectId == '':    # the first record
                 oldObjectId = objectId
@@ -104,18 +112,29 @@ def update_objects(debug=False):
                 else:          ndelete += 1
                 candlist = []
                 oldObjectId = objectId
+        if oldObjectId != '':
+            result = make_object(objectId, candlist)
+            if result > 0: nupdate += 1
+            else:          ndelete += 1
         k += 1
         if debug:
             print('Iteration %d: %d candidates, %d updated objects, %d deleted objects' % (k, ntotalcand, nupdate, ndelete))
-        if ncand < nbatch:
-            break
-    if ntotalcand > 0:
-        result = make_object(objectId, candlist)
-        if result > 0: nupdate += 1
-        else:          ndelete += 1
+        if new:
+            if ncand < nbatch:
+                 break
+        else:
+            query = 'SELECT COUNT(*) AS nobj FROM objects WHERE stale=1'
+            cursor.execute(query)
+            for record in cursor:
+                break
+            nobj = record['nobj']
+            print('%d objects still stale' % nobj)
+            if nobj == 0:
+                break
+
     print('-------------- UPDATE OBJECTS --------------')
     print('%d candidates, %d updated objects, %d deleted objects' % (ntotalcand, nupdate, ndelete))
     print('Time %.1f seconds' % (time.time() - t))
 
 if __name__ == "__main__":
-    update_objects()
+    update_objects(new=False, debug=True)
