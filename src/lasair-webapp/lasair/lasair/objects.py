@@ -43,7 +43,7 @@ def objlist(request):
 
         selectlist = selected.split(',')
         if not 'objectId' in selectlist:
-            selectlist.append('objectId')
+            selectlist.insert(0, 'objectId')
         selected = ','.join(selectlist)
 
         query = 'SELECT ' + selected + ' FROM objects'
