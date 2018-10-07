@@ -102,6 +102,7 @@ def show_watchlist(request, wl_id):
         if c[7]:
             d['objectId'] = c[7]
             d['arcsec']   = c[8]
+            d['sherlock_classification'] = c[30]
             if c[13]:
                 d['ncand'] = c[13]
                 if c[19]: 

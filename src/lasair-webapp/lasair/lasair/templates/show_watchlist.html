@@ -55,6 +55,7 @@ Watchlist has {{ count }} sources under watch.
 <th>objectId</th>
 <th>candidates</th>
 <th>mag range</th>
+<th>Sherlock class</th>
 </tr>
 {% for c in conelist %}
 <tr>
@@ -64,6 +65,7 @@ Watchlist has {{ count }} sources under watch.
 <td><a href=/object/{{ c.objectId }}/>{{ c.objectId }}</a></td>
 <td>{% if c.ncand %}{{ c.ncand }}{% endif %}</td>
 <td>{{ c.range|floatformat:1 }}</td>
+<td>{{ c.sherlock_classification }}</td>
 </tr>
 {% endfor %}
 </table>
