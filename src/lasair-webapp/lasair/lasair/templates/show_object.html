@@ -91,5 +91,10 @@ $(document).ready(function()
 	plotlc(json_data);
 
 </script>
+<ul>
+<li><a href="http://simbad.u-strasbg.fr/simbad/sim-coo?Coord={{ cands.0.ra }}%20{{ cands.0.decl }}&Radius=0.05" target="new">Simbad</a>
+<li><a href="https://ned.ipac.caltech.edu/ui/?q=nearposn&lat={{ cands.0.decl }}d&lon='+{{ cands.0.ra }}d&sr=0.05&coordsys=Equatorial&equinox=J2000.0" target="new">NED</a>
+</ul>
+
 {% endblock %}
 
