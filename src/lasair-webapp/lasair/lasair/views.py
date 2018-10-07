@@ -36,7 +36,7 @@ def conesearch(request):
         dra = radius/(3600*math.cos(dec*math.pi/180))
         dde = radius/3600
         cursor = connection.cursor()
-        cursor.execute('SELECT objectId,ra,decl FROM candidates WHERE ra BETWEEN %f and %f AND decl BETWEEN %f and %f' % (ra-dra, ra+dra, dec-dde, dec+dde))
+        cursor.execute('SELECT objectId,ramean,decmean FROM objects WHERE ramean BETWEEN %f and %f AND decmean BETWEEN %f and %f' % (ra-dra, ra+dra, dec-dde, dec+dde))
         hits = cursor.fetchall()
         hitdict = {}
         for hit in hits:
