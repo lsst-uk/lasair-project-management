@@ -79,7 +79,7 @@ $(document).ready(function()
 
 <script type="text/javascript" src="//aladin.u-strasbg.fr/AladinLite/api/v2/latest/aladin.min.js" charset="utf-8"></script>
 <script type="text/javascript">
-    var aladin = A.aladin('#aladin-lite-div', {survey: "P/DSS2/color", fov:0.04, target: "{{ cands.0.ra }}, {{ cands.0.decl }}"});
+    var aladin = A.aladin('#aladin-lite-div', {survey: "P/PanSTARRS/DR1/color-z-zg-g", fov:0.04, target: "{{ cands.0.ra }}, {{ cands.0.decl }}"});
     $('input[name=survey]').change(function() {
         aladin.setImageSurvey($(this).val());
 });
@@ -92,8 +92,9 @@ $(document).ready(function()
 
 </script>
 <ul>
-<li><a href="http://simbad.u-strasbg.fr/simbad/sim-coo?Coord={{ cands.0.ra }}%20{{ cands.0.decl }}&Radius=0.05" target="new">Simbad</a>
-<li><a href="https://ned.ipac.caltech.edu/ui/?q=nearposn&lat={{ cands.0.decl }}d&lon={{ cands.0.ra }}d&sr=0.05&coordsys=Equatorial&equinox=J2000.0" target="new">NED</a>
+<li><a href="http://simbad.u-strasbg.fr/simbad/sim-coo?Coord={{ cands.0.ra }}%20{{ cands.0.decl }}&Radius=0.08" target="new">Simbad</a>
+<li><a href="https://ned.ipac.caltech.edu/ui/?q=nearposn&lat={{ cands.0.decl }}d&lon={{ cands.0.ra }}d&sr=0.08&coordsys=Equatorial&equinox=J2000.0" target="new">NED</a>
+<li><a href="https://wis-tns.weizmann.ac.il/search?ra={{ cands.0.ra }}&decl={{ cands.0.decl }}&radius=5&coords_unit=arcsec" target="new">Transient Name Server</a>
 </ul>
 
 {% endblock %}
