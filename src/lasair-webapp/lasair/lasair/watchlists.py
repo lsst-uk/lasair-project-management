@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.template.context_processors import csrf
 from django.db import connection
-from django.db.models import Q
+from django.contrib.auth.models import User
 import lasair.settings
 from lasair.models import Watchlists, WatchlistCones, WatchlistHits
 import mysql.connector
@@ -20,7 +20,8 @@ def watchlists_home(request):
     message = ''
     if request.method == 'POST' and request.user.is_authenticated:
         delete      = request.POST.get('delete')
-        if delete == None:
+
+        if delete == None:   # create new watchlist
             name        = request.POST.get('name')
             description = request.POST.get('description')
             d_radius    = request.POST.get('radius')
@@ -54,12 +55,12 @@ def watchlists_home(request):
                 watchlist.delete()
                 message = 'Watchlist %s deleted successfully' % watchlist.name
 
+# public watchlists belong to the anonymous user
+    other_watchlists = Watchlists.objects.filter(public=1)
     if request.user.is_authenticated:
         my_watchlists    = Watchlists.objects.filter(user=request.user)
-        other_watchlists = Watchlists.objects.filter(~Q(user=request.user))
     else:
         my_watchlists    = None
-        other_watchlists = Watchlists.objects.all()
 
     return render(request, 'watchlists_home.html',
         {'my_watchlists': my_watchlists, 
@@ -71,16 +72,24 @@ def show_watchlist(request, wl_id):
     message = ''
     watchlist = get_object_or_404(Watchlists, wl_id=wl_id)
 
-    is_owner = request.user.is_authenticated and request.user == watchlist.user
+    is_owner = (request.user.is_authenticated) and (request.user == watchlist.user)
+    is_public = (watchlist.public == 1)
+    is_visible = is_owner or is_public
+    if not is_visible:
+        return render(request, 'error.html',{
+            'message': "This watchlist is private and not visible to you"})
 
     if request.method == 'POST' and is_owner:
         if 'name' in request.POST:
             watchlist.name        = request.POST.get('name')
             watchlist.description = request.POST.get('description')
-            if request.POST.get('active'):
-                watchlist.active  = 1
-            else:
-                watchlist.active  = 0
+
+            if request.POST.get('active'): watchlist.active  = 1
+            else:                          watchlist.active  = 0
+
+            if request.POST.get('public'): watchlist.public  = 1
+            else:                          watchlist.public  = 0
+
             watchlist.radius      = request.POST.get('radius')
             watchlist.save()
             message += 'watchlist updated'
