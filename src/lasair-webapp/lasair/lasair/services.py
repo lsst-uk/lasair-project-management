@@ -21,16 +21,13 @@ def coverageAjax(request, nid1, nid2):
     cursor = msl.cursor(buffered=True, dictionary=True)
     if nid1 <= nid2:   # date range
         dict = {'queryType': 'dateRange', 'nid1':nid1, 'nid2':nid2}
-        query = "SELECT candidates.field,fid,fields.ra,fields.decl,COUNT(*) AS n "
-        query += "FROM candidates INNER JOIN fields ON candidates.field=fields.field "
-        query += "WHERE nid BETWEEN %d AND %d  " % (nid1, nid2+1)
-        query += "GROUP BY candidates.field,fid"
+        query = "SELECT field,fid,ra,decl,SUM(n) as sum "
+        query += "FROM coverage WHERE nid BETWEEN %d and %d GROUP BY field,fid,ra,decl" % (nid1, nid2+1)
 
     else:              # all dates
         dict = {'queryType': 'allDates'}
-        query = "SELECT candidates.field,fid,fields.ra,fields.decl,COUNT(*) AS n "
-        query += "FROM candidates INNER JOIN fields ON candidates.field=fields.field "
-        query += "GROUP BY candidates.field,fid"
+        query = "SELECT field,fid,ra,decl,SUM(n) as sum "
+        query += "FROM coverage GROUP BY field,fid,ra,decl"
 
     cursor.execute(query)
     result = []
@@ -40,7 +37,7 @@ def coverageAjax(request, nid1, nid2):
             'fid'  :row['fid'], \
             'ra'   :row['ra'], \
             'dec'  :row['decl'], 
-            'n'    :row['n']})
+            'n'    :int(row['sum'])})
 
     dict['result'] = result
     return JsonResponse(dict)
