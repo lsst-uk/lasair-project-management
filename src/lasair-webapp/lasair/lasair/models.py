@@ -154,6 +154,7 @@ class Watchlists(models.Model):
     name          = models.CharField(max_length=256, blank=True, null=True)
     description   = models.CharField(max_length=4096, blank=True, null=True)
     active        = models.IntegerField(blank=True, null=True)
+    public        = models.IntegerField(blank=True, null=True)
     prequel_where = models.CharField(max_length=4096, blank=True, null=True)
     radius        = models.FloatField(blank=True, null=True)
 

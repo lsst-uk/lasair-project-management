@@ -65,7 +65,7 @@ Paste here the list of sources to be watched, as comma-separated values
 
     <div class="col-xs-6">
 <h3>My Watchlists</h3>
-Your current watchlists are listed below. Click "Create new watchlist" 
+Your private watchlists are listed below. Click "Create new watchlist" 
 above to make a new one. Click on the name of the watchlist for more information and crossmatching.
 <table class="table table-bordered" style="width:70%">
   <thead>
@@ -74,6 +74,7 @@ above to make a new one. Click on the name of the watchlist for more information
       <th class="width:70%">Description</th>
       <th class="width:5%">Radius</th>
       <th class="width:5%">Active</th>
+      <th class="width:5%">Public</th>
       <th class="width:10%"></th>
     </tr>
   </thead>
@@ -82,11 +83,14 @@ above to make a new one. Click on the name of the watchlist for more information
 <td>{{ wl.description }}</td>
 <td> {{ wl.radius }} arcsec </td>
 <td> {% if wl.active == 1 %}&#x2714;{% endif %} </td>
+<td> {% if wl.public == 1 %}&#x2714;{% endif %} </td>
+
 <td><form method="POST"  action="/watchlist/">
 {% csrf_token %}
 <input type="hidden" name="delete" value="{{ wl.wl_id }}">
 <input type="submit" value="(delete)">
 </form>
+
 </td></tr>
 {% endfor %}
 </table>
@@ -99,17 +103,17 @@ To create your own watchlists, you must log in.
 
 <div class="row">
     <div class="col-xs-6">
-<h3>Other Watchlists</h3>
-Watchlists created by other users are listed below. Click on the name of 
+<h3>Public Watchlists</h3>
+Watchlists created and made public are listed below. Click on the name of 
 the watchlist for more information and crossmatching.
-<table class="table table-bordered" style="width:70%">
+<table class="table table-bordered" style="width:80%">
   <thead>
     <tr>
-      <th style="width:10%">Name</th>
+      <th style="width:20%">Name</th>
       <th style="width:20%">Owner</th>
       <th class="width:60%">Description</th>
       <th class="width:5%">Radius</th>
-      <th class="width:5%">Active</th>
+      <th class="width:3%">Active</th>
     </tr>
   </thead>
 {% for wl in other_watchlists %}
