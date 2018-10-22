@@ -116,11 +116,27 @@ def alert_filter(alert, msl, stampdir=None):
     if data:  # Write your condition statement here
 
         t = time.time()
-# insert the candidate record
         objectId = data['objectId']
+
+
+# look for non detection limiting magnitude
+#        prv_array = data['prv_candidates']
+#        for prv in prv_array:
+#            if not prv['candid']:
+#                jd         = prv['jd']
+#                fid        = prv['fid']
+#                diffmaglim = prv['diffmaglim']
+#                logger.info('%d %s %.3f %d %.3f' % (len(prv_array), objectId, jd, fid, diffmaglim))
+
+
+
+# insert the candidate record
         query  = insert_sql_candidate(data)
-        query2 = 'DELETE FROM objects WHERE objectId="%s"' % objectId
-        query3 = 'INSERT INTO objects (objectId, stale) VALUES ("%s", 1)' % objectId
+# for new objects 
+        query2 = 'INSERT IGNORE INTO objects (objectId, stale) VALUES ("%s", 1)' % objectId
+# for existing objects
+        query3 = 'UPDATE objects set stale=1 where objectId="%s"' % objectId
+
         logger.debug(query)
         logger.debug(query2)
         logger.debug(query3)
@@ -134,7 +150,7 @@ def alert_filter(alert, msl, stampdir=None):
             logger.error("Database insert failed: %s" % str(err))
 
         candid = alert.get('candid')
-        logger.debug('inserted %d' % candid)
+        logger.info('inserted %d' % candid)
 
 
         time_insert += time.time() - t
@@ -183,6 +199,7 @@ def parse_args():
 def main(args):
     global time_fetch
     # Configure consumer connection to Kafka broker
+    print('Connecting to Kafka at %s' % args.host)
 #    conf = {'bootstrap.servers': '{}:9092,{}:9093,{}:9094'.format(args.host,args.host,args.host),
 #            'default.topic.config': {'auto.offset.reset': 'smallest'}}
     conf = {'bootstrap.servers': '{}:9092'.format(args.host,args.host,args.host),

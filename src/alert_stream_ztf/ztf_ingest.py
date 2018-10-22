@@ -37,6 +37,9 @@ os.system(cmd)
 cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/update_objects.py'
 os.system(cmd)
 
+cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/coverage.py'
+os.system(cmd)
+
 cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/get_number_candidates.py'
 os.system(cmd)
 
