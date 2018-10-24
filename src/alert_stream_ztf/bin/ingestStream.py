@@ -77,10 +77,6 @@ def insert_sql_candidate(alert):
 # and here is the SQL
     return 'INSERT INTO candidates \n(%s) \nVALUES \n(%s)' % (','.join(names), ','.join(values))
 
-def update_sql_object(alert):
-    """ The SQL to make the object stale so that it will get recomputed
-    """
-
 def msg_text(message):
     """Remove postage stamp cutouts from an alert message.
     """
@@ -120,14 +116,25 @@ def alert_filter(alert, msl, stampdir=None):
 
 
 # look for non detection limiting magnitude
-#        prv_array = data['prv_candidates']
-#        for prv in prv_array:
-#            if not prv['candid']:
-#                jd         = prv['jd']
-#                fid        = prv['fid']
-#                diffmaglim = prv['diffmaglim']
-#                logger.info('%d %s %.3f %d %.3f' % (len(prv_array), objectId, jd, fid, diffmaglim))
-
+        prv_array = data['prv_candidates']
+        noncanlist = []
+        query4 = ''
+        for prv in prv_array:
+            if not prv['candid']:
+                jd         = prv['jd']
+                fid        = prv['fid']
+                diffmaglim = prv['diffmaglim']
+                noncanlist.append('("%s", %.5f, %d, %.3f)' % (objectId, jd, fid, diffmaglim))
+        if len(noncanlist) > 0:
+            query4 = 'INSERT INTO noncandidates (objectId, jd, fid, diffmaglim) VALUES '
+            query4 += ', '.join(noncanlist)
+            logger.debug(query4)
+            try:
+                cursor = msl.cursor(buffered=True)
+                cursor.execute(query4)
+                msl.commit()
+            except mysql.connector.Error as err:
+                logger.error("Noncandidate insert failed: %s" % str(err))
 
 
 # insert the candidate record

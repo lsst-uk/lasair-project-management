@@ -80,12 +80,12 @@ function writeCoverageTable(){
     console.log("candidates: " + total);
     html  = "Total candidate alerts = " + total;
     html += "<table id=fields_table class='table'>";
-    html += "<thead><tr><th>RA</th><th>Dec</th><th>Filter</th><th>Ncandidate</th></tr></thead><tbody>";
+    html += "<thead><tr><th>Field</th><th>RA</th><th>Dec</th><th>Filter</th><th>Ncandidate</th></tr></thead><tbody>";
     for(var k=0; k<storedData.result.length; k++){
         row = storedData.result[k];
         if(row.fid == 1) {tok = "r";}
         else             {tok = "g";}
-        html += "<tr><td>" + row.ra + "</td><td>" +  row.dec + "</td><td>" + tok + "</td><td>" +row.n + "</td></tr>";
+        html += "<tr><td>" + row.field + "</td><td>" + row.ra + "</td><td>" +  row.dec + "</td><td>" + tok + "</td><td>" +row.n + "</td></tr>";
     }
     html += "</tbody></table>";
     document.getElementById("coverageTable").innerHTML = html;

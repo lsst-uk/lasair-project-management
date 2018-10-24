@@ -11,14 +11,19 @@ msl = mysql.connector.connect(\
 
 cursor  = msl.cursor(buffered=True, dictionary=True)
 
+
+query = 'CREATE TABLE coverage2 AS '
+query += '(SELECT candidates.field, fid, nid, fields.ra, fields.decl, COUNT(*) AS n '
+query += 'FROM candidates INNER JOIN fields ON candidates.field=fields.field '
+query += 'GROUP BY candidates.field, fid, nid)'
+cursor.execute(query)
+
 t = time.time()
 query = 'DROP TABLE coverage'
 cursor.execute(query)
 
-query = 'CREATE TABLE coverage AS '
-query += '(SELECT candidates.field, fid, nid, fields.ra, fields.decl, COUNT(*) AS n '
-query += 'FROM candidates INNER JOIN fields ON candidates.field=fields.field '
-query += 'GROUP BY candidates.field, fid, nid)'
+t = time.time()
+query = 'RENAME TABLE coverage2 TO coverage'
 cursor.execute(query)
 
 print('Coverage table rebuilt in %.1f seconds' % (time.time() - t))
