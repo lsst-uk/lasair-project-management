@@ -91,6 +91,17 @@ class Candidates(models.Model):
         db_table = 'candidates'
         app_label = 'Candidates'
 
+#class Noncandidates(models.Model):
+#    primaryid = models.AutoField(db_column='primaryId', primary_key=True)  # Field name made lowercase.
+#    objectid = models.CharField(db_column='objectId', max_length=16, blank=True, null=True)  # Field name made lowercase.
+#    jd = models.FloatField(blank=True, null=True)
+#    fid = models.IntegerField(blank=True, null=True)
+#    diffmaglim = models.FloatField(blank=True, null=True)
+#
+#    class Meta:
+#        managed = False
+#        db_table = 'noncandidates'
+
 class Objects(models.Model):
     primaryid = models.AutoField(db_column='primaryId', primary_key=True)  # Field name made lowercase.
     objectid = models.CharField(db_column='objectId', unique=True, max_length=16, blank=True, null=True)  # Field name made lowercase.
