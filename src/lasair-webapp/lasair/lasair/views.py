@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 from django.template.context_processors import csrf
 from django.db import connection
@@ -8,6 +8,28 @@ import lasair.settings
 import mysql.connector
 import json
 import math
+
+from django.contrib.auth.models import User
+from django.contrib.auth import login, authenticate
+
+import string
+import random
+def id_generator(size=10):
+   chars = string.ascii_lowercase + string.ascii_uppercase + string.digits
+   return ''.join(random.choice(chars) for _ in range(size))
+
+def signup(request):
+    if request.method == 'POST':
+        first_name    = request.POST['first_name']
+        last_name     = request.POST['last_name']
+        username      = request.POST['username']
+        email         = request.POST['email']
+        password      = id_generator(10)
+        user = User.objects.create_user(username=username, first_name=first_name,last_name=last_name, email=email, password=password)
+        user.save()
+        return redirect('/accounts/password_reset/')
+    else:
+        return render(request, 'signup.html')
 
 def connect_db():
     msl = mysql.connector.connect(

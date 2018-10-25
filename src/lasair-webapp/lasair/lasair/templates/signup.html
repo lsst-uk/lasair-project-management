@@ -1,0 +1,15 @@
+{% extends "base.html"%}
+{% block content %}
+  <h2>Sign up</h2>
+  <form method="post">
+    {% csrf_token %}
+<table>
+<tr><td>First name and Last name</td><td> <input name="first_name"> <input name="last_name"></td></tr>
+<tr><td>Preferred username</td><td> <input name="username"> </td></tr>
+<tr><td>Your email</td><td> <input name="email"></td></tr>
+</table>
+After you sign up, you will enter your email again, and respond to that email.
+<br/>
+<button type="submit">Sign up</button>
+  </form>
+{% endblock %}

@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.contrib.auth import views as authviews
 from django.urls import include, path
 from django.views.generic import TemplateView
+
 from lasair import views, services, candidates, objects, watchlists
 
 from django.contrib import admin
@@ -41,7 +42,8 @@ urlpatterns = [
     path('release',  TemplateView.as_view(template_name='release.html')),
     path('contact',  TemplateView.as_view(template_name='contact.html')),
     path('coverageAjax/<int:nid1>/<int:nid2>/',\
-                                     services.coverageAjax, name='coverageAjax'),
+                                     services.coverageAjax,     name='coverageAjax'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('admin/', admin.site.urls),
+    path('signup/',                  views.signup,              name='signup'),
+    path('admin/',                   admin.site.urls),
 ]
