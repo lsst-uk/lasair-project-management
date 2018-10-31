@@ -84,6 +84,7 @@ Information on this webpage also&nbsp; <a href="/object/{{ data.objectId }}/json
 		<table id=candidates_table class="table">
 		<thead><tr>
 		<th>JD</th>
+		<th>UTC</th>
 		<th>Filter</th>
 		<th>magpsf</th>
 		<th>candidate</th>
@@ -93,6 +94,7 @@ Information on this webpage also&nbsp; <a href="/object/{{ data.objectId }}/json
 		{% for cand in data.candidates %}
 			<tr>
 			<td>{{ cand.jd|floatformat:3 }}</td>
+			<td>{{ cand.utc }}</td>
 			<td>{% if cand.fid == 1 %}g{% else %}r{% endif %}</td>
 			<td>{{ cand.magpsf|floatformat:3 }} &plusmn; {{ cand.sigmapsf|floatformat:3 }}</td>
 			<td> <a href="/cand/{{ cand.candid }}/">{{ cand.candid }}</a></td>

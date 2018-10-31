@@ -4,6 +4,7 @@ from django.db import connection
 import lasair.settings
 from lasair.models import Objects
 import mysql.connector
+from astropy.time import Time
 import json
 
 def connect_db():
@@ -36,13 +37,17 @@ def obj(objectId):
         objectData = row
     message += str(objectData)
     primaryId = int(objectData['primaryId'])
-    objectData['annotation'] = objectData['annotation'].replace('"', ' arcsec')
+    if objectData and 'annotation' in objectData and objectData['annotation']:
+        objectData['annotation'] = objectData['annotation'].replace('"', ' arcsec')
 
     query = 'SELECT candid, jd, ra, decl, fid, nid, magpsf, sigmapsf, distpsnr1, sgscore1, sgmag1, srmag1 '
     query += 'FROM candidates WHERE objectId = "%s" ORDER BY jd DESC ' % objectId
     candidates = []
     cursor.execute(query)
     for row in cursor:
+        jd = float(row['jd'])
+        t = Time(jd, format='jd')
+        row['utc'] = t.iso
         candidates.append(row)
     message += 'Got %d candidates' % len(candidates)
 
