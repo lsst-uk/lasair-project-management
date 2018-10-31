@@ -11,11 +11,14 @@ rra = []
 rdec = [] 
 g = 'rgb(104,139,46)';
 r = 'rgb(244,2,52)'; 
-first_item = data[0];
-first_ra = Number(first_item.ra)*3600;
-first_dec = Number(first_item.decl)*3600;
+candidates = data.candidates;
+//first_item = data[0];
+//first_ra = Number(first_item.ra)*3600;
+//first_dec = Number(first_item.decl)*3600;
+first_ra = Number(data.objectData.ramean)*3600;
+first_dec = Number(data.objectData.decmean)*3600;
 
-data.forEach(function(item){
+candidates.forEach(function(item){
 	y = Number(item.magpsf);
         x = Number(item.jd)-2400000.5;
 	e = Number(item.sigmapsf);

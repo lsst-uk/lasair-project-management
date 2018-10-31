@@ -8,9 +8,10 @@
 
 <div class="row">
 	<div class="col-sm">
-		<h3>Object {{ objectId }}</h3>
+		<h3>Object {{ data.objectId }}</h3>
 	</div>
 </div>
+
 <div class="row">
         <div class="col-sm-8">
 		<div id="lc" style="width:100%;height:300px;"></div>
@@ -20,39 +21,35 @@
 	</div>
 </div>
 
-<div class ="row">
-To sort, click the column headings:
-	<div class="col-sm-12">
-		<table id=candidates_table class="table">
-		<thead><tr>
-		<th>RA</th>
-		<th>Dec</th>
-		<th>JD</th>
-		<th>Filter</th>
-		<th>magpsf</th>
-		<th>candidate</th>
-		<th>Image</th>
-		</tr></thead>
-                <tbody>
-		{% for cand in cands %}
-			<tr>
-			<td>{{ cand.ra|floatformat:5 }}</td>
-			<td>{{ cand.decl|floatformat:5 }}</td>
-			<td>{{ cand.jd|floatformat:3 }}</td>
-			<td>{% if cand.fid == 1 %}g{% else %}r{% endif %}</td>
-			<td>{{ cand.magpsf }}</td>
-			<td> <a href="/cand/{{ cand.candid }}/">{{ cand.candid }}</a></td>
-			<td><a href=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg><img src=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg></a></td>
-			</tr>
-		{% endfor %}
-                </tbody>
-		</table>
-	</div>
+<hr/>
+<div class="row">
+Object has {{ data.objectData.ncand }} candidates, at mean (RA, Dec) = ({{ data.objectData.ramean }}, {{ data.objectData.decmean }}). Classified as {{ data.objectData.classification }} at distance {{ data.objectData.separationArcsec|floatformat:2 }} arcsec.
+<hr/>
+{{ data.objectData.annotation|safe }}
+<hr/>
+Information on this webpage also&nbsp; <a href="/object/{{ data.objectId }}/json/">available as JSON.</a>
 </div>
 
+<hr/>
 <div class="row">
+<div class="col-sm-8">
+<h4>Crossmatches</h4>
+<table class="table" border=1>
+<thead>
+<tr><th>rank</th><th>ID</th><th>CatalogID</th><th>Type</th><th>Separation</th><th>r-mag</th><th>g-mag</th><th>photoZ</th></tr>
+</thead>
+{% for cm in data.crossmatches %}
+<tr><td>{{ cm.rank }}</td><td>{{ cm.catalogue_object_id }}</td><td>{{ cm.catalogue_table_id }}</td>
+<td>{{ cm.catalogue_object_type }}</td><td>{{ cm.separationArcsec|floatformat:2 }}</td><td>{{ cm.r }}</td><td>{{ cm.g }}</td><td>{{ cm.photoZ }}</td></tr>
+{% endfor %}
+</table>
+</div>
+</div>
 
+<hr/>
+<h4>AladinLite</h4>
 <!-- insert this snippet where you want Aladin Lite viewer to appear and after the loading of jQuery -->
+<div class="row">
         <div class="col-sm-3">
                 <form>
                 <div class="form-group"> <input id="DSS" type="radio" name="survey" value="P/DSS2/color"><label for="DSS">DSS color<label> </div>
@@ -69,6 +66,44 @@ To sort, click the column headings:
 </div>
 
 
+
+<div class ="row">
+<h4>Conesearch Links</h4> 
+&nbsp;&nbsp;|&nbsp;&nbsp;
+<a href="http://simbad.u-strasbg.fr/simbad/sim-coo?Coord={{ data.objectData.ramean }}%20{{ data.objectData.decmean }}&Radius=0.08" target="new">Simbad</a>
+&nbsp;&nbsp;|&nbsp;&nbsp;
+<a href="https://ned.ipac.caltech.edu/ui/?q=nearposn&lat={{ data.objectData.decmean }}d&lon={{ data.objectData.ramean }}d&sr=0.08&coordsys=Equatorial&equinox=J2000.0" target="new">NED</a>
+&nbsp;&nbsp;|&nbsp;&nbsp;
+<a href="https://wis-tns.weizmann.ac.il/search?ra={{ data.objectData.ramean }}&decl={{ data.objectData.decmean }}&radius=5&coords_unit=arcsec" target="new">Transient Name Server</a>
+</div>
+
+<div class ="row">
+<h4>Candidates</h4>&nbsp;&nbsp;
+(To sort, click the column headings)
+	<div class="col-sm-12">
+		<table id=candidates_table class="table">
+		<thead><tr>
+		<th>JD</th>
+		<th>Filter</th>
+		<th>magpsf</th>
+		<th>candidate</th>
+		<th>Image</th>
+		</tr></thead>
+                <tbody>
+		{% for cand in data.candidates %}
+			<tr>
+			<td>{{ cand.jd|floatformat:3 }}</td>
+			<td>{% if cand.fid == 1 %}g{% else %}r{% endif %}</td>
+			<td>{{ cand.magpsf|floatformat:3 }} &plusmn; {{ cand.sigmapsf|floatformat:3 }}</td>
+			<td> <a href="/cand/{{ cand.candid }}/">{{ cand.candid }}</a></td>
+			<td><a href=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg><img src=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg></a></td>
+			</tr>
+		{% endfor %}
+                </tbody>
+		</table>
+	</div>
+</div>
+
 <script type="text/javascript">
 $(document).ready(function() 
     { 
@@ -79,23 +114,21 @@ $(document).ready(function()
 
 <script type="text/javascript" src="//aladin.u-strasbg.fr/AladinLite/api/v2/latest/aladin.min.js" charset="utf-8"></script>
 <script type="text/javascript">
-    var aladin = A.aladin('#aladin-lite-div', {survey: "P/PanSTARRS/DR1/color-z-zg-g", fov:0.04, target: "{{ cands.0.ra }}, {{ cands.0.decl }}"});
+    var aladin = A.aladin('#aladin-lite-div', {survey: "P/PanSTARRS/DR1/color-z-zg-g", fov:0.04, target: "{{ data.objectData.ramean }}, {{ data.objectData.decmean }}"});
     $('input[name=survey]').change(function() {
         aladin.setImageSurvey($(this).val());
 });
 
-	var data = "{{ json_cands }}";
-	var data = data.replace(/&quot;/g,'"');
-	var json_data = JSON.parse(data);
-	//console.log(json_data);
+
+
+
+	var pd = "{{ json_data }}";
+	pd = pd.replace(/&quot;/g,'"')
+//	console.log(pd);
+	var json_data = JSON.parse(pd);
 	plotlc(json_data);
 
 </script>
-<ul>
-<li><a href="http://simbad.u-strasbg.fr/simbad/sim-coo?Coord={{ cands.0.ra }}%20{{ cands.0.decl }}&Radius=0.08" target="new">Simbad</a>
-<li><a href="https://ned.ipac.caltech.edu/ui/?q=nearposn&lat={{ cands.0.decl }}d&lon={{ cands.0.ra }}d&sr=0.08&coordsys=Equatorial&equinox=J2000.0" target="new">NED</a>
-<li><a href="https://wis-tns.weizmann.ac.il/search?ra={{ cands.0.ra }}&decl={{ cands.0.decl }}&radius=5&coords_unit=arcsec" target="new">Transient Name Server</a>
-</ul>
 
 {% endblock %}
 

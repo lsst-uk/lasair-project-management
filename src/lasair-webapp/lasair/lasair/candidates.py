@@ -85,25 +85,4 @@ def cand(request, candid):
     canddict = cand.__dict__
     message = ''
 
-#    import sys
-#    sys.path.append('/home/roy/ps1/code/utils/htm_utils/python/swig')
-#    import htmCircle
-
-
-#    radius_arcsec = 30.0
-#    whereClause = htmCircle.htmCircleRegion(16, cand.ra, cand.decl, radius_arcsec)
-
-#    msl = connect_db()
-#    cursor = msl.cursor(buffered=True, dictionary=True)
-#    query = ("SELECT * from candidates " + whereClause)
-#    query = query.replace('htm16ID', 'htmid16')
-
-#    prv_cands = []
-#    cursor.execute(query)
-#    for row in cursor:
-#        if row['candid'] != candid:
-#            prv_cands.append(row)
-#    message = query
-
-#    return render(request, 'cand.html',{'cand': canddict, 'prv_cands': prv_cands, 'message': message})
     return render(request, 'cand.html',{'cand': canddict, 'message': message})

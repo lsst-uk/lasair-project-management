@@ -29,7 +29,8 @@ urlpatterns = [
     path('cand/<int:candid>/',      candidates.cand,            name='cand'),
 
     path('objlist/',                objects.objlist,            name='objlist'),
-    path('object/<slug:objectId>/', objects.obj,                name='obj'),
+    path('object/<slug:objectId>/',      objects.objhtml,                name='objhtml'),
+    path('object/<slug:objectId>/json/', objects.objjson,                name='objjson'),
 
     path('conesearch/',             views.conesearch,           name='conesearch'),
 

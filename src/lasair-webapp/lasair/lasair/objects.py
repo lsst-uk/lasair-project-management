@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, HttpResponse
 from django.template.context_processors import csrf
 from django.db import connection
 import lasair.settings
@@ -14,18 +14,51 @@ def connect_db():
         database='ztf')
     return msl
 
-def obj(request, objectId):
+def objhtml(request, objectId):
+    data = obj(objectId)
+    return render(request, 'show_object.html',
+        {'data':data, 'json_data':json.dumps(data)})
+
+def objjson(request, objectId):
+    data = obj(objectId)
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+def obj(objectId):
     """Show a specific object, with all its candidates"""
+    message = ''
     msl = connect_db()
     cursor = msl.cursor(buffered=True, dictionary=True)
-    query = ('SELECT * from candidates WHERE objectId = "' + objectId + '" ORDER BY jd')
-    cands = []
+    query = 'SELECT o.primaryId, o.ncand, o.ramean, o.decmean, s.classification, s.annotation, s.separationArcsec  '
+    query += 'FROM objects AS o LEFT JOIN sherlock_classifications AS s ON o.primaryId = s.transient_object_id '
+    query += 'WHERE o.objectId = "%s"' % objectId
     cursor.execute(query)
     for row in cursor:
-        cands.append(row)
-    message = 'Got %d candidates' % len(cands)
-    json_data = json.dumps(cands)
-    return render(request, 'show_object.html',{'objectId':objectId, 'cands': cands,'json_cands':json_data, 'message': message})
+        objectData = row
+    message += str(objectData)
+    primaryId = int(objectData['primaryId'])
+    objectData['annotation'] = objectData['annotation'].replace('"', ' arcsec')
+
+    query = 'SELECT candid, jd, ra, decl, fid, nid, magpsf, sigmapsf, distpsnr1, sgscore1, sgmag1, srmag1 '
+    query += 'FROM candidates WHERE objectId = "%s" ORDER BY jd DESC ' % objectId
+    candidates = []
+    cursor.execute(query)
+    for row in cursor:
+        candidates.append(row)
+    message += 'Got %d candidates' % len(candidates)
+
+    query = 'SELECT catalogue_object_id, catalogue_table_id, catalogue_object_type, separationArcsec, '
+    query += '_r AS r, _g AS g, photoZ, rank '
+    query += 'FROM sherlock_crossmatches where transient_object_id = %d ' % primaryId
+    query += 'ORDER BY -rank DESC'
+    crossmatches = []
+    cursor.execute(query)
+    for row in cursor:
+        crossmatches.append(row)
+    message += ' and %d crossmatches' % len(crossmatches)
+
+    data = {'objectId':objectId, 'objectData': objectData, 'candidates': candidates, 'crossmatches': crossmatches}
+    return data
+
 
 def objlist(request):
     perpage = 100
