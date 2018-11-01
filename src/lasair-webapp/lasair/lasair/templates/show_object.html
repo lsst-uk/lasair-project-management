@@ -23,11 +23,13 @@
 
 <hr/>
 <div class="row">
-Object has {{ data.objectData.ncand }} candidates, at mean (RA, Dec) = ({{ data.objectData.ramean }}, {{ data.objectData.decmean }}). Classified as {{ data.objectData.classification }} at distance {{ data.objectData.separationArcsec|floatformat:2 }} arcsec.
-<hr/>
-{{ data.objectData.annotation|safe }}
-<hr/>
-Information on this webpage also&nbsp; <a href="/object/{{ data.objectId }}/json/">available as JSON.</a>
+<ul>
+<li>Object has {{ data.objectData.ncand }} candidates, at mean 
+(RA, Dec) = ({{ data.objectData.ramean|floatformat:6 }}, {{ data.objectData.decmean|floatformat:6 }}),
+(l, b) = ({{ data.objectData.lmean|floatformat:6 }}, {{ data.objectData.bmean|floatformat:6 }}). </li>
+<li>Classified as {{ data.objectData.classification }} at distance {{ data.objectData.separationArcsec|floatformat:2 }} arcsec.</li>
+<li>{{ data.objectData.annotation|safe }}</li>
+<li>Information on this webpage also&nbsp; <a href="/object/{{ data.objectId }}/json/">available as JSON.</a></li>
 </div>
 
 <hr/>

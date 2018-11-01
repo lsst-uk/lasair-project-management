@@ -4,7 +4,8 @@ from django.db import connection
 import lasair.settings
 from lasair.models import Objects
 import mysql.connector
-from astropy.time import Time
+import ephem, math
+from datetime import datetime, timedelta
 import json
 
 def connect_db():
@@ -38,7 +39,14 @@ def obj(objectId):
     message += str(objectData)
     primaryId = int(objectData['primaryId'])
     if objectData and 'annotation' in objectData and objectData['annotation']:
-        objectData['annotation'] = objectData['annotation'].replace('"', ' arcsec')
+        objectData['annotation'] = objectData['annotation'].replace('"', ' arcsec').strip()
+
+    ra  = objectData['ramean']
+    dec = objectData['decmean']
+    ce = ephem.Equatorial(ra, dec)
+    cg = ephem.Galactic(ce)
+    objectData['lmean'] = math.degrees(float(repr(cg.lon)))
+    objectData['bmean'] = math.degrees(float(repr(cg.lat)))
 
     query = 'SELECT candid, jd, ra, decl, fid, nid, magpsf, sigmapsf, distpsnr1, sgscore1, sgmag1, srmag1 '
     query += 'FROM candidates WHERE objectId = "%s" ORDER BY jd DESC ' % objectId
@@ -46,8 +54,10 @@ def obj(objectId):
     cursor.execute(query)
     for row in cursor:
         jd = float(row['jd'])
-        t = Time(jd, format='jd')
-        row['utc'] = t.iso
+        mjd = jd - 2400000.5
+        date = datetime.strptime("1858/11/17", "%Y/%m/%d")
+        date += timedelta(mjd)
+        row['utc'] = date.strftime("%Y-%m-%d %H:%M:%S")
         candidates.append(row)
     message += 'Got %d candidates' % len(candidates)
 
