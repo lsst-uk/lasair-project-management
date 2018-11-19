@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.template.context_processors import csrf
 from django.db import connection
 from django.contrib.auth.models import User
@@ -54,8 +54,27 @@ def connect_db():
 
 def new_myquery(request):
     is_owner = (request.user.is_authenticated)
+    message = ''
+    if request.method == 'POST' and is_owner:
+        name        = request.POST.get('name')
+        description = request.POST.get('description')
+        query       = request.POST.get('query')
+        public      = request.POST.get('public')
+
+        if request.POST.get('public'): public  = 1
+        else:                          public  = 0
+
+        mq = Myqueries(user=request.user, name=name, description=description, 
+                public=public, query=query)
+        mq.save()
+        message = "Query saved successfully"
+        return render(request, 'show_myquery.html',{
+            'myquery'  :mq, 
+            'is_owner' :is_owner,
+            'message'  :message})
+
     return render(request, 'new_myquery.html',{
-        'is_owner' :is_owner,
+        'is_owner' :is_owner
     })
 
 def show_myquery(request, mq_id):
@@ -70,16 +89,20 @@ def show_myquery(request, mq_id):
             'message': "This query is private and not visible to you"})
 
     if request.method == 'POST' and is_owner:
-        myquery.name        = request.POST.get('name')
-        myquery.description = request.POST.get('description')
-        myquery.query       = request.POST.get('query')
-        myquery.public      = request.POST.get('public')
+        if 'delete' in request.POST:
+            myquery.delete()
+            return redirect('/objlist/')
+        else:
+            myquery.name        = request.POST.get('name')
+            myquery.description = request.POST.get('description')
+            myquery.query       = request.POST.get('query')
+            myquery.public      = request.POST.get('public')
 
-        if request.POST.get('public'): myquery.public  = 1
-        else:                          myquery.public  = 0
+            if request.POST.get('public'): myquery.public  = 1
+            else:                          myquery.public  = 0
 
-        myquery.save()
-        message += 'query updated'
+            myquery.save()
+            message += 'query updated'
 
     return render(request, 'show_myquery.html',{
         'myquery'  :myquery, 

@@ -11,18 +11,20 @@
 {% csrf_token %}
 <tr><td>Name</td><td><h2><input name="name" value="{{ myquery.name }}"></h2></td></tr>
 <tr><td>Description</td><td><textarea name="description" rows=4 cols=80>{{ myquery.description }}</textarea></td></tr>
-<tr><td>SQL query</td><td><tt><textarea name="query" rows=8 cols=80>{{ myquery.query }}</tt></textarea></td></tr>
+<tr><td>SQL query</td><td><tt><textarea name="query" rows=8 cols=80>{{ myquery.query }}</textarea></tt></td></tr>
 <tr><td>Public</td><td><h3><input type="checkbox" name="public" {% if myquery.public == 1 %}checked{% endif %}></h3></td></tr>
 </table>
 
 <input type="submit" class="button" style="color: blue; background-color: #EEEEFF;" value=" Update query"></td>
 </form>
 <br/><hr/>&nbsp;
-<form method="POST"  action="/myquery/">
+<form method="POST"  action="/myquery/{{ myquery.mq_id }}/">
 {% csrf_token %}
-<input type="hidden" name="delete" value="{{ mq.mq_id }}">
+<input type="hidden" name="delete" value="delete">
 <input type="submit" class="button" style="color: blue; background-color: #EEEEFF;" value=" Delete this query"></td>
 </form>
+
+{{ message }}
 
 {% else %}
 <!-- viewing a public query not yours -->
