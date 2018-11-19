@@ -100,6 +100,9 @@ def objlist(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         sqlquery_user = request.POST['sqlquery'].strip()
+        json_checked = False
+        if 'json' in request.POST and request.POST['json'] == 'on':
+            json_checked = True
 
         page     = request.POST['page']
         if len(page.strip()) == 0: page = 0
@@ -137,9 +140,12 @@ def objlist(request):
             pe = ps + nalert
             lastpage = 1
 
-        return render(request, 'objlist.html',
-            {'table': queryset, 'nalert': nalert, 'nextpage': page+1, 'ps':ps, 'pe':pe,  'sqlquery_user':sqlquery_user, 'message': message, 'lastpage':lastpage})
-
+        if json_checked:
+            return HttpResponse(json.dumps(queryset), content_type="application/json")
+        else:
+            return render(request, 'objlist.html',
+                {'table': queryset, 'nalert': nalert, 'nextpage': page+1, 'ps':ps, 'pe':pe, 
+                    'sqlquery_user':sqlquery_user, 'message': message, 'lastpage':lastpage})
     else:
         if request.user.is_authenticated:
             myqueries    = Myqueries.objects.filter(user=request.user)
