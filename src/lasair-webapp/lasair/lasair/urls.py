@@ -18,14 +18,14 @@ from django.contrib.auth import views as authviews
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from lasair import views, services, candidates, objects, watchlists
+from lasair import views, services, candidates, objects, watchlists, myqueries
 
 from django.contrib import admin
 #admin.autodiscover()
 
 urlpatterns = [
     path('',                        views.index,                name='index'),
-    path('candlist/',               candidates.candlist,        name='candlist'),
+#    path('candlist/',               candidates.candlist,        name='candlist'),
     path('cand/<int:candid>/',      candidates.cand,            name='cand'),
 
     path('objlist/',                objects.objlist,            name='objlist'),
@@ -37,8 +37,12 @@ urlpatterns = [
     path('watchlist/',              watchlists.watchlists_home, name='watchlists_home'),
     path('watchlist/<int:wl_id>/',  watchlists.show_watchlist,  name='show_watchlist'),
 
+    path('myquery/',              myqueries.new_myquery,   name='new_myquery'),
+    path('myquery/<int:mq_id>/',  myqueries.show_myquery,  name='show_myquery'),
+
     path('coverage/',               views.coverage,             name='coverage'),
 
+    path('schema',   TemplateView.as_view(template_name='schema.html')),
     path('jupyter',  TemplateView.as_view(template_name='jupyter.html')),
     path('release',  TemplateView.as_view(template_name='release.html')),
     path('contact',  TemplateView.as_view(template_name='contact.html')),

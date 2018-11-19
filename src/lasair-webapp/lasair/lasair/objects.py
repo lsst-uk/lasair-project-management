@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, HttpResponse
 from django.template.context_processors import csrf
 from django.db import connection
 import lasair.settings
-from lasair.models import Objects
+from lasair.models import Objects, Myqueries
 import mysql.connector
 import ephem, math
 from datetime import datetime, timedelta
@@ -27,30 +27,36 @@ def objjson(request, objectId):
 
 def obj(objectId):
     """Show a specific object, with all its candidates"""
+    objectData = None
     message = ''
     msl = connect_db()
     cursor = msl.cursor(buffered=True, dictionary=True)
-    query = 'SELECT o.primaryId, o.ncand, o.ramean, o.decmean, s.classification, s.annotation, s.separationArcsec  '
+    query = 'SELECT o.primaryId, o.ncand, o.ramean, o.decmean, o.glonmean, o.glatmean, s.classification, s.annotation, s.separationArcsec  '
     query += 'FROM objects AS o LEFT JOIN sherlock_classifications AS s ON o.primaryId = s.transient_object_id '
-    query += 'WHERE o.objectId = "%s"' % objectId
+    query += 'WHERE stale != 1 AND o.objectId = "%s"' % objectId
     cursor.execute(query)
     for row in cursor:
         objectData = row
-    message += str(objectData)
-    primaryId = int(objectData['primaryId'])
-    if objectData and 'annotation' in objectData and objectData['annotation']:
-        objectData['annotation'] = objectData['annotation'].replace('"', ' arcsec').strip()
 
-    ra  = objectData['ramean']
-    dec = objectData['decmean']
-    ce = ephem.Equatorial(ra, dec)
-    cg = ephem.Galactic(ce)
-    objectData['lmean'] = math.degrees(float(repr(cg.lon)))
-    objectData['bmean'] = math.degrees(float(repr(cg.lat)))
+    crossmatches = []
+    if objectData:
+        message += str(objectData)
+        primaryId = int(objectData['primaryId'])
+        if objectData and 'annotation' in objectData and objectData['annotation']:
+            objectData['annotation'] = objectData['annotation'].replace('"', ' arcsec').strip()
 
-    query = 'SELECT candid, jd, ra, decl, fid, nid, magpsf, sigmapsf, distpsnr1, sgscore1, sgmag1, srmag1 '
-    query += 'FROM candidates WHERE objectId = "%s" ORDER BY jd DESC ' % objectId
+        query = 'SELECT catalogue_object_id, catalogue_table_name, catalogue_object_type, separationArcsec, '
+        query += '_r AS r, _g AS g, photoZ, rank '
+        query += 'FROM sherlock_crossmatches where transient_object_id = %d ' % primaryId
+        query += 'ORDER BY -rank DESC'
+        cursor.execute(query)
+        for row in cursor:
+            crossmatches.append(row)
+    message += ' and %d crossmatches' % len(crossmatches)
+
     candidates = []
+    query = 'SELECT candid, jd, ra, decl, fid, nid, magpsf, sigmapsf, ssdistnr, ssnamenr '
+    query += 'FROM candidates WHERE objectId = "%s" ' % objectId
     cursor.execute(query)
     for row in cursor:
         jd = float(row['jd'])
@@ -59,29 +65,41 @@ def obj(objectId):
         date += timedelta(mjd)
         row['utc'] = date.strftime("%Y-%m-%d %H:%M:%S")
         candidates.append(row)
+
+    if not objectData:
+        objectData = {'ramean': row['ra'], 'decmean': row['decl'], 
+            'ncand':len(candidates), 'MPCname':row['ssnamenr']}
+        objectData['annotation'] = 'Unknown object'
+        if row['ssdistnr'] < 10:
+            objectData['MPCname'] = row['ssnamenr']
+
     message += 'Got %d candidates' % len(candidates)
 
-    query = 'SELECT catalogue_object_id, catalogue_table_id, catalogue_object_type, separationArcsec, '
-    query += '_r AS r, _g AS g, photoZ, rank '
-    query += 'FROM sherlock_crossmatches where transient_object_id = %d ' % primaryId
-    query += 'ORDER BY -rank DESC'
-    crossmatches = []
+    query = 'SELECT jd, fid, diffmaglim '
+    query += 'FROM noncandidates WHERE objectId = "%s"' % objectId
     cursor.execute(query)
     for row in cursor:
-        crossmatches.append(row)
-    message += ' and %d crossmatches' % len(crossmatches)
+        jd = float(row['jd'])
+        mjd = jd - 2400000.5
+        date = datetime.strptime("1858/11/17", "%Y/%m/%d")
+        date += timedelta(mjd)
+        row['utc'] = date.strftime("%Y-%m-%d %H:%M:%S")
+        row['magpsf'] = row['diffmaglim']
+        candidates.append(row)
+    message += 'Got %d candidates and noncandidates' % len(candidates)
+
+    candidates.sort(key= lambda c: c['jd'], reverse=True)
+
 
     data = {'objectId':objectId, 'objectData': objectData, 'candidates': candidates, 'crossmatches': crossmatches}
     return data
 
 
 def objlist(request):
-    perpage = 100
+    perpage = 1000
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
-        selected = request.POST['selected'].strip()
-        where    = request.POST['where'].strip()
-        order    = request.POST['order'].strip()
+        sqlquery_user = request.POST['sqlquery'].strip()
 
         page     = request.POST['page']
         if len(page.strip()) == 0: page = 0
@@ -89,30 +107,47 @@ def objlist(request):
         ps = page    *perpage
         pe = (page+1)*perpage
 
-        selectlist = selected.split(',')
-        if not 'objectId' in selectlist:
-            selectlist.insert(0, 'objectId')
-        selected = ','.join(selectlist)
+        tokens = sqlquery_user.split()
+        firstword = tokens[0].lower()
+        if firstword != 'select':
+            message = 'You must start the query with the word "SELECT"'
+            return render(request, 'error.html', {'message': message})
 
-        query = 'SELECT ' + selected + ' FROM objects'
-        if len(where.strip()) > 0:
-            query += ' WHERE ' + where.strip()
-        if len(order.strip()) > 0:
-            query += ' ORDER BY ' + order.strip()
-        query += ' LIMIT %d OFFSET %d' % (perpage, page*perpage)
-        message = query
+        sqlquery_real = 'SELECT /*+ MAX_EXECUTION_TIME(60000) */ ' + ' '.join(tokens[1:])
+
+        sqlquery_real += ' LIMIT %d OFFSET %d' % (perpage, page*perpage)
+        message = sqlquery_real
 
         nalert = 0
         msl = connect_db()
         cursor = msl.cursor(buffered=True, dictionary=True)
 
-        cursor.execute(query)
+        try:
+            cursor.execute(sqlquery_real)
+        except Exception as e:
+            message = 'Your query:<br/><b>' + sqlquery_real + '</b><br/>returned the error<br/><i>' + str(e) + '</i>'
+            return render(request, 'error.html', {'message': message})
+
         queryset = []
         for row in cursor:
             queryset.append(row)
             nalert += 1
+        lastpage = 0
+        if ps + nalert < pe:
+            pe = ps + nalert
+            lastpage = 1
 
         return render(request, 'objlist.html',
-            {'table': queryset, 'nalert': nalert, 'nextpage': page+1, 'ps':ps, 'pe':pe,  'selected':selected, 'where':where, 'order':order, 'message': message})
+            {'table': queryset, 'nalert': nalert, 'nextpage': page+1, 'ps':ps, 'pe':pe,  'sqlquery_user':sqlquery_user, 'message': message, 'lastpage':lastpage})
+
     else:
-        return render(request, 'objlistquery.html', {})
+        if request.user.is_authenticated:
+            myqueries    = Myqueries.objects.filter(user=request.user)
+        else:
+            myqueries    = None
+
+        public_queries = Myqueries.objects.filter(public=1)
+        return render(request, 'objlistquery.html', {
+            'is_authenticated': request.user.is_authenticated,
+            'myqueries':myqueries, 
+            'public_queries':public_queries})

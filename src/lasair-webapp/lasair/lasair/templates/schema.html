@@ -1,0 +1,148 @@
+{% extends "base.html"%}
+{% block content %}
+<div class="row">
+<div class="col-sm">
+<h2>Schemas for the tables</h2>
+<i>All attributes are floating point or double unless otherwise noted.</i>
+<p>
+<h3>Schema for "objects" table</h3>
+<table border=1>
+<tr><td>ncand</td><td>number of candidates that cite this object (integer)</td></tr>
+<tr><td>ramean</td><td>mean RA in degrees</td></tr>
+<tr><td>decmean</td><td>mean Dec in degrees</td></tr>
+<tr><td>rastd</td><td>standard deviation of RA in arcseconds</td></tr>
+<tr><td>decstd</td><td>standard deviation of Dec in arcseconds</td></tr>
+<tr><td>maggmin</td><td>minimum g magnitude of candidates that cite this object</td></tr>
+<tr><td>maggmax</td><td>maximum g magnitude of candidates that cite this object</td></tr>
+<tr><td>maggmedian</td><td>median g magnitude of candidates that cite thisobject</td></tr>
+<tr><td>maggmean</td><td>mean g magnitude of candidates that cite thisobject</td></tr>
+<tr><td>magrmin</td><td>minimum r magnitude of candidates that cite thisobject</td></tr>
+<tr><td>magrmax</td><td>maximum r magnitude of candidates that cite thisobject</td></tr>
+<tr><td>magrmedian</td><td>median r magnitude of candidates that cite thisobject</td></tr>
+<tr><td>magrmean</td><td>mean r magnitude of candidates that cite thisobject</td></tr>
+<tr><td>latestgmag</td><td>latest g magnitude of candidates that cite this object</td></tr>
+<tr><td>latestrmag</td><td>latest r magnitude of candidates that cite this object</td></tr>
+<tr><td>jdmin</td><td>earliest Julian Day of candidates that cite this object</td></tr>
+<tr><td>jdmax</td><td>latest Julian Day of candidates that cite this object</td></tr>
+<tr><td>sherlock_classification</td><td>object classification from Sherlock (string)</td></tr>
+</table>
+<p>
+<h3>Schema for "sherlock_crossmatches" table</h3>
+(for more information see <a href=https://qub-sherlock.readthedocs.io/en/stable/>Sherlock documentation</a>)
+<table border=1>
+<tr><td>rank                          </td><td>Rank of the match, 1 being best (integer)</td></tr>
+<tr><td>catalogue_object_type         </td><td>Type of the matched object (Can be: star, galaxy, cv, cb, agn, other, unknown) (string)</td></tr>
+<tr><td>association_type              </td><td>Type of the object (Can be VS, SN, CV, BS, NT, AGN, UNKNOWN) (string)</td></tr>
+<tr><td>separationArcsec              </td><td>Separation from the candidate</td></tr>
+<tr><td>northSeparationArcsec         </td><td>Separation north</td></tr>
+<tr><td>eastSeparationArcsec          </td><td>Separation east</td></tr>
+<tr><td>catalogue_table_name          </td><td>Name of the catalog with the matched object (string)</td></tr>
+<tr><td>catalogue_object_id           </td><td>ID in the named catalog (integer)</td></tr>
+<tr><td>z                             </td><td>Redshift  of the object</td></tr>
+<tr><td>distance                      </td><td>Distance of the object in Mpc</td></tr>
+
+<!--
+<tr><td>id                            </td><td>HHH</td></tr>
+<tr><td>scale                         </td><td>HHH</td></tr>
+<tr><td>distance_modulus              </td><td>HHH</td></tr>
+<tr><td>photoZ                        </td><td>HHH</td></tr>
+<tr><td>photoZErr                     </td><td>HHH</td></tr>
+<tr><td>dateCreated                   </td><td>HHH</td></tr>
+<tr><td>physical_separation_kpc       </td><td>HHH</td></tr>
+<tr><td>association_rank              </td><td>HHH</td></tr>
+<tr><td>catalogue_view_name           </td><td>HHH</td></tr>
+<tr><td>rankScore                     </td><td>HHH</td></tr>
+<tr><td>search_name                   </td><td>HHH</td></tr>
+<tr><td>major_axis_arcsec             </td><td>HHH</td></tr>
+<tr><td>direct_distance               </td><td>HHH</td></tr>
+<tr><td>direct_distance_scale         </td><td>HHH</td></tr>
+<tr><td>direct_distance_modulus       </td><td>HHH</td></tr>
+<tr><td>classificationReliability     </td><td>HHH</td></tr>
+-->
+<tr><td>U         </td><td>U magnitude if known</td></tr>
+<tr><td>UErr      </td><td>Error on U magnitude</td></tr>
+<tr><td>B         </td><td>B magnitude if known</td></tr>
+<tr><td>BErr      </td><td>Error on B magnitude</td></tr>
+<tr><td>V         </td><td>V magnitude if known</td></tr>
+<tr><td>VErr      </td><td>Error on V magnitude</td></tr>
+<tr><td>G         </td><td>G magnitude if known</td></tr>
+<tr><td>GErr      </td><td>Error on G magnitude</td></tr>
+<tr><td>R         </td><td>R magnitude if known</td></tr>
+<tr><td>RErr      </td><td>Error on R magnitude</td></tr>
+<tr><td>I         </td><td>I magnitude if known</td></tr>
+<tr><td>IErr      </td><td>Error on I magnitude</td></tr>
+<tr><td>J         </td><td>J magnitude if known</td></tr>
+<tr><td>JErr      </td><td>Error on J magnitude</td></tr>
+<tr><td>H         </td><td>H magnitude if known</td></tr>
+<tr><td>HErr      </td><td>Error on H magnitude</td></tr>
+<tr><td>K         </td><td>K magnitude if known</td></tr>
+<tr><td>KErr      </td><td>Error on K magnitude</td></tr>
+<tr><td>_u        </td><td>u magnitude if known</td></tr>
+<tr><td>_uErr     </td><td>Error on u magnitude</td></tr>
+<tr><td>_g        </td><td>g magnitude if known</td></tr>
+<tr><td>_gErr     </td><td>Error on g magnitude</td></tr>
+<tr><td>_r        </td><td>r magnitude if known</td></tr>
+<tr><td>_rErr     </td><td>Error on r magnitude</td></tr>
+<tr><td>_i        </td><td>i magnitude if known</td></tr>
+<tr><td>_iErr     </td><td>Error on i magnitude</td></tr>
+<tr><td>_z        </td><td>z magnitude if known</td></tr>
+<tr><td>_zErr     </td><td>Error on z magnitude</td></tr>
+<tr><td>_y        </td><td>y magnitude if known</td></tr>
+<tr><td>_yErr     </td><td>Error on y magnitude</td></tr>
+</table>
+<p>
+<h3>Schema for "candidates" table</h3>
+(The attributes below are not the full schema. For more documentation and full schema see <a href=https://zwickytransientfacility.github.io/ztf-avro-alert/schema.html>ZTF schema document</a>).
+<table border=1>
+<tr><td>objectId    </td><td>Object ID for objects to which this candidate belongs (string)</td></tr>
+<tr><td>candid      </td><td>unique identifier for the subtraction candidate (integer)</td></tr>
+<tr><td>jd          </td><td>Observation Julian date at start of exposure </td></tr>
+<tr><td>ra          </td><td>Right Ascension of candidate; J2000 [deg]</td></tr>
+<tr><td>decl        </td><td>Declination of candidate; J2000 [deg]</td></tr>
+<tr><td>magpsf      </td><td>magnitude from PSF-fit photometry [mag]</td></tr>
+<tr><td>sigmapsf    </td><td>1-sigma uncertainty in magpsf [mag]</td></tr>
+<tr><td>chipsf      </td><td>Reduced chi-square for PSF-fit</td></tr>
+<tr><td>magap       </td><td>Aperture mag using 8 pixel diameter aperture [mag]</td></tr>
+<tr><td>sigmagap    </td><td>1-sigma uncertainty in magap [mag]</td></tr>
+
+<tr><td>isdiffpos   </td><td>t or 1 if candidate is from positive (sci minus ref) subtraction; f or 0 if candidate is from negative (ref minus sci) subtraction (string)</td></tr>
+<tr><td>nid         </td><td>Night ID, starts 2017-01-01 (integer)</td></tr>
+<tr><td>field       </td><td>ZTF field ID (integer)</td></tr>
+<tr><td>xpos        </td><td>x-image position of candidate [pixels]</td></tr>
+<tr><td>ypos        </td><td>y-image position of candidate [pixels]</td></tr>
+<tr><td>distnr      </td><td>distance to nearest source in reference image PSF-catalog within 30 arcsec [pixels]</td></tr>
+<tr><td>magnr       </td><td>magnitude of nearest source in reference image PSF-catalog within 30 arcsec [mag]</td></tr>
+<tr><td>sigmagnr    </td><td>1-sigma uncertainty in magnr within 30 arcsec [mag]</td></tr>
+<tr><td>sky         </td><td>Local sky background estimate [DN]</td></tr>
+<tr><td>magdiff     </td><td>Difference: magap - magpsf [mag]</td></tr>
+<tr><td>fwhm        </td><td>Full Width Half Max assuming a Gaussian core, from SExtractor [pixels]</td></tr>
+<tr><td>classtar    </td><td>Star/Galaxy classification score from SExtractor (string)</td></tr>
+<tr><td>elong       </td><td>Ratio: aimage / bimage</td></tr>
+<tr><td>nbad        </td><td>number of prior-tagged bad pixels in a 5 x 5 pixel stamp (integer)</td></tr>
+<tr><td>rb          </td><td>RealBogus quality score; range is 0 to 1 where closer to 1 is more reliable</td></tr>
+<tr><td>scorr       </td><td>Peak-pixel signal-to-noise ratio in point source matched-filtered detection image
+<tr><td colspan=2 style="background-color:#ddddff">Solar System</td></tr>
+<tr><td>ssdistnr    </td><td>distance to nearest known solar system object; set to -999.0 if none [arcsec]</td></tr>
+<tr><td>ssmagnr     </td><td>magnitude of nearest known solar system object (usually V-band from MPC archive); set to -999.0 if none [mag]</td></tr>
+<tr><td>ssnamenr    </td><td>name of nearest known solar system object (from MPC archive); ‘null’ if none (string)</td></tr>
+<tr><td colspan=2 style="background-color:#ddddff">Pan-STARRS</td></tr>
+<tr><td>objectidps1 </td><td>Object ID of closest source from PS1 catalog; if exists within 30 arcsec</td></tr>
+<tr><td>sgmag1      </td><td>g-band PSF magnitude of closest source from PS1 catalog; if exists within 30 arcsec [mag]</td></tr>
+<tr><td>srmag1      </td><td>r-band PSF magnitude of closest source from PS1 catalog; if exists within 30 arcsec [mag]</td></tr>
+<tr><td>simag1      </td><td>i-band PSF magnitude of closest source from PS1 catalog; if exists within 30 arcsec [mag]</td></tr>
+<tr><td>szmag1      </td><td>z-band PSF magnitude of closest source from PS1 catalog; if exists within 30 arcsec [mag]</td></tr>
+<tr><td>sgscore1    </td><td>Star/Galaxy score of closest source from PS1 catalog 0 &lt;= sgscore &lt;= 1 where closer to 1 implies higher likelihood of being a star</td></tr>
+<tr><td>distpsnr1   </td><td>Distance of closest source from PS1 catalog; if exists within 30 arcsec [arcsec]</td></tr>
+<tr><td colspan=2 style="background-color:#ddddff">Gaia DR1</td></tr>
+<tr><td>neargaia	</td><td>Distance to closest source from Gaia DR1 catalog irrespective of magnitude; if exists within 90 arcsec [arcsec]</td></tr>
+<tr><td>neargaiabright	</td><td>Distance to closest source from Gaia DR1 catalog brighter than magnitude 14; if exists within 90 arcsec [arcsec]</td></tr>
+<tr><td>maggaia		</td><td>Gaia (G-band) magnitude of closest source from Gaia DR1 catalog irrespective of magnitude; if exists within 90 arcsec [mag]</td></tr>
+<tr><td>maggaiabright	</td><td>Gaia (G-band) magnitude of closest source from Gaia DR1 catalog brighter than magnitude 14; if exists within 90 arcsec [mag]</td></tr>
+</td></tr>
+</table>
+
+
+
+</div>
+</div>
+{% endblock %}

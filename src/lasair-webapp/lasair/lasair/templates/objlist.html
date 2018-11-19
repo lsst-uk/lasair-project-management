@@ -14,18 +14,18 @@
 	<div class="col-sm-4">
 		Showing results {{ ps }}-{{ pe }} <!-- of  {{ nalert }} -->
 	</div>
+{% if lastpage == 0 %}
 	<div class="col-sm-8">
 		<form method="POST" action="/objlist/">
                 {% csrf_token %}
 		<div class ="form-group">
-			<input type="hidden" name="selected" value="{{ selected }}"/>
-			<input type="hidden" name="where"    value="{{ where }}"/>
-			<input type="hidden" name="order"    value="{{ order }}"/>
+			<input type="hidden" name="sqlquery" value="{{ sqlquery_user }}"/>
 			<input type="hidden" name="page"     value="{{ nextpage }}"/>
 			<input class="btn btn-primary" type="submit" value="next page"/>
 		</div>
 		</form>
 	</div>
+{% endif %}
 </div>
 
 <div class="row">

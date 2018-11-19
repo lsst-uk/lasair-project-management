@@ -1,0 +1,28 @@
+{% extends "base.html"%}
+{% block content %}
+
+<div class="row">
+<div class="col-sm">
+
+{% if is_owner %}
+<!-- create new query -->
+<form method="POST"  action="/myquery/">
+{% csrf_token %}
+<table width=400>
+<tr><td>Name:</td><td> <input name="name"></td></tr>
+
+<tr><td>Description:</td><td> <textarea name="description" rows=4 cols=80></textarea></td></tr>
+<tr><td>SQL Query:</td><td> <textarea name="query" rows=8 cols=80></textarea></td></tr>
+
+<tr><td>Public:</td><td> <input type="checkbox" name="public"></td></tr>
+</table>
+<input type="submit" class="button" style="color: blue; background-color: #EEEEFF;" value="Create query">
+</form>
+{% else %}
+You must be signed in to create a stored query. See links at the top left.
+{% endif %}
+
+</div>
+</div>
+
+{% endblock %}

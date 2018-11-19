@@ -1,0 +1,40 @@
+{% extends "base.html"%}
+{% block content %}
+
+<div class="row">
+<div class="col-sm">
+
+{% if is_owner %}
+<!-- editing an existing query -->
+<form method="POST"  action="/myquery/{{ myquery.mq_id }}/">
+<table>
+{% csrf_token %}
+<tr><td>Name</td><td><h2><input name="name" value="{{ myquery.name }}"></h2></td></tr>
+<tr><td>Description</td><td><textarea name="description" rows=4 cols=80>{{ myquery.description }}</textarea></td></tr>
+<tr><td>SQL query</td><td><tt><textarea name="query" rows=8 cols=80>{{ myquery.query }}</tt></textarea></td></tr>
+<tr><td>Public</td><td><h3><input type="checkbox" name="public" {% if myquery.public == 1 %}checked{% endif %}></h3></td></tr>
+</table>
+
+<input type="submit" class="button" style="color: blue; background-color: #EEEEFF;" value=" Update query"></td>
+</form>
+<br/><hr/>&nbsp;
+<form method="POST"  action="/myquery/">
+{% csrf_token %}
+<input type="hidden" name="delete" value="{{ mq.mq_id }}">
+<input type="submit" class="button" style="color: blue; background-color: #EEEEFF;" value=" Delete this query"></td>
+</form>
+
+{% else %}
+<!-- viewing a public query not yours -->
+<table border=1>
+<tr><td>Name</td><td><h2>{{ myquery.name }}</h2></td></tr>
+<tr><td>Description</td><td>{{ myquery.description }}</td></tr>
+<tr><td>SQL Query</td><td><tt>{{ myquery.query }}</tt></td></tr>
+<tr><td>Public</td><td>{% if myquery.public == 1 %}yes{% else %}no{% endif %}</td></tr>
+</table>
+{% endif %}
+
+</div>
+</div>
+
+{% endblock %}

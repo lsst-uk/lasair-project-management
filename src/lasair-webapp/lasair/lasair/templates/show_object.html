@@ -25,10 +25,20 @@
 <div class="row">
 <ul>
 <li>Object has {{ data.objectData.ncand }} candidates, at mean 
-(RA, Dec) = ({{ data.objectData.ramean|floatformat:6 }}, {{ data.objectData.decmean|floatformat:6 }}),
-(l, b) = ({{ data.objectData.lmean|floatformat:6 }}, {{ data.objectData.bmean|floatformat:6 }}). </li>
-<li>Classified as {{ data.objectData.classification }} at distance {{ data.objectData.separationArcsec|floatformat:2 }} arcsec.</li>
-<li>{{ data.objectData.annotation|safe }}</li>
+(RA, Dec) = ({{ data.objectData.ramean|floatformat:6 }}, {{ data.objectData.decmean|floatformat:6 }})
+{% if data.objectData.glonmean %}, (l, b) = ({{ data.objectData.glonmean|floatformat:6 }}, {{ data.objectData.glatmean|floatformat:6 }}). {% endif %}</li>
+
+{% if data.objectData.classification %}
+<li>Classified as {{ data.objectData.classification }} at distance {{ data.objectData.separationArcsec|floatformat:2 }} arcsec.</li> {% endif %}
+
+<li>
+{% if data.objectData.MPCname %}
+<form method="post" id="JPLsearch" action="https://ssd.jpl.nasa.gov/sbdb.cgi">
+<input type="hidden" name="sstr" value="{{ data.objectData.MPCname }}"></form>
+Moving object, MPC name is <a href="#" onclick="document.forms[0].submit()">{{ data.objectData.MPCname }}</a>
+{% else %}
+{{ data.objectData.annotation|safe }}{% endif %}</li>
+
 <li>Information on this webpage also&nbsp; <a href="/object/{{ data.objectId }}/json/">available as JSON.</a></li>
 </div>
 
@@ -38,10 +48,10 @@
 <h4>Crossmatches</h4>
 <table class="table" border=1>
 <thead>
-<tr><th>rank</th><th>ID</th><th>CatalogID</th><th>Type</th><th>Separation</th><th>r-mag</th><th>g-mag</th><th>photoZ</th></tr>
+<tr><th>rank</th><th>ID</th><th>Catalog</th><th>Type</th><th>Separation</th><th>r-mag</th><th>g-mag</th><th>photoZ</th></tr>
 </thead>
 {% for cm in data.crossmatches %}
-<tr><td>{{ cm.rank }}</td><td>{{ cm.catalogue_object_id }}</td><td>{{ cm.catalogue_table_id }}</td>
+<tr><td>{{ cm.rank }}</td><td>{{ cm.catalogue_object_id }}</td><td>{{ cm.catalogue_table_name }}</td>
 <td>{{ cm.catalogue_object_type }}</td><td>{{ cm.separationArcsec|floatformat:2 }}</td><td>{{ cm.r }}</td><td>{{ cm.g }}</td><td>{{ cm.photoZ }}</td></tr>
 {% endfor %}
 </table>
@@ -94,14 +104,16 @@
 		</tr></thead>
                 <tbody>
 		{% for cand in data.candidates %}
+
 			<tr>
-			<td>{{ cand.jd|floatformat:3 }}</td>
-			<td>{{ cand.utc }}</td>
-			<td>{% if cand.fid == 1 %}g{% else %}r{% endif %}</td>
-			<td>{{ cand.magpsf|floatformat:3 }} &plusmn; {{ cand.sigmapsf|floatformat:3 }}</td>
-			<td> <a href="/cand/{{ cand.candid }}/">{{ cand.candid }}</a></td>
-			<td><a href=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg><img src=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg></a></td>
+			<td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{{ cand.jd|floatformat:3 }}{% if not cand.candid %}</font>{% endif %}</td>
+			<td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{{ cand.utc }}{% if not cand.candid %}</font>{% endif %}</td>
+			<td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{% if cand.fid == 1 %}g{% else %}r{% endif %}{% if not cand.candid %}</font>{% endif %}</td>
+			<td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{{ cand.magpsf|floatformat:3 }} {% if cand.candid %}&plusmn; {{ cand.sigmapsf|floatformat:3 }}{% endif %}{% if not cand.candid %}</font>{% endif %}</td>
+			<td> {% if not cand.candid %}<font color="gray" size=-2>non-detection</font>{% else %}<a href="/cand/{{ cand.candid }}/">{{ cand.candid }}</a>{% endif %}</td>
+			<td>{% if cand.candid %}<a href=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg><img src=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg></a>{% endif %}</td>
 			</tr>
+
 		{% endfor %}
                 </tbody>
 		</table>
@@ -118,19 +130,25 @@ $(document).ready(function()
 
 <script type="text/javascript" src="//aladin.u-strasbg.fr/AladinLite/api/v2/latest/aladin.min.js" charset="utf-8"></script>
 <script type="text/javascript">
-    var aladin = A.aladin('#aladin-lite-div', {survey: "P/PanSTARRS/DR1/color-z-zg-g", fov:0.04, target: "{{ data.objectData.ramean }}, {{ data.objectData.decmean }}"});
+    var aladin = A.aladin('#aladin-lite-div', {survey: "P/PanSTARRS/DR1/color-z-zg-g", fov:0.01, target: "{{ data.objectData.ramean }}, {{ data.objectData.decmean }}"});
     $('input[name=survey]').change(function() {
         aladin.setImageSurvey($(this).val());
-});
+    });
+
+    var hipsCats = {
+        'ps1': A.catalogHiPS('https://axel.u-strasbg.fr/HiPSCatService/II/349/ps1', {name: 'PanSTARRS DR1 sources', shape: 'circle', sourceSize: 8, color: '#6baed6', onClick: 'showTable', name: '          PanSTARRS DR1'}),
+        'gdr2': A.catalogHiPS('https://axel.u-strasbg.fr/HiPSCatService/I/345/gaia2', {name: 'Gaia DR2 sources', shape: 'circle', sourceSize: 8, color: '#d66bae', onClick: 'showTable', name: 'Gaia DR2'})
+        };
+    hipsCats['ps1'].hide();
+    hipsCats['gdr2'].hide();
+    aladin.addCatalog(hipsCats['ps1']);
+    aladin.addCatalog(hipsCats['gdr2']);
 
 
-
-
-	var pd = "{{ json_data }}";
-	pd = pd.replace(/&quot;/g,'"')
-//	console.log(pd);
-	var json_data = JSON.parse(pd);
-	plotlc(json_data);
+    var pd = "{{ json_data }}";
+    pd = pd.replace(/&quot;/g,'"')
+    var json_data = JSON.parse(pd);
+    plotlc(json_data);
 
 </script>
 

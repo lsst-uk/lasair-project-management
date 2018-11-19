@@ -1,28 +1,55 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="row">
-        <div class="col-sm">
+  <div class="col-sm">
                 <h3>Query the ZTF object database</h3>
-        </div>		
+  </div>		
 </div>
 <div class="row">
-        <div class="col-sm">
+  <div class="col-sm">
 <p>
-The form below is a builder for SELECT queries on the ZTF database of objects. 
-You can also <a href="/candlist/">query the candidate (detections) database directly</a>.
-The attributes that can be queried are listed below.
-<table border=1 cellpadding=4>
-<tr><td>ncand</td><td> number of candidates that cite this object</td></tr>
-<tr><td>ramean, decmean</td><td> mean RA and Dec in degrees</td></tr>
-<tr><td>rastd, decstd</td><td> standard deviation of RA and Dec in arcseconds</td></tr>
-<tr><td>maggmin, maggmax, maggmedian, maggmean</td><td> min, max, median, mean of g light curve (99 if none)</td></tr>
-<tr><td>magrmin, magrmax, magrmedian, magrmean</td><td> min, max, median, mean of r light curve (99 if none)</td></tr>
-<tr><td>latestgmag, latestrmag</td><td> latest magnitude in g and r</td></tr>
-<tr><td>jdmin, jdmax</td><td> min, max epoch of the candidates that cite this object</td></tr>
-<tr><td>sherlock_classification</td><td>object classification from <a href=https://qub-sherlock.readthedocs.io/en/stable/>Sherlock</a></td></tr>
-</table>
-            </div>		
-        </div>
+The form below is a builder for SQL SELECT queries on the ZTF database of objects. 
+There are three tables that can be joined in SELECT queries 
+(only SELECT queries are allowed). See examples below.
+The tables are:
+<ul>
+<li> <b>objects</b>: The astrophysical objects which consist of a series
+of candidates (aka detections). The object has a light curve, the candidate has a single magnitude and date.</li>
+<li> <b>sherlock_crossmatches</b>: Information about each object derived from 
+multiple catalogs by the <a href=https://qub-sherlock.readthedocs.io/en/stable/>Sherlock</a> software. 
+The crossmatches have a <i>rank</i> 1,2,3... where 
+1 is considered most likely.</li>
+<li> <b>candidates</b>: The individual detections provided by ZTF each night. 
+Each is associated with an <i>object</i>, which is a cluster of detections 
+within 1.5 arcsec, and presumed to be an astrophysical object.
+</ul>
+<p>
+<b>For detailed information about the attributes of these three tables, 
+that you can use in the queries :
+<a target="new" href=/schema>click here</a>.</b>
+
+<ul>
+<li> The public survey uses two filters: fid=1 (g) and fid=2 (r)
+<li> For each observing field of the survey and each of the g and r filters,
+ZTF will only issue candidate alerts when it has
+built up a <i>reference image</i> of that field with that filter, by stacking 15 good images.
+<li> Once that is in place, each fresh image is subtracted from the reference,
+and any 5-sigma difference generates a candidate alert.
+<li> When a candidate is within 1.5 arcseconds of a previous candidate, it gets the same <i>objectId</i>. 
+Thus a light curve can be obtained from all the candidates that have a given objectId.
+<li> More details of the processing pipeline are available
+<a href=http://web.ipac.caltech.edu/staff/fmasci/ztf/ztf_pipelines_deliverables.pdf>here</a>.
+<li> Further cuts can be made to remove spurious candidates, 
+The highest quality candidates satisfy the criterion 
+<tt>rb &gt;= 0.65 and nbad = 0 and fwhm &lt;= 5 and elong &lt;= 1.2 and abs(magdiff) &lt;= 0.1</tt>. See example below.
+<li> In the example queries below, you can see the expression 
+<tt>(unix_timestamp(now())/86400 + 2440587.5)</tt>. 
+This evaluates to the current Julian Day: in short, it means simply <i>now</i>.
+<li>If you would like to learn the SQL language, <a href=http://cas.sdss.org/dr6/en/help/howto/search/>this</a>
+is a good resource.
+</ul>
+  </div>
+</div>
 
 <div class="row">
         <div class="col-sm">
@@ -30,24 +57,68 @@ The attributes that can be queried are listed below.
                     {% csrf_token %} 
                     <input type="submit" value="Submit Query" class="btn btn-primary"/>
                     <div class ="form-group">
-                        <label for="select">SELECT</label>
-                        <textarea class="form-control" rows="1" cols="50" name="selected" id="SELECT">maggmean, latestgmag, ncand</textarea>
+                        <tt><textarea class="form-control" rows="8" cols="40" name="sqlquery" id="sqlquery"></textarea></tt>
                     </div>
-                    <div class ="form-group">
-                            <label for="where">FROM objects WHERE</label>
-<textarea class="form-control" rows="2" cols="50" name="where" id="where">
-maggmean - latestgmag &gt; 2 and maggmean &lt;&gt; 99
-</textarea>
-                    </div>
-                    <div class ="form-group">
-                            <label for="orderby">ORDER BY</label>
-                            <input id="orderby" class="form-control" name="order" type="text" value="ncand DESC"/><br/>
-                            <input class="form-control" type="hidden" name="page" value="{{ page }}"/><br/>
-                    </div>
+                    <input class="form-control" type="hidden" name="page" value="{{ page }}"/><br/>
                 </form>
-        </div>		
+  </div>
 </div>
 
 
+<div class="row">
+  <div class="col-xs-6">
+
+{% if is_authenticated %}
+<h3>My Stored Queries</h3>
+Stored queries that you control are listed below.
+Click on the name of the query to push it into the query area above,
+or the link below the name to edit it. 
+<form action="/myquery/">
+    <input type="submit" value="Create new stored query" class="btn btn-primary"/>
+</form>
+<br/>
+<table class="table table-bordered" style="width:80%">
+  <thead>
+    <tr>
+      <th style="width:20%">Name</th>
+      <th class="width:60%">Description</th>
+      <th class="width:20%">Query</th>
+    </tr>
+  </thead>
+{% for mq in myqueries %}
+<tr><td><b><a href=# onclick='document.getElementById("sqlquery").value = document.getElementById("query{{ mq.mq_id}}").textContent;'>{{ mq.name }}</a></b><br/>&nbsp;<br/><a href="/myquery/{{ mq.mq_id }}/">Edit/delete query</a></td>
+<td>{{ mq.description }}</td>
+<td><font size=-1><pre id="query{{ mq.mq_id }}">{{ mq.query }}</pre></font></td>
+</tr>
+{% endfor %}
+</table>
+<br/>
+{% else %}
+(If you would like to create your own stored queries, you should be signed in. See links at top left.)
+<hr/>
+{% endif %}
+
+<h3>Contributed Stored Queries</h3>
+Stored queries created and made public are listed below. Click on the name of
+the query to push it into the query area above.
+<table class="table table-bordered" style="width:80%">
+  <thead>
+    <tr>
+      <th style="width:10%">Name</th>
+      <th style="width:10%">Owner</th>
+      <th class="width:40%">Description</th>
+      <th class="width:40%">Query</th>
+    </tr>
+  </thead>
+{% for mq in public_queries %}
+<tr><td><b><a href=# onclick='document.getElementById("sqlquery").value = document.getElementById("query{{ mq.mq_id}}").textContent;'>{{ mq.name }}</a></b></td>
+<td>{{ mq.user.first_name }} {{ mq.user.last_name }}</td>
+<td>{{ mq.description }}</td>
+<td><font size=-1><pre id="query{{ mq.mq_id }}">{{ mq.query }}</pre></font></td>
+</tr>
+{% endfor %}
+</table>
+  </div>
+</div>
 
 {% endblock %}
