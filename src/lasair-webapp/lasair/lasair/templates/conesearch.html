@@ -6,7 +6,7 @@
 <hr/>
 <h3>Cone Search</h3>
 Enter RA and Dec and optionally radius in arcseconds, to search for
-objects in ZTF in that cone. They can be separated by spaces or commas.
+objects in ZTF in that cone. They can be separated by spaces, commas, semicolons, or vertical bars.
 They can be in decimal degrees (floating point number), 
 or sexagesimal in the form hh:mm:ss and dd:mm:ss.
 You can also enter an objectId, beginning with 'ZTF'.
@@ -20,7 +20,7 @@ You can also enter an objectId, beginning with 'ZTF'.
 </table>
 
 {% if message %}
-{{ message }}
+{{ message|safe }}
 {% if hitdict %}
 
 <table class="table table-bordered" style="width:60%">
