@@ -9,7 +9,12 @@ import os,sys
 sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
 
 import date_nid
-nid  = date_nid.nid_now()
+
+if len(sys.argv) > 1:
+    nid = int(sys.argv[1])
+else:
+    nid  = date_nid.nid_now()
+
 date = date_nid.nid_to_date(nid)
 topic  = 'ztf_' + date + '_programid1'
 print "Topic is %s, nid is %d" % (topic, nid)
@@ -38,6 +43,9 @@ cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/update_ob
 os.system(cmd)
 
 cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/coverage.py'
+os.system(cmd)
+
+cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/check_status.py %d' % nid
 os.system(cmd)
 
 cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/get_number_candidates.py'

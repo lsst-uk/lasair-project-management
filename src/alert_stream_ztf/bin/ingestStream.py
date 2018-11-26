@@ -117,25 +117,25 @@ def alert_filter(alert, msl, stampdir=None):
 
 # look for non detection limiting magnitude
         prv_array = data['prv_candidates']
-        noncanlist = []
-        query4 = ''
-        for prv in prv_array:
-            if not prv['candid']:
-                jd         = prv['jd']
-                fid        = prv['fid']
-                diffmaglim = prv['diffmaglim']
-                noncanlist.append('("%s", %.5f, %d, %.3f)' % (objectId, jd, fid, diffmaglim))
-        if len(noncanlist) > 0:
-            query4 = 'INSERT INTO noncandidates (objectId, jd, fid, diffmaglim) VALUES '
-            query4 += ', '.join(noncanlist)
-            logger.debug(query4)
-            try:
-                cursor = msl.cursor(buffered=True)
-                cursor.execute(query4)
-                msl.commit()
-            except mysql.connector.Error as err:
-                logger.error("Noncandidate insert failed: %s" % str(err))
-
+        if prv_array:
+            noncanlist = []
+            query4 = ''
+            for prv in prv_array:
+                if not prv['candid']:
+                    jd         = prv['jd']
+                    fid        = prv['fid']
+                    diffmaglim = prv['diffmaglim']
+                    noncanlist.append('("%s", %.5f, %d, %.3f)' % (objectId, jd, fid, diffmaglim))
+            if len(noncanlist) > 0:
+                query4 = 'INSERT INTO noncandidates (objectId, jd, fid, diffmaglim) VALUES '
+                query4 += ', '.join(noncanlist)
+                logger.debug(query4)
+                try:
+                    cursor = msl.cursor(buffered=True)
+                    cursor.execute(query4)
+                    msl.commit()
+                except mysql.connector.Error as err:
+                    logger.debug("Noncandidate insert failed: %s" % str(err))
 
 # insert the candidate record
         query  = insert_sql_candidate(data)
@@ -157,8 +157,7 @@ def alert_filter(alert, msl, stampdir=None):
             logger.error("Database insert failed: %s" % str(err))
 
         candid = alert.get('candid')
-        logger.info('inserted %d' % candid)
-
+        logger.debug('inserted %d' % candid)
 
         time_insert += time.time() - t
 
@@ -242,7 +241,7 @@ def main(args):
         sys.exit()
 
     nalert = 0
-    while True:
+    while nalert < 50000:   # run for an hour at 1320 per minute then do post processing
         try:
 #            msg = streamReader.poll(decode=args.avroFlag)
             t = time.time()
