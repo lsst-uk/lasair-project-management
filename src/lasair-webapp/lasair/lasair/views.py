@@ -8,6 +8,7 @@ import lasair.settings
 import mysql.connector
 import json
 import math
+import time
 
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
@@ -39,9 +40,26 @@ def connect_db():
         database='ztf')
     return msl
 
+def status(request):
+    message = ''
+    web_domain = lasair.settings.WEB_DOMAIN
+    jsonstr = open('/mnt/lasair-head-data/ztf/system_status.json').read()
+    status = json.loads(jsonstr)
+    unix_time = time.time()
+    time_since_update = time.time() - status['update_time_unix']
+    if time_since_update > 3600:
+        message = 'No update in %d seconds! ' % int(time_since_update)
+    z = status['today_candidates_ztf']
+    l = status['today_candidates_lasair']
+    if z > 2000 and z-l > 10000:
+        message += 'ZTF reports %d candidates today, only %d ingested by Lasair!' % (z, l)
+    return render(request, 'status.html', {'web_domain': web_domain, 'status':status, 'message':message})
+
 def index(request):
     web_domain = lasair.settings.WEB_DOMAIN
-    n_candidates = int(open('/mnt/lasair-head-data/ztf/number_candidates.txt').read())
+    jsonstr = open('/mnt/lasair-head-data/ztf/system_status.json').read()
+    j = json.loads(jsonstr)
+    n_candidates = j['total_candidates']
     return render(request, 'index.html', {'web_domain': web_domain, 'n_candidates':n_candidates})
 
 def distance(ra1, de1, ra2, de2):

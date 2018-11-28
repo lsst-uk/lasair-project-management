@@ -40,7 +40,8 @@ urlpatterns = [
     path('myquery/',              myqueries.new_myquery,   name='new_myquery'),
     path('myquery/<int:mq_id>/',  myqueries.show_myquery,  name='show_myquery'),
 
-    path('coverage/',               views.coverage,             name='coverage'),
+    path('coverage/',             views.coverage,             name='coverage'),
+    path('status/',               views.status,             name='status'),
 
     path('schema',   TemplateView.as_view(template_name='schema.html')),
     path('jupyter',  TemplateView.as_view(template_name='jupyter.html')),
