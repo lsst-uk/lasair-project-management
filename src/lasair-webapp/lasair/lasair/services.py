@@ -22,7 +22,7 @@ def coverageAjax(request, nid1, nid2):
     if nid1 <= nid2:   # date range
         dict = {'queryType': 'dateRange', 'nid1':nid1, 'nid2':nid2}
         query = "SELECT field,fid,ra,decl,SUM(n) as sum "
-        query += "FROM coverage WHERE nid BETWEEN %d and %d GROUP BY field,fid,ra,decl" % (nid1, nid2+1)
+        query += "FROM coverage WHERE nid BETWEEN %d and %d GROUP BY field,fid,ra,decl" % (nid1, nid2)
 
     else:              # all dates
         dict = {'queryType': 'allDates'}
