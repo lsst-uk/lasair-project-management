@@ -1,0 +1,16 @@
+{% extends "base.html"%}
+{% block content %}
+<div class="row">
+	<h3>Lasair Ingestion Status</h3>
+</div>
+<div class="row">
+	<div class="col-sm">
+<font color="red"><h4>{{ message }}</h4> </font>
+<ul>
+<li>Last Lasair update time: {{ status.update_time }}
+<li>Alerts from ZTF today: {{ status.today_candidates_ztf }}
+<li>Alerts ingested to Lasair today: {{ status.today_candidates_lasair }}
+</ul>
+	</div>
+</div>
+{% endblock %}
