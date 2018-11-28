@@ -58,10 +58,11 @@ def main():
     day_total = 0
     run_total = 0
     t = time.time()
-    for file in os.listdir(dirfits):
-        if file.endswith('_targ_sci.fits.gz'):
-            day_total += 1
-            run_total += convert_fits(dirfits, dirjpg, file)
+    if os.path.isfile(dirfits):
+        for file in os.listdir(dirfits):
+            if file.endswith('_targ_sci.fits.gz'):
+                day_total += 1
+                run_total += convert_fits(dirfits, dirjpg, file)
     print('------------  JPG STAMPS ----------')
     print('Tried %d stamps, Made %d jpegs' % (day_total, run_total))
     print('Time %.1f seconds' % (time.time() - t))

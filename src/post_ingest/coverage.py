@@ -1,4 +1,5 @@
 import sys
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
 import settings
 import time
 
@@ -12,17 +13,16 @@ msl = mysql.connector.connect(\
 cursor  = msl.cursor(buffered=True, dictionary=True)
 
 
+t = time.time()
 query = 'CREATE TABLE coverage2 AS '
 query += '(SELECT candidates.field, fid, nid, fields.ra, fields.decl, COUNT(*) AS n '
 query += 'FROM candidates INNER JOIN fields ON candidates.field=fields.field '
 query += 'GROUP BY candidates.field, fid, nid)'
 cursor.execute(query)
 
-t = time.time()
 query = 'DROP TABLE coverage'
 cursor.execute(query)
 
-t = time.time()
 query = 'RENAME TABLE coverage2 TO coverage'
 cursor.execute(query)
 

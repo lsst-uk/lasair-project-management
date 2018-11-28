@@ -1,8 +1,10 @@
 import sys
 import math
 import numpy as np
-import settings
 import time
+import ephem
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
+import settings
 
 # setup database connection
 import mysql.connector
@@ -31,7 +33,7 @@ def make_object(objectId, candlist, debug=False):
     magg = []
     magr = []
     jd   = []
-    latestgmag = latestrmag = 99
+    latestgmag = latestrmag = 'NULL'
     for cand in candlist:
         ra.append(cand['ra'])
         dec.append(cand['decl'])
@@ -49,7 +51,7 @@ def make_object(objectId, candlist, debug=False):
         maggmean = np.mean(magg)
         maggmedian = np.median(magg)
     else:
-        maggmin = maggmax = maggmean = maggmedian = 99
+        maggmin = maggmax = maggmean = maggmedian = 'NULL'
 
     if len(magr) > 0:
         magrmin = np.min(magr)
@@ -57,28 +59,51 @@ def make_object(objectId, candlist, debug=False):
         magrmean = np.mean(magr)
         magrmedian = np.median(magr)
     else:
-        magrmin = magrmax = magrmean = magrmedian = 99
+        magrmin = magrmax = magrmean = magrmedian = 'NULL'
 
-    attributes  = 'objectId, ncand, stale,'
-    attributes += 'ramean, rastd, decmean, decstd,'
-    attributes += 'maggmin, maggmax, maggmedian, maggmean,'
-    attributes += 'magrmin, magrmax, magrmedian, magrmean,'
-    attributes += 'latestgmag, latestrmag, jdmin, jdmax'
+    ramean  = np.mean(ra)
+    decmean = np.mean(dec)
+    ce = ephem.Equatorial(math.radians(ramean), math.radians(decmean))
+    cg = ephem.Galactic(ce)
+    glonmean = math.degrees(float(repr(cg.lon)))
+    glatmean = math.degrees(float(repr(cg.lat)))
 
-    values  = '"%s", %d, 0, ' % (objectId, ncand)
-    values += '%.7f, %.3f, %.7f, %.3f, ' % (np.mean(ra), 3600*np.std(ra), np.mean(dec), 3600*np.std(dec))
-    values += '%.3f, %.3f, %.3f, %.3f, ' % (maggmin, maggmax, maggmedian, maggmean)
-    values += '%.3f, %.3f, %.3f, %.3f, ' % (magrmin, magrmax, magrmedian, magrmean)
-    values += '%.3f, %.3f, %.5f, %.5f '  % (latestgmag, latestrmag, np.min(jd), np.max(jd))
-    
-    query = 'REPLACE INTO objects (' + attributes + ') VALUES (' + values + ')'
+    sets = {}
+    sets['ncand']      = ncand
+    sets['stale']      = 0
+    sets['ramean']     = ramean
+    sets['rastd']      = 3600*np.std(ra)
+    sets['decmean']    = decmean
+    sets['decstd']     = 3600*np.std(dec)
+    sets['maggmin']    = maggmin
+    sets['maggmax']    = maggmax
+    sets['maggmedian'] = maggmedian
+    sets['maggmean']   = maggmean
+    sets['magrmin']    = magrmin
+    sets['magrmax']    = magrmax
+    sets['magrmedian'] = magrmedian
+    sets['magrmean']   = magrmean
+    sets['latestgmag'] = latestgmag
+    sets['latestrmag'] = latestrmag
+    sets['jdmin']      = np.min(jd)
+    sets['jdmax']      = np.max(jd)
+    sets['glatmean']   = glatmean
+    sets['glonmean']   = glonmean
+
+    list = []
+    query = 'UPDATE objects SET '
+    for key,value in sets.items():
+        list.append(key + '=' + str(value))
+    query += ', '.join(list)
+    query += ' WHERE objectId="' + objectId + '"'
+
     if debug: print(query)
     cursor  = msl.cursor(buffered=True, dictionary=True)
     cursor.execute(query)
     msl.commit()
     return 1
 
-def update_objects(new = False, debug=False):
+def update_objects(debug=False):
     t = time.time()
     cursor  = msl.cursor(buffered=True, dictionary=True)
     n = 0
@@ -88,12 +113,12 @@ def update_objects(new = False, debug=False):
     candlist = []
     ntotalcand = nupdate = ndelete = 0
     while(1):
-        if new:
-            query =  'SELECT objectId,ra,decl,jd,fid,magpsf FROM candidates '
-            query += 'ORDER BY objectId LIMIT %d OFFSET %d' % (nbatch, k*nbatch)
-        else:
-            query =  'SELECT objectId,ra,decl,jd,fid,magpsf FROM candidates NATURAL JOIN objects '
-            query += 'WHERE stale=1 ORDER BY objectId LIMIT %d OFFSET %d' % (nbatch, k*nbatch)
+#        if new:
+#            query =  'SELECT objectId,ra,decl,jd,fid,magpsf FROM candidates '
+#            query += 'ORDER BY objectId LIMIT %d OFFSET %d' % (nbatch, k*nbatch)
+#        else:
+        query =  'SELECT objectId,ra,decl,jd,fid,magpsf FROM candidates NATURAL JOIN objects '
+        query += 'WHERE stale=1 ORDER BY objectId LIMIT %d ' % nbatch
         if debug:
             print(query)
         cursor.execute(query)
@@ -112,29 +137,28 @@ def update_objects(new = False, debug=False):
                 else:          ndelete += 1
                 candlist = []
                 oldObjectId = objectId
-        if oldObjectId != '':
-            result = make_object(objectId, candlist)
-            if result > 0: nupdate += 1
-            else:          ndelete += 1
-        k += 1
         if debug:
             print('Iteration %d: %d candidates, %d updated objects, %d deleted objects' % (k, ntotalcand, nupdate, ndelete))
-        if new:
-            if ncand < nbatch:
-                 break
-        else:
-            query = 'SELECT COUNT(*) AS nobj FROM objects WHERE stale=1'
-            cursor.execute(query)
-            for record in cursor:
-                break
-            nobj = record['nobj']
-            print('%d objects still stale' % nobj)
-            if nobj == 0:
-                break
+#        if new:
+#            if ncand < nbatch:
+#                 break
+#        else:
+        query = 'SELECT COUNT(*) AS nobj FROM objects WHERE stale=1'
+        cursor.execute(query)
+        for record in cursor:
+            break
+        nobj = record['nobj']
+        if nobj == 1:
+            result = make_object(oldObjectId, candlist)
+            nobj -= 1
+
+        print('%d objects still stale' % nobj)
+        if nobj == 0:
+            break
 
     print('-------------- UPDATE OBJECTS --------------')
     print('%d candidates, %d updated objects, %d deleted objects' % (ntotalcand, nupdate, ndelete))
     print('Time %.1f seconds' % (time.time() - t))
 
 if __name__ == "__main__":
-    update_objects(new=False, debug=True)
+    update_objects(debug=True)
