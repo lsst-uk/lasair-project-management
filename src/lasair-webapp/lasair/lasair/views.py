@@ -51,8 +51,9 @@ def status(request):
         message = 'No update in %d seconds! ' % int(time_since_update)
     z = status['today_candidates_ztf']
     l = status['today_candidates_lasair']
-    if z > 2000 and z-l > 10000:
+    if z > 2000 and z-l > 60000:
         message += 'ZTF reports %d candidates today, only %d ingested by Lasair!' % (z, l)
+    status['minutes_since'] = int(time_since_update/60.0)
     return render(request, 'status.html', {'web_domain': web_domain, 'status':status, 'message':message})
 
 def index(request):
