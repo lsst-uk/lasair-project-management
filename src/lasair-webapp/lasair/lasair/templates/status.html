@@ -6,11 +6,14 @@
 <div class="row">
 	<div class="col-sm">
 <font color="red"><h4>{{ message }}</h4> </font>
-<ul>
-<li>Last Lasair update time: {{ status.update_time }}
-<li>Alerts from ZTF today: {{ status.today_candidates_ztf }}
-<li>Alerts ingested to Lasair today: {{ status.today_candidates_lasair }}
-</ul>
+<table cellpadding="8">
+<tr><td>Last Lasair update time</td><td> {{ status.update_time }}</td></tr>
+<tr><td>Minutes since now</td><td> {{ status.minutes_since }}</td></tr>
+<tr><td>Alerts from ZTF today</td><td> {{ status.today_candidates_ztf }}</td></tr>
+<tr><td>Alerts ingested to Lasair today</td><td> {{ status.today_candidates_lasair }}</td></tr>
+</table>
+<hr/>
+<a href=/lasair/static/ztf/logs/ztf_{{ status.date }}_programid1.log>Log File for {{ status.date }}</a>
 	</div>
 </div>
 {% endblock %}
