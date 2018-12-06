@@ -21,7 +21,7 @@ config = {
 msl = mysql.connector.connect(**config)
 
 def run_watchlist(wl_id, delete_old=True):
-# runs the crossmatch of a given watchlist with all the candidates
+# runs the crossmatch of a given watchlist with all the objects
     cursor  = msl.cursor(buffered=True, dictionary=True)
     cursor2 = msl.cursor(buffered=True, dictionary=True)
     cursor3 = msl.cursor(buffered=True, dictionary=True)
@@ -53,13 +53,13 @@ def run_watchlist(wl_id, delete_old=True):
     
         subClause = htmCircle.htmCircleRegion(16, myRA, myDecl, wl_radius)
         subClause = subClause.replace('htm16ID', 'htmid16')
-        query2 = 'SELECT * FROM candidates WHERE htmid16 ' + subClause[15: -2]
+        query2 = 'SELECT * FROM objects WHERE htm16 ' + subClause[15: -2]
 #        print(query2)
         cursor2.execute(query2)
         for row in cursor2:
             objectId = row['objectId']
             ndethist = row['ndethist']
-            arcsec = 3600*distance(myRA, myDecl, row['ra'], row['decl'])
+            arcsec = 3600*distance(myRA, myDecl, row['ramean'], row['decmean'])
             if arcsec > wl_radius:
                 continue
     
