@@ -18,7 +18,7 @@ from django.contrib.auth import views as authviews
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from lasair import views, services, candidates, objects, watchlists, myqueries
+from lasair import views, services, candidates, objects, watchlists, myqueries, comments
 
 from django.contrib import admin
 #admin.autodiscover()
@@ -37,11 +37,14 @@ urlpatterns = [
     path('watchlist/',              watchlists.watchlists_home, name='watchlists_home'),
     path('watchlist/<int:wl_id>/',  watchlists.show_watchlist,  name='show_watchlist'),
 
-    path('myquery/',              myqueries.new_myquery,   name='new_myquery'),
-    path('myquery/<int:mq_id>/',  myqueries.show_myquery,  name='show_myquery'),
+    path('myquery/',                myqueries.new_myquery,      name='new_myquery'),
+    path('myquery/<int:mq_id>/',    myqueries.show_myquery,     name='show_myquery'),
 
-    path('coverage/',             views.coverage,             name='coverage'),
-    path('status/',               views.status,             name='status'),
+    path('comment/',                comments.new_comment,       name='new_comment'),
+    path('delete_comment/<int:comment_id>/',    comments.delete_comment,    name='delete_comment'),
+
+    path('coverage/',               views.coverage,             name='coverage'),
+    path('status/',                 views.status,               name='status'),
 
     path('schema',   TemplateView.as_view(template_name='schema.html')),
     path('jupyter',  TemplateView.as_view(template_name='jupyter.html')),

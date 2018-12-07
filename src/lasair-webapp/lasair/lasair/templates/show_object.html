@@ -24,9 +24,12 @@
 <hr/>
 <div class="row">
 <ul>
-<li>Object has {{ data.objectData.ncand }} candidates, at mean 
-(RA, Dec) = ({{ data.objectData.ramean|floatformat:6 }}, {{ data.objectData.decmean|floatformat:6 }})
-{% if data.objectData.glonmean %}, (l, b) = ({{ data.objectData.glonmean|floatformat:6 }}, {{ data.objectData.glatmean|floatformat:6 }}). {% endif %}</li>
+<li>Object has {{ data.objectData.ncand }} candidates, at mean position:
+<ul>
+<li> (RA, Dec) = ({{ data.objectData.ramean|floatformat:6 }}, {{ data.objectData.decmean|floatformat:6 }})</li>
+<li> (RA, Dec) = ({{ data.objectData.rasex }}, {{ data.objectData.decsex }})</li>
+{% if data.objectData.glonmean %}<li> (l, b) = ({{ data.objectData.glonmean|floatformat:6 }}, {{ data.objectData.glatmean|floatformat:6 }})</li> {% endif %}
+</ul>
 
 {% if data.objectData.classification %}
 <li>Classified as {{ data.objectData.classification }} at distance {{ data.objectData.separationArcsec|floatformat:2 }} arcsec.</li> {% endif %}
@@ -40,6 +43,30 @@ Moving object, MPC name is <a href="#" onclick="document.forms[0].submit()">{{ d
 {{ data.objectData.annotation|safe }}{% endif %}</li>
 
 <li>Information on this webpage also&nbsp; <a href="/object/{{ data.objectId }}/json/">available as JSON.</a></li>
+</div>
+
+<hr/>
+<div class="row">
+<div class="col-sm-8">
+<h4>Comments</h4>
+<!--{{ data.message }}-->
+<table>
+{% for c in data.comments %}
+<tr><td><font size=-1>{{ c.name }}</font></td>
+<td><font size=-1>{{ c.time }}</td>
+<td>{% if c.mine %} <form method="POST" action="/delete_comment/{{ c.comment_id }}/"> {% csrf_token %} <input type="submit" value="(delete)"/></form> {% endif %} </td><td>{{ c.content|safe }}</td></tr>
+{% endfor %}
+</table>
+{% if authenticated %}
+<form method="POST" action="/comment/">
+{% csrf_token %}
+<input type="hidden" name="objectId" value="{{ data.objectId }}">
+<input type="submit" value="New comment"/>
+</form>
+{% else %}
+You must be signed in to post comments.
+{% endif %}
+</div>
 </div>
 
 <hr/>

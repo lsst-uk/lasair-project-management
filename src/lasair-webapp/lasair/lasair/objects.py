@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, HttpResponse
 from django.template.context_processors import csrf
 from django.db import connection
 import lasair.settings
-from lasair.models import Objects, Myqueries
+from lasair.models import Objects, Myqueries, Comments
 import mysql.connector
 import ephem, math
 from datetime import datetime, timedelta
@@ -16,16 +16,42 @@ def connect_db():
         database='ztf')
     return msl
 
+def rasex(ra):
+    h = math.floor(ra/15)
+    ra -= h*15
+    m = math.floor(ra*4)
+    ra -= m/4.0
+    s = ra*240
+    return '%02d:%02d:%.3f' % (h, m, s)
+
+def decsex(de):
+    ade = abs(de)
+    d = math.floor(ade)
+    ade -= d
+    m = math.floor(ade*60)
+    ade -= m/60.0
+    s = ade*3600
+    if de > 0.0:
+        return '%02d:%02d:%.3f' % (d, m, s)
+    else:
+        return '-%02d:%02d:%.3f' % (d, m, s)
+
 def objhtml(request, objectId):
-    data = obj(objectId)
+    data = obj(request, objectId)
+    data2 = data.copy()
+    if 'comments' in data2:
+        data2.pop('comments')
     return render(request, 'show_object.html',
-        {'data':data, 'json_data':json.dumps(data)})
+        {'data':data, 'json_data':json.dumps(data2),
+        'authenticated': request.user.is_authenticated})
 
 def objjson(request, objectId):
-    data = obj(objectId)
+    data = obj(request, objectId)
+    if 'comments' in data:
+        data.pop('comments')
     return HttpResponse(json.dumps(data), content_type="application/json")
 
-def obj(objectId):
+def obj(request, objectId):
     """Show a specific object, with all its candidates"""
     objectData = None
     message = ''
@@ -38,12 +64,27 @@ def obj(objectId):
     for row in cursor:
         objectData = row
 
+    comments = []
+    if objectData:
+        qcomments = Comments.objects.filter(objectid=objectId).order_by('-time')
+        for c in qcomments: 
+            comments.append(
+                {'name':c.user.first_name+' '+c.user.last_name,
+                 'content': c.content,
+                 'time': c.time,
+                 'comment_id': c.comment_id,
+                 'mine': (c.user == request.user)})
+        message += ' and %d comments' % len(comments)
+        message += str(comments)
+
     crossmatches = []
     if objectData:
-        message += str(objectData)
         primaryId = int(objectData['primaryId'])
         if objectData and 'annotation' in objectData and objectData['annotation']:
             objectData['annotation'] = objectData['annotation'].replace('"', ' arcsec').strip()
+
+        objectData['rasex'] = rasex(objectData['ramean'])
+        objectData['decsex'] = decsex(objectData['decmean'])
 
         query = 'SELECT catalogue_object_id, catalogue_table_name, catalogue_object_type, separationArcsec, '
         query += '_r AS r, _g AS g, photoZ, rank '
@@ -90,10 +131,9 @@ def obj(objectId):
 
     candidates.sort(key= lambda c: c['jd'], reverse=True)
 
-
-    data = {'objectId':objectId, 'objectData': objectData, 'candidates': candidates, 'crossmatches': crossmatches}
+    data = {'objectId':objectId, 'objectData': objectData, 'candidates': candidates, 
+        'crossmatches': crossmatches, 'comments':comments}
     return data
-
 
 def objlist(request):
     perpage = 1000

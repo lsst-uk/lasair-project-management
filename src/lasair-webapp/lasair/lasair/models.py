@@ -185,3 +185,14 @@ class Myqueries(models.Model):
         managed = False
         db_table = 'myqueries'
 
+class Comments(models.Model):
+    comment_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, models.DO_NOTHING, db_column='user', blank=True, null=True)
+    objectid = models.CharField(db_column='objectId', unique=True, max_length=16, blank=True, null=True)  # Field name made lowercase.
+    content = models.CharField(max_length=4096, blank=True, null=True)
+    time = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'comments'
+
