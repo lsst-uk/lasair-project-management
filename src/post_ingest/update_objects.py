@@ -3,8 +3,9 @@ import math
 import numpy as np
 import time
 import ephem
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
 import settings
+import htmCircle
 
 # setup database connection
 import mysql.connector
@@ -68,6 +69,12 @@ def make_object(objectId, candlist, debug=False):
     glonmean = math.degrees(float(repr(cg.lon)))
     glatmean = math.degrees(float(repr(cg.lat)))
 
+# Compute the HTM ID for later cone searches
+    try:
+        htm16 = htmCircle.htmID(16, ramean, decmean)
+    except:
+        print('Cannot get HTMID for ra=%f, dec=%f' % (ramean, decmean))
+
     sets = {}
     sets['ncand']      = ncand
     sets['stale']      = 0
@@ -89,6 +96,7 @@ def make_object(objectId, candlist, debug=False):
     sets['jdmax']      = np.max(jd)
     sets['glatmean']   = glatmean
     sets['glonmean']   = glonmean
+    sets['htm16']      = htm16
 
     list = []
     query = 'UPDATE objects SET '
@@ -113,11 +121,7 @@ def update_objects(debug=False):
     candlist = []
     ntotalcand = nupdate = ndelete = 0
     while(1):
-#        if new:
-#            query =  'SELECT objectId,ra,decl,jd,fid,magpsf FROM candidates '
-#            query += 'ORDER BY objectId LIMIT %d OFFSET %d' % (nbatch, k*nbatch)
-#        else:
-        query =  'SELECT objectId,ra,decl,jd,fid,magpsf FROM candidates NATURAL JOIN objects '
+        query =  'SELECT candid, objectId,ra,decl,jd,fid,magpsf FROM candidates NATURAL JOIN objects '
         query += 'WHERE stale=1 ORDER BY objectId LIMIT %d ' % nbatch
         if debug:
             print(query)
@@ -127,6 +131,7 @@ def update_objects(debug=False):
             ntotalcand += 1
             ncand += 1
             objectId = cand['objectId']
+#            print objectId, cand['candid']   ########################
             if oldObjectId == '':    # the first record
                 oldObjectId = objectId
             if objectId == oldObjectId:  # same again
@@ -139,10 +144,6 @@ def update_objects(debug=False):
                 oldObjectId = objectId
         if debug:
             print('Iteration %d: %d candidates, %d updated objects, %d deleted objects' % (k, ntotalcand, nupdate, ndelete))
-#        if new:
-#            if ncand < nbatch:
-#                 break
-#        else:
         query = 'SELECT COUNT(*) AS nobj FROM objects WHERE stale=1'
         cursor.execute(query)
         for record in cursor:
