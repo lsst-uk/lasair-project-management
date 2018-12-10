@@ -8,31 +8,35 @@
 Lasair is a broker for astronomers studying transients and variables. 
 It is being developed as part of the 
 <a href=https://www.lsst.ac.uk/>LSST:UK </a>
-Phase A programme through a 
+A programme through a 
 collaboration between the 
 <a href=https://www.ed.ac.uk/>University of Edinburgh</a> and
-<a href=http://www.qub.ac.uk/>Queen's University, Belfast</a>
-with funding from grants ST/N002512/1 and ST/N002520/1, respectively. 
+<a href=http://www.qub.ac.uk/>Queen's University, Belfast</a>.
 To help prototype the functionality needed to process alerts from LSST, 
 Lasair is currently ingesting and presenting alerts from the public stream of the 
 <a href=http://www.ztf.caltech.edu>ZTF</a> survey.
 Its capabilities will develop incrementally, guided by user feedback, so 
 please try it and tell us what more you need to do your science.
 </p><p>
-You can query the alerts by selecting "Query ZTF" at the left, 
-you can see the coverage of the ZTF survey each night,
-and you can -- with a login -- query the database through a <a href= http://jupyter.org/>Jupyter</a> notebook interface.
+You can query the alerts with a freeform SQL interface (select <i><b>Query Objects</b></i>).
+The <i><b>Cone Search</b></i> finds an object by position.
+You can see the coverage of the ZTF survey each night (click <i><b>Coverage</b></i>).
+A <i><b>Watchlist</b></i> is a collection of sky positions that you find interesting, and
+Lasair can do cone searches on all of these together.
+Power users can use a <a href= http://jupyter.org/>Jupyter</a> notebook interface, 
+click <i><b>Jupyter</b></i> for more information and to see the capabilities.
+</p><ul>
+<li>Some functions of this website require a login. If you want to use these functions, use the "login/signup" links
+at the top left of this page.</li>
 </p><p>
-Lasair started ingesting ZTF on 28 May 2018, and now has {{ n_candidates }} candidate alerts.
+<li>Questions and enquiries, please click "Contact". Make suggestions for improvements and fixes at the 
+<a href="https://github.com/lsst-uk/lasair/issues">Lasair github issues page</a>.</li>
 </p><p>
-Some functions of this website require a login. If you want to use these functions, use the "signup" link 
-at the top left of this page.
-</p><p>
-Questions and enquiries, please click "Contact". Make suggestions for improvements and fixes at the 
-<a href="https://github.com/lsst-uk/lasair/issues">Lasair github issues page</a>.
-</p><p>
-The word "lasair" means flame or flash in Scots and Irish gaelic. It is pronounced <i>lassa</i>. More accurately, listen <a href="https://forvo.com/word/lasair/">here</a> or <a href="https://www.teanglann.ie/en/fuaim/lasair">here</a>.
-</p>
+<li>Lasair started ingesting ZTF on 28 May 2018, and now has {{ n_candidates }} candidate alerts.</li>
+<li>The word "lasair" means flame or flash in Scots and Irish gaelic. It is pronounced <i>lassa</i>. 
+More accurately, listen <a href="https://forvo.com/word/lasair/">here</a> 
+or <a href="https://www.teanglann.ie/en/fuaim/lasair">here</a>.</li>
+</ul>
 	</div>
 </div>
 
