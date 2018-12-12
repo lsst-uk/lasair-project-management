@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render, get_object_or_404, HttpResponse
 from django.template.context_processors import csrf
 from django.db import connection
@@ -7,6 +8,7 @@ import mysql.connector
 import ephem, math
 from datetime import datetime, timedelta
 import json
+import date_nid
 
 def connect_db():
     msl = mysql.connector.connect(
@@ -135,11 +137,35 @@ def obj(request, objectId):
         'crossmatches': crossmatches, 'comments':comments}
     return data
 
+def record_query(request, query):
+    onelinequery = query.replace('\r', ' ').replace('\n', ' ')
+    time = datetime.now().replace(microsecond=0).isoformat()
+    
+    if request.user.is_authenticated:
+        name = request.user.first_name +' '+ request.user.last_name
+    else:
+        name = 'anonymous'
+
+    IP       = request.META.get('REMOTE_ADDR')
+    if 'HTTP_X_FORWARDED_FOR' in request.META:
+        IP = record.request.META['HTTP_X_FORWARDED_FOR']
+
+    date = date_nid.nid_to_date(date_nid.nid_now())
+    filename = lasair.settings.QUERY_CACHE + '/' + date
+    f = open(filename, 'w+')
+    s = '%s, %s, %s, %s\n' % (IP, name, time, onelinequery)
+    f.write(s)
+    f.close()
+
 def objlist(request):
     perpage = 1000
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         sqlquery_user = request.POST['sqlquery'].strip()
+
+# lets keep a record of all the queries the people try to execute
+        record_query(request, sqlquery_user)
+
         json_checked = False
         if 'json' in request.POST and request.POST['json'] == 'on':
             json_checked = True
