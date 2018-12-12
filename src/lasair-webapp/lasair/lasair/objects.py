@@ -153,7 +153,7 @@ def record_query(request, query):
     date = date_nid.nid_to_date(date_nid.nid_now())
     filename = lasair.settings.QUERY_CACHE + '/' + date
     f = open(filename, 'w+')
-    s = '%s, %s, %s, %s\n' % (IP, name, time, onelinequery)
+    s = '%s| %s| %s| %s\n' % (IP, name, time, onelinequery)
     f.write(s)
     f.close()
 
