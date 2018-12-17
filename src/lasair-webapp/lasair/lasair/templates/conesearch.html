@@ -8,7 +8,8 @@
 Enter RA and Dec and optionally radius in arcseconds, to search for
 objects in ZTF in that cone. They can be separated by spaces, commas, semicolons, or vertical bars.
 They can be in decimal degrees (floating point number), 
-or sexagesimal in the form hh:mm:ss and dd:mm:ss.
+or sexagesimal in the form hh:mm:ss and dd:mm:ss or 
+hh mm ss and dd mm ss.
 You can also enter an objectId, beginning with 'ZTF'.
 <table class="table table-bordered" style="width:60%">
 <form method="POST"  action="/conesearch/">
@@ -38,5 +39,20 @@ You can also enter an objectId, beginning with 'ZTF'.
 </div>
 </div>
 
+<font size=-2>
+Examples of searches:
+<ul><tt>
+<li>ZTF18acsovsw
+<li>141.15725 25.39508 
+<li>141.15725;25.39508 
+<li>141.15725| 25.39508 
+<li>141.15725,  25.39508, 5.0
+<li>09:24:37.74 | +25:23:42.3
+<li>09:24:37.74 | +25:23:42.3 10.0
+<li>09 24 37.74   +25 23 42.3
+<li>09 24 37.74 | +25 23 42.3 5
+<li>09 24 37.74 ; +25 23 42.3 5
+</tt></ul>
+</font>
 {% endblock %}
 

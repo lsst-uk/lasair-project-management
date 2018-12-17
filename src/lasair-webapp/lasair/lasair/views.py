@@ -68,52 +68,66 @@ def distance(ra1, de1, ra2, de2):
     dde = (de1 - de2)
     return math.sqrt(dra*dra + dde*dde)
 
-def floatsplit(s):
-    toks = s.split(':')
-    ftoks = []
-    for t in toks: 
-        ftoks.append(float(t))
-    return ftoks
+def sexra(tok):
+    return 15*(float(tok[0]) + (float(tok[1]) + float(tok[2])/60)/60)
+
+def sexde(tok):
+    if tok[0].startswith('-'):
+        dec = (float(tok[0]) - (float(tok[1]) + float(tok[2])/60)/60)
+    else:
+        dec = (float(tok[0]) + (float(tok[1]) + float(tok[2])/60)/60)
+    return dec
 
 def readcone(cone):
     error = False
+    message = ''
     cone = cone.replace(',', '').replace('\t',' ').replace(';',' ').replace('|',' ')
     tok = cone.strip().split()
-    
+#    message += str(tok)
+
+# if only one token, must be a ZTF identifier
     if len(tok) == 1:
         if tok[0].startswith('ZTF'):
             return {'objectId': tok[0], 'message':'ZTF object'}
         else:
             error = True
 
+# if odd number of tokens, must end with radius in arcsec
     radius = 5.0
-    if len(tok) == 3:
+    if len(tok)%2 == 1:
         try:
-           radius = float(tok[2])
+           radius = float(tok[-1])
         except:
             error = True
+        tok = tok[:-1]
 
-    if len(tok) >= 2:
+# remaining options tok=2 and tok=6
+#   radegrees decdegrees
+#   h:m:s   d:m:s
+#   h m s   d m s
+    if len(tok) == 2:
         try:
             ra  = float(tok[0])
             dec = float(tok[1])
         except:
             try:
-                ratok = floatsplit(tok[0])
-                detok = floatsplit(tok[1])
-                ra = 15*(float(ratok[0] + (ratok[1] + ratok[2]/60)/60))
-                if tok[1].startswith('-'):
-                    dec = (detok[0] - (detok[1] + detok[2]/60)/60)
-                else:
-                    dec = (detok[0] + (detok[1] + detok[2]/60)/60)
+                ra = sexra(tok[0].split(':'))
+                de = sexde(tok[1].split(':'))
             except:
                 error = True
 
+    if len(tok) == 6:
+        try:
+            ra = sexra(tok[0:3])
+            de = sexde(tok[3:6])
+        except:
+            error = True
+
     if error:
-        return {'message': 'cannot parse ' + cone}
+        return {'message': 'cannot parse ' + cone + ' ' + message}
     else:
-        return {'ra':ra, 'dec':dec, 'radius':radius, 
-            'message':'RA,Dec,radius=%.5f,%.5f,%.1f' % (ra, dec, radius)}
+        message += 'RA,Dec,radius=%.5f,%.5f,%.1f' % (ra, de, radius)
+        return {'ra':ra, 'dec':de, 'radius':radius, 'message':message}
 
 def conesearch(request):
     if request.method == 'POST':
