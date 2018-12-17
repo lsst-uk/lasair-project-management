@@ -73,10 +73,10 @@ def sexra(tok):
 
 def sexde(tok):
     if tok[0].startswith('-'):
-        dec = (float(tok[0]) - (float(tok[1]) + float(tok[2])/60)/60)
+        de = (float(tok[0]) - (float(tok[1]) + float(tok[2])/60)/60)
     else:
-        dec = (float(tok[0]) + (float(tok[1]) + float(tok[2])/60)/60)
-    return dec
+        de = (float(tok[0]) + (float(tok[1]) + float(tok[2])/60)/60)
+    return de
 
 def readcone(cone):
     error = False
@@ -107,8 +107,8 @@ def readcone(cone):
 #   h m s   d m s
     if len(tok) == 2:
         try:
-            ra  = float(tok[0])
-            dec = float(tok[1])
+            ra = float(tok[0])
+            de = float(tok[1])
         except:
             try:
                 ra = sexra(tok[0].split(':'))
