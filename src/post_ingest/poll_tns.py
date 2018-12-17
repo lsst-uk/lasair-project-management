@@ -19,7 +19,9 @@ Options:
 import sys
 __doc__ = __doc__ % (sys.argv[0], sys.argv[0], sys.argv[0])
 from docopt import docopt
-import os, MySQLdb
+import os
+#import MySQLdb
+import mysql.connector as MySQLdb
 from gkutils import Struct, cleanOptions, dbConnect, coords_sex_to_dec, floatValue, intValue, nullValue
 #sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
 import requests
@@ -32,7 +34,8 @@ def getTNSRow(conn, tnsName):
    """
 
    try:
-      cursor = conn.cursor (MySQLdb.cursors.DictCursor)
+      #cursor = conn.cursor (MySQLdb.cursors.DictCursor)
+      cursor = conn.cursor (dictionary=True)
 
       cursor.execute ("""
            select tns_prefix, tns_name
@@ -52,7 +55,8 @@ def getTNSRow(conn, tnsName):
 
 def deleteTNSRow(conn, tnsName):
     try:
-        cursor = conn.cursor (MySQLdb.cursors.DictCursor)
+        #cursor = conn.cursor (MySQLdb.cursors.DictCursor)
+        cursor = conn.cursor (dictionary=True)
 
         cursor.execute ("""
             delete from crossmatch_tns
@@ -69,8 +73,10 @@ def deleteTNSRow(conn, tnsName):
 
 def insertTNS(conn, tnsEntry):
 
+    insertId = 0
     try:
-        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        #cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        cursor = conn.cursor (dictionary=True)
 
         cursor.execute ("""
             insert into crossmatch_tns (
@@ -121,6 +127,7 @@ def insertTNS(conn, tnsEntry):
                   nullValue(tnsEntry['Discovery Date (UT)']),
                   intValue(tnsEntry['TNS AT']),
                   tnsEntry['htm16']))
+        insertId = cursor.lastrowid
         cursor.close ()
 
     except MySQLdb.Error as e:
@@ -129,7 +136,7 @@ def insertTNS(conn, tnsEntry):
         else:
             print e
 
-    insertId = conn.insert_id()
+    #insertId = conn.insert_id()
     conn.commit()
     return insertId
 
