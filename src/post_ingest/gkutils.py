@@ -1,5 +1,6 @@
 def dbConnect(lhost, luser, lpasswd, ldb, lport=3306, quitOnError=True):
-   import MySQLdb
+   #import MySQLdb
+   import mysql.connector as MySQLdb
 
    try:
       conn = MySQLdb.connect (host = lhost,

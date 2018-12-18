@@ -19,12 +19,16 @@ Options:
 import sys
 __doc__ = __doc__ % (sys.argv[0], sys.argv[0], sys.argv[0])
 from docopt import docopt
-import os, MySQLdb
+import os
+#import MySQLdb
+import mysql.connector as MySQLdb
 from gkutils import Struct, cleanOptions, dbConnect, coords_sex_to_dec, floatValue, intValue, nullValue
-#sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
 import requests
 import csv
 import htmCircle
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
+import settings
 
 def getTNSRow(conn, tnsName):
    """
@@ -32,7 +36,8 @@ def getTNSRow(conn, tnsName):
    """
 
    try:
-      cursor = conn.cursor (MySQLdb.cursors.DictCursor)
+      #cursor = conn.cursor (MySQLdb.cursors.DictCursor)
+      cursor = conn.cursor (dictionary=True)
 
       cursor.execute ("""
            select tns_prefix, tns_name
@@ -52,7 +57,8 @@ def getTNSRow(conn, tnsName):
 
 def deleteTNSRow(conn, tnsName):
     try:
-        cursor = conn.cursor (MySQLdb.cursors.DictCursor)
+        #cursor = conn.cursor (MySQLdb.cursors.DictCursor)
+        cursor = conn.cursor (dictionary=True)
 
         cursor.execute ("""
             delete from crossmatch_tns
@@ -69,8 +75,10 @@ def deleteTNSRow(conn, tnsName):
 
 def insertTNS(conn, tnsEntry):
 
+    insertId = 0
     try:
-        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        #cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        cursor = conn.cursor (dictionary=True)
 
         cursor.execute ("""
             insert into crossmatch_tns (
@@ -121,6 +129,7 @@ def insertTNS(conn, tnsEntry):
                   nullValue(tnsEntry['Discovery Date (UT)']),
                   intValue(tnsEntry['TNS AT']),
                   tnsEntry['htm16']))
+        insertId = cursor.lastrowid
         cursor.close ()
 
     except MySQLdb.Error as e:
@@ -129,7 +138,7 @@ def insertTNS(conn, tnsEntry):
         else:
             print e
 
-    insertId = conn.insert_id()
+    #insertId = conn.insert_id()
     conn.commit()
     return insertId
 
@@ -211,11 +220,16 @@ def getTNSData(opts):
     with open(options.configFile) as yaml_file:
         config = yaml.load(yaml_file)
 
+    username = settings.DB_USER_WRITE
+    password = settings.DB_PASS_WRITE
+    hostname = settings.DB_HOST
+    database = 'ztf'
+#    database = settings.DB
 
-    username = config['databases']['local']['username']
-    password = config['databases']['local']['password']
-    database = config['databases']['local']['database']
-    hostname = config['databases']['local']['hostname']
+#    username = config['databases']['local']['username']
+#    password = config['databases']['local']['password']
+#    database = config['databases']['local']['database']
+#    hostname = config['databases']['local']['hostname']
 
     conn = dbConnect(hostname, username, password, database)
     if not conn:
@@ -230,6 +244,7 @@ def getTNSData(opts):
 
     csvEntries = csv.DictReader(content.splitlines(), delimiter=',')
     data = list(csvEntries)
+    rowsAdded = 0
     for row in data:
         name = row['Name'].strip().split()
 
@@ -257,12 +272,20 @@ def getTNSData(opts):
         htm16 = htmCircle.htmID(16, ra, dec)
         row['htm16'] = htm16
         tnsEntry = getTNSRow(conn, suffix)
-        if tnsEntry and tnsEntry['tns_prefix'] != prefix:
-            # The entry has been updated on TNS - classified!
-            deleteTNSRow(conn, suffix)
-        insertTNS(conn, row)
+        if tnsEntry:
+            if tnsEntry['tns_prefix'] != prefix:
+                # The entry has been updated on TNS - classified! Otherwise do nothing!
+                deleteTNSRow(conn, suffix)
+                insertTNS(conn, row)
+                print "Object %s has been updated" % row['suffix']
+                rowsAdded += 1
+        else:
+            insertTNS(conn, row)
+            print "Object %s has been added" % row['suffix']
+            rowsAdded += 1
         #print prefix, suffix, ra, dec, htm16, row['Discovery Date (UT)']
 
+    print "Total rows added or modified = %d" % rowsAdded
 
     conn.commit()
     conn.close()
