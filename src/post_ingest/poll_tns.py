@@ -23,10 +23,12 @@ import os
 #import MySQLdb
 import mysql.connector as MySQLdb
 from gkutils import Struct, cleanOptions, dbConnect, coords_sex_to_dec, floatValue, intValue, nullValue
-#sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
 import requests
 import csv
 import htmCircle
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
+import settings
 
 def getTNSRow(conn, tnsName):
    """
@@ -218,11 +220,15 @@ def getTNSData(opts):
     with open(options.configFile) as yaml_file:
         config = yaml.load(yaml_file)
 
+    username = settings.DB_USER_WRITE
+    password = settings.DB_PASS_WRITE
+    hostname = settings.DB_HOST
+    database = 'ztf'
 
-    username = config['databases']['local']['username']
-    password = config['databases']['local']['password']
-    database = config['databases']['local']['database']
-    hostname = config['databases']['local']['hostname']
+#    username = config['databases']['local']['username']
+#    password = config['databases']['local']['password']
+#    database = config['databases']['local']['database']
+#    hostname = config['databases']['local']['hostname']
 
     conn = dbConnect(hostname, username, password, database)
     if not conn:
