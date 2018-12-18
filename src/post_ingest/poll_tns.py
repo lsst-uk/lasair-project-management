@@ -224,6 +224,7 @@ def getTNSData(opts):
     password = settings.DB_PASS_WRITE
     hostname = settings.DB_HOST
     database = 'ztf'
+#    database = settings.DB
 
 #    username = config['databases']['local']['username']
 #    password = config['databases']['local']['password']
@@ -243,6 +244,7 @@ def getTNSData(opts):
 
     csvEntries = csv.DictReader(content.splitlines(), delimiter=',')
     data = list(csvEntries)
+    rowsAdded = 0
     for row in data:
         name = row['Name'].strip().split()
 
@@ -270,12 +272,20 @@ def getTNSData(opts):
         htm16 = htmCircle.htmID(16, ra, dec)
         row['htm16'] = htm16
         tnsEntry = getTNSRow(conn, suffix)
-        if tnsEntry and tnsEntry['tns_prefix'] != prefix:
-            # The entry has been updated on TNS - classified!
-            deleteTNSRow(conn, suffix)
-        insertTNS(conn, row)
+        if tnsEntry:
+            if tnsEntry['tns_prefix'] != prefix:
+                # The entry has been updated on TNS - classified! Otherwise do nothing!
+                deleteTNSRow(conn, suffix)
+                insertTNS(conn, row)
+                print "Object %s has been updated" % row['suffix']
+                rowsAdded += 1
+        else:
+            insertTNS(conn, row)
+            print "Object %s has been added" % row['suffix']
+            rowsAdded += 1
         #print prefix, suffix, ra, dec, htm16, row['Discovery Date (UT)']
 
+    print "Total rows added or modified = %d" % rowsAdded
 
     conn.commit()
     conn.close()
