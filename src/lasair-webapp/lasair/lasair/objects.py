@@ -83,7 +83,7 @@ def obj(request, objectId):
     if objectData:
         primaryId = int(objectData['primaryId'])
         if objectData and 'annotation' in objectData and objectData['annotation']:
-            objectData['annotation'] = objectData['annotation'].replace('"', ' arcsec').strip()
+            objectData['annotation'] = objectData['annotation'].replace('"', '').strip()
 
         objectData['rasex'] = rasex(objectData['ramean'])
         objectData['decsex'] = decsex(objectData['decmean'])

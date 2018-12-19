@@ -32,20 +32,31 @@
 </ul>
 
 {% if data.objectData.classification %}
-<li>Classified as {{ data.objectData.classification }} at distance {{ data.objectData.separationArcsec|floatformat:2 }} arcsec.</li> {% endif %}
+<li>Classified as {{ data.objectData.classification }}{% if data.objectData.separationArcsec %} at distance {{ data.objectData.separationArcsec|floatformat:2 }} arcsec.</li> {% endif %}{% endif %}
 
-<li>
 {% if data.objectData.MPCname %}
-<form method="post" id="JPLsearch" action="https://ssd.jpl.nasa.gov/sbdb.cgi">
+<li><form method="post" id="JPLsearch" action="https://ssd.jpl.nasa.gov/sbdb.cgi">
 <input type="hidden" name="sstr" value="{{ data.objectData.MPCname }}"></form>
-Moving object, MPC name is <a href="#" onclick="document.forms[0].submit()">{{ data.objectData.MPCname }}</a>
+Moving object, MPC name is <a href="#" onclick="document.forms[0].submit()">{{ data.objectData.MPCname }}</a></li>
 {% else %}
-{{ data.objectData.annotation|safe }}{% endif %}</li>
+{% if data.objectData.annotation %}
+<li>{{ data.objectData.annotation|safe }}{% endif %}</li>
+{% endif %}
 
 <li>Information on this webpage also&nbsp; <a href="/object/{{ data.objectId }}/json/">available as JSON.</a></li>
+
+<li>Conesearch Links:
+&nbsp;&nbsp;|&nbsp;&nbsp;
+<a href="http://simbad.u-strasbg.fr/simbad/sim-coo?Coord={{ data.objectData.ramean }}%20{{ data.objectData.decmean }}&Radius=0.08" target="new">Simbad</a>
+&nbsp;&nbsp;|&nbsp;&nbsp;
+<a href="https://ned.ipac.caltech.edu/cgi-bin/objsearch?search_type=Near+Position+Search&in_csys=Equatorial&in_equinox=J2000.0&lon={{ data.objectData.ramean }}d&lat={{ data.objectData.decmean }}d&radius=0.08" target="new">NED</a>
+&nbsp;&nbsp;|&nbsp;&nbsp;
+<a href="https://wis-tns.weizmann.ac.il/search?ra={{ data.objectData.ramean }}&decl={{ data.objectData.decmean }}&radius=5&coords_unit=arcsec" target="new">Transient Name Server</a>
+</li>
+
+</ul>
 </div>
 
-<hr/>
 <div class="row">
 <div class="col-sm-8">
 <h4>Comments</h4>
@@ -68,8 +79,9 @@ You must be signed in to post comments.
 {% endif %}
 </div>
 </div>
+<p>&nbsp;</p>
 
-<hr/>
+
 <div class="row">
 <div class="col-sm-8">
 <h4>Crossmatches</h4>
@@ -105,16 +117,6 @@ You must be signed in to post comments.
 </div>
 
 
-
-<div class ="row">
-<h4>Conesearch Links</h4> 
-&nbsp;&nbsp;|&nbsp;&nbsp;
-<a href="http://simbad.u-strasbg.fr/simbad/sim-coo?Coord={{ data.objectData.ramean }}%20{{ data.objectData.decmean }}&Radius=0.08" target="new">Simbad</a>
-&nbsp;&nbsp;|&nbsp;&nbsp;
-<a href="https://ned.ipac.caltech.edu/ui/?q=nearposn&lat={{ data.objectData.decmean }}d&lon={{ data.objectData.ramean }}d&sr=0.08&coordsys=Equatorial&equinox=J2000.0" target="new">NED</a>
-&nbsp;&nbsp;|&nbsp;&nbsp;
-<a href="https://wis-tns.weizmann.ac.il/search?ra={{ data.objectData.ramean }}&decl={{ data.objectData.decmean }}&radius=5&coords_unit=arcsec" target="new">Transient Name Server</a>
-</div>
 
 <div class ="row">
 <h4>Candidates</h4>&nbsp;&nbsp;
