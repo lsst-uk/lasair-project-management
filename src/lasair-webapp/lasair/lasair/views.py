@@ -81,7 +81,7 @@ def sexde(tok):
 def readcone(cone):
     error = False
     message = ''
-    cone = cone.replace(',', '').replace('\t',' ').replace(';',' ').replace('|',' ')
+    cone = cone.replace(',', ' ').replace('\t',' ').replace(';',' ').replace('|',' ')
     tok = cone.strip().split()
 #    message += str(tok)
 
@@ -132,7 +132,8 @@ def readcone(cone):
 def conesearch(request):
     if request.method == 'POST':
         ra = dec = radius = 0.0
-        hitdict = {}
+#        hitdict = {}
+        hitlist = []
         cone = request.POST['cone']
         d = readcone(cone)
         if 'objectId' in d:
@@ -144,17 +145,19 @@ def conesearch(request):
             dra = radius/(3600*math.cos(dec*math.pi/180))
             dde = radius/3600
             cursor = connection.cursor()
-            query = 'SELECT objectId,ramean,decmean FROM objects WHERE ramean BETWEEN %f and %f AND decmean BETWEEN %f and %f' % (ra-dra, ra+dra, dec-dde, dec+dde)
+#            query = 'SELECT objectId,ramean,decmean FROM objects WHERE ramean BETWEEN %f and %f AND decmean BETWEEN %f and %f' % (ra-dra, ra+dra, dec-dde, dec+dde)
+            query = 'SELECT DISTINCT objectId FROM candidates WHERE ra BETWEEN %f and %f AND decl BETWEEN %f and %f' % (ra-dra, ra+dra, dec-dde, dec+dde)
             cursor.execute(query)
             hits = cursor.fetchall()
             for hit in hits:
-                dist = distance(ra, dec, hit[1], hit[2]) * 3600.0
-                if dist < radius:
-                    hitdict[hit[0]] = (hit[1], hit[2], dist)
-            message = d['message'] + '<br/>%d objects found in cone' % len(hitdict)
+#                dist = distance(ra, dec, hit[1], hit[2]) * 3600.0
+#                if dist < radius:
+#                    hitdict[hit[0]] = (hit[1], hit[2], dist)
+                 hitlist.append(hit[0])
+            message = d['message'] + '<br/>%d objects found in cone' % len(hitlist)
             return render(request, 'conesearch.html',
                 {'ra':ra, 'dec':dec, 'radius':radius, 'cone':cone, 
-                    'hitdict': hitdict, 'message': message})
+                    'hitlist': hitlist, 'message': message})
         else:
             return render(request, 'conesearch.html',
                 {'cone':cone, 'message': d['message']})

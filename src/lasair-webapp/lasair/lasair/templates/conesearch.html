@@ -22,14 +22,13 @@ You can also enter an objectId, beginning with 'ZTF'.
 
 {% if message %}
 {{ message|safe }}
-{% if hitdict %}
+{% if hitlist %}
 
-<table class="table table-bordered" style="width:60%">
-<tr><th>ZTF object</th><th>RA</th><th>Dec</th><th>Arcsec</th></tr>
-{% for k,v in hitdict.items %}
-<tr><td><a href=/object/{{ k }}>{{ k }}</a></td><td>{{ v.0|floatformat:6 }}</td><td>{{ v.1|floatformat:6 }}</td><td>{{ v.2|floatformat:1 }}</td></tr>
+<ul>
+{% for h in hitlist %}
+<li><a href=/object/{{ h }}>{{ h }}</a></li>
 {% endfor %}
-</table>
+</ul>
 
 {% else %}
 
