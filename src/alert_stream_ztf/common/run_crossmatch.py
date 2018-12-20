@@ -52,13 +52,13 @@ def run_watchlist(wl_id, delete_old=True):
         myDecl   = watch_pos['decl']
     
         subClause = htmCircle.htmCircleRegion(16, myRA, myDecl, wl_radius)
-        subClause = subClause.replace('htm16ID', 'htmid16')
-        query2 = 'SELECT * FROM objects WHERE htm16 ' + subClause[15: -2]
+        subClause = subClause.replace('htm16ID', 'htm16')
+        query2 = 'SELECT * FROM objects WHERE htm16 ' + subClause[14: -2]
 #        print(query2)
         cursor2.execute(query2)
         for row in cursor2:
             objectId = row['objectId']
-            ndethist = row['ndethist']
+            ndethist = row['ncand']
             arcsec = 3600*distance(myRA, myDecl, row['ramean'], row['decmean'])
             if arcsec > wl_radius:
                 continue

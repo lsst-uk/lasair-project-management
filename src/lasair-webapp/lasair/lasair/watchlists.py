@@ -106,9 +106,11 @@ def show_watchlist(request, wl_id):
     cursor.execute('SELECT * FROM watchlist_cones AS c LEFT JOIN watchlist_hits AS h ON c.cone_id = h.cone_id LEFT JOIN objects on h.objectId = objects.objectId WHERE c.wl_id=%d ' % wl_id)
     cones = cursor.fetchall()
     conelist = []
+    found = 0
     for c in cones:
         d = {'name':c[2], 'ra'  :c[3], 'decl' :c[4]}
         if c[7]:
+            found += 1
             d['objectId'] = c[7]
             d['arcsec']   = c[8]
             d['sherlock_classification'] = c[30]
@@ -136,6 +138,7 @@ def show_watchlist(request, wl_id):
             return '000000000'
 
     conelist.sort(reverse=True, key=first)
+    message += ' %d matches found' % found
 
     count = len(conelist)
     
