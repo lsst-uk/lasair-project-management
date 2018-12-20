@@ -108,13 +108,16 @@ def obj(request, objectId):
         date += timedelta(mjd)
         row['utc'] = date.strftime("%Y-%m-%d %H:%M:%S")
         candidates.append(row)
+        ssnamenr = row['ssnamenr']
+        if ssnamenr == 'null':
+            ssnamenr = None
 
     if not objectData:
         objectData = {'ramean': row['ra'], 'decmean': row['decl'], 
-            'ncand':len(candidates), 'MPCname':row['ssnamenr']}
+            'ncand':len(candidates), 'MPCname':ssnamenr}
         objectData['annotation'] = 'Unknown object'
-        if row['ssdistnr'] < 10:
-            objectData['MPCname'] = row['ssnamenr']
+        if row['ssdistnr'] > 0 and row['ssdistnr'] < 10:
+            objectData['MPCname'] = ssnamenr
 
     message += 'Got %d candidates' % len(candidates)
 
