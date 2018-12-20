@@ -113,7 +113,10 @@ def obj(request, objectId):
             ssnamenr = None
 
     if not objectData:
-        objectData = {'ramean': row['ra'], 'decmean': row['decl'], 
+        ra = float(row['ra'])
+        dec = float(row['decl'])
+        objectData = {'ramean': ra, 'decmean': dec, 
+            'rasex': rasex(ra), 'decsex': decsex(dec),
             'ncand':len(candidates), 'MPCname':ssnamenr}
         objectData['annotation'] = 'Unknown object'
         if row['ssdistnr'] > 0 and row['ssdistnr'] < 10:
