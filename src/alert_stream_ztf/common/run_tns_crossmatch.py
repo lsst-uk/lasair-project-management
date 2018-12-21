@@ -27,22 +27,24 @@ def run_tns_crossmatch(radius):
     cursor3 = msl.cursor(buffered=True, dictionary=True)
 
 # get user id of user lasair, named "Lasair Bot"
-    already_commented = []
+    already_commented = {}
     query = 'SELECT * FROM comments WHERE user=%d' % settings.LASAIR_USERID
     cursor.execute(query)
     for row in cursor:
-        already_commented.append(row['objectId'])
+        already_commented[row['objectId']] = row['content']
 #    print("%d comments already from Lasair Bot" % len(already_commented))
 
     n_tns = 0
     n_hits = 0
     n_newhits = 0
     # get all the cones and run them
-    query = 'SELECT tns_name,ra,decl,disc_date FROM crossmatch_tns'
+    query = 'SELECT tns_prefix, tns_name, ra,decl, disc_date, host_name FROM crossmatch_tns'
     cursor.execute(query)
     for row in cursor:
         tns_name  = row['tns_name']
+        tns_prefix  = row['tns_prefix']
         disc_date = row['disc_date']
+        host_name = row['host_name']
         myRA      = row['ra']
         myDecl    = row['decl']
         n_tns += 1
@@ -58,12 +60,12 @@ def run_tns_crossmatch(radius):
             if arcsec > radius:
                 continue
             n_hits += 1
-            if objectId in already_commented:
+            content = 'In TNS as <a href=https://wis-tns.weizmann.ac.il/object/%s>%s%s</a> discovered %s' % (tns_name, tns_prefix, tns_name, disc_date)
+            if objectId in already_commented and already_commented[objectId] == content:
                 continue
             n_newhits += 1
-            comment = 'In TNS as <a href=https://wis-tns.weizmann.ac.il/object/%s>%s</a> discovered %s' % (tns_name, tns_name, disc_date)
             query3 = 'INSERT INTO comments (user, objectId, content) '
-            query3 += 'VALUES (%d, "%s", "%s")' % (settings.LASAIR_USERID, objectId, comment)
+            query3 += 'VALUES (%d, "%s", "%s")' % (settings.LASAIR_USERID, objectId, content)
 #            print(query3)
             cursor3.execute(query3)
             msl.commit()
