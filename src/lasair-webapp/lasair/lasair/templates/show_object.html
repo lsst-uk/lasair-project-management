@@ -49,7 +49,7 @@ Moving object, MPC name is <a href="#" onclick="document.forms[0].submit()">{{ d
 &nbsp;&nbsp;|&nbsp;&nbsp;
 <a href="http://simbad.u-strasbg.fr/simbad/sim-coo?Coord={{ data.objectData.ramean }}%20{{ data.objectData.decmean }}&Radius=0.08" target="new">Simbad</a>
 &nbsp;&nbsp;|&nbsp;&nbsp;
-<a href="https://ned.ipac.caltech.edu/cgi-bin/objsearch?search_type=Near+Position+Search&in_csys=Equatorial&in_equinox=J2000.0&lon={{ data.objectData.ramean }}d&lat={{ data.objectData.decmean }}d&radius=0.08" target="new">NED</a>
+<a href="http://ned.ipac.caltech.edu/cgi-bin/nph-objsearch?lon={{ data.objectData.ramean|floatformat:6 }}d&lat={{ data.objectData.decmean|floatformat:6 }}d&radius=10.0&search_type=Near+Position+Search" target="new">NED</a>
 &nbsp;&nbsp;|&nbsp;&nbsp;
 <a href="https://wis-tns.weizmann.ac.il/search?ra={{ data.objectData.ramean }}&decl={{ data.objectData.decmean }}&radius=5&coords_unit=arcsec" target="new">Transient Name Server</a>
 </li>
@@ -61,7 +61,7 @@ Moving object, MPC name is <a href="#" onclick="document.forms[0].submit()">{{ d
 <div class="col-sm-8">
 <h4>Comments</h4>
 <!--{{ data.message }}-->
-<table>
+<table border=1>
 {% for c in data.comments %}
 <tr><td><font size=-1>{{ c.name }}</font></td>
 <td><font size=-1>{{ c.time }}</td>

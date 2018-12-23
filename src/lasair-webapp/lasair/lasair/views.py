@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.template.context_processors import csrf
 from django.db import connection
 from django.db.models import Q
@@ -131,38 +131,49 @@ def readcone(cone):
 
 def conesearch(request):
     if request.method == 'POST':
-        ra = dec = radius = 0.0
-#        hitdict = {}
-        hitlist = []
         cone = request.POST['cone']
-        d = readcone(cone)
-        if 'objectId' in d:
-            return redirect('/object/%s/' % d['objectId'])
-        if 'ra' in d:
-            ra = d['ra']
-            dec = d['dec']
-            radius = d['radius']
-            dra = radius/(3600*math.cos(dec*math.pi/180))
-            dde = radius/3600
-            cursor = connection.cursor()
-#            query = 'SELECT objectId,ramean,decmean FROM objects WHERE ramean BETWEEN %f and %f AND decmean BETWEEN %f and %f' % (ra-dra, ra+dra, dec-dde, dec+dde)
-            query = 'SELECT DISTINCT objectId FROM candidates WHERE ra BETWEEN %f and %f AND decl BETWEEN %f and %f' % (ra-dra, ra+dra, dec-dde, dec+dde)
-            cursor.execute(query)
-            hits = cursor.fetchall()
-            for hit in hits:
-#                dist = distance(ra, dec, hit[1], hit[2]) * 3600.0
-#                if dist < radius:
-#                    hitdict[hit[0]] = (hit[1], hit[2], dist)
-                 hitlist.append(hit[0])
-            message = d['message'] + '<br/>%d objects found in cone' % len(hitlist)
-            return render(request, 'conesearch.html',
-                {'ra':ra, 'dec':dec, 'radius':radius, 'cone':cone, 
-                    'hitlist': hitlist, 'message': message})
+        json_checked = False
+        if 'json' in request.POST and request.POST['json'] == 'on':
+            json_checked = True
+
+        data = conesearch_impl(cone)
+        if json_checked:
+            return HttpResponse(json.dumps(data), content_type="application/json")
         else:
-            return render(request, 'conesearch.html',
-                {'cone':cone, 'message': d['message']})
+            return render(request, 'conesearch.html', {'data':data})
     else:
-        return render(request, 'conesearch.html',{})
+        return render(request, 'conesearch.html', {})
+
+def conesearch_impl(cone):
+    ra = dec = radius = 0.0
+#    hitdict = {}
+    hitlist = []
+    d = readcone(cone)
+    if 'objectId' in d:
+        return redirect('/object/%s/' % d['objectId'])
+    if 'ra' in d:
+        ra = d['ra']
+        dec = d['dec']
+        radius = d['radius']
+        dra = radius/(3600*math.cos(dec*math.pi/180))
+        dde = radius/3600
+        cursor = connection.cursor()
+#            query = 'SELECT objectId,ramean,decmean FROM objects WHERE ramean BETWEEN %f and %f AND decmean BETWEEN %f and %f' % (ra-dra, ra+dra, dec-dde, dec+dde)
+        query = 'SELECT DISTINCT objectId FROM candidates WHERE ra BETWEEN %f and %f AND decl BETWEEN %f and %f' % (ra-dra, ra+dra, dec-dde, dec+dde)
+        cursor.execute(query)
+        hits = cursor.fetchall()
+        for hit in hits:
+#            dist = distance(ra, dec, hit[1], hit[2]) * 3600.0
+#            if dist < radius:
+#                hitdict[hit[0]] = (hit[1], hit[2], dist)
+             hitlist.append(hit[0])
+        message = d['message'] + '<br/>%d objects found in cone' % len(hitlist)
+        data = {'ra':ra, 'dec':dec, 'radius':radius, 'cone':cone,
+                'hitlist': hitlist, 'message': message}
+        return data
+    else:
+        data = {'cone':cone, 'message': d['message']}
+        return data
 
 import date_nid
 def coverage(request):
