@@ -2,7 +2,7 @@
 """Get the TNS list.  Max size of request is 1000 rows.
 
 Usage:
-  %s <configFile> [--pageSize=<n>] [--pageNumber=<n>] [--inLastNumberOfDays=<n>]
+  %s [--pageSize=<n>] [--pageNumber=<n>] [--inLastNumberOfDays=<n>]
   %s (-h | --help)
   %s --version
 
@@ -217,8 +217,8 @@ def getTNSData(opts):
         options = opts
 
     import yaml
-    with open(options.configFile) as yaml_file:
-        config = yaml.load(yaml_file)
+#    with open(options.configFile) as yaml_file:
+#        config = yaml.load(yaml_file)
 
     username = settings.DB_USER_WRITE
     password = settings.DB_PASS_WRITE
@@ -259,6 +259,9 @@ def getTNSData(opts):
             # Set the discovery date to January of the suffix name.
             discoveryDate = '%s-01-01 00:00:00' % suffix[0:4]
             row['Discovery Date (UT)'] = discoveryDate
+
+        if not 'Type' in row:  # sometimes TNS does not supply Type -- RDW
+            row['Type'] = 'null'
 
         row['prefix'] = prefix
         row['suffix'] = suffix

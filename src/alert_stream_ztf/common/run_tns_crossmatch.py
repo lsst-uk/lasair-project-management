@@ -60,9 +60,13 @@ def run_tns_crossmatch(radius):
             if arcsec > radius:
                 continue
             n_hits += 1
-            content = 'In TNS as <a href=https://wis-tns.weizmann.ac.il/object/%s>%s%s</a> discovered %s' % (tns_name, tns_prefix, tns_name, disc_date)
-            if objectId in already_commented and already_commented[objectId] == content:
-                continue
+            content = 'In TNS as <a href=https://wis-tns.weizmann.ac.il/object/%s>%s%s</a> at %.1f arcsec, discovered %s' % (tns_name, tns_prefix, tns_name, arcsec, disc_date)
+            if objectId in already_commented:
+                if already_commented[objectId] == content:
+                    continue
+                else:
+                    query3 = 'DELETE from comments where user=%s and objectId="%s"' % (settings.LASAIR_USERID, objectId)
+                    cursor3.execute(query3)
             n_newhits += 1
             query3 = 'INSERT INTO comments (user, objectId, content) '
             query3 += 'VALUES (%d, "%s", "%s")' % (settings.LASAIR_USERID, objectId, content)
