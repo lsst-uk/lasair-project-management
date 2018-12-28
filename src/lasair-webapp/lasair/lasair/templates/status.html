@@ -13,7 +13,8 @@
 <tr><td>Alerts ingested to Lasair today</td><td> {{ status.today_candidates_lasair }}</td></tr>
 </table>
 <hr/>
-<a href=/lasair/static/ztf/logs/ztf_{{ status.date }}_programid1.log>Log File for {{ status.date }}</a>
+<a href=/lasair/static/ztf/logs/ztf_{{ status.date }}_programid1.log>Kafka Log File for {{ status.date }}</a><br/>
+<a href=/lasair/static/ztf/logs/ztf_{{ status.date }}_tns.log>TNS Log for {{ status.date }}</a><br/>
 	</div>
 </div>
 {% endblock %}
