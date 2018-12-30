@@ -116,7 +116,7 @@ def insertTNS(conn, tnsEntry):
                   floatValue(tnsEntry['Discovery Mag']),
                   nullValue(tnsEntry['Discovery Mag Filter']),
                   nullValue(tnsEntry['Disc. Instrument/s']),
-                  nullValue(tnsEntry['Type']),
+                  nullValue(tnsEntry['Obj. Type']),
                   intValue(tnsEntry['Public']),
                   nullValue(tnsEntry['Sender']),
                   nullValue(tnsEntry['Associated Group/s']),
@@ -260,8 +260,8 @@ def getTNSData(opts):
             discoveryDate = '%s-01-01 00:00:00' % suffix[0:4]
             row['Discovery Date (UT)'] = discoveryDate
 
-        if not 'Type' in row:  # sometimes TNS does not supply Type -- RDW
-            row['Type'] = 'null'
+#        if not 'Type' in row:  # sometimes TNS does not supply Type -- RDW
+#            row['Type'] = 'null'
 
         row['prefix'] = prefix
         row['suffix'] = suffix
