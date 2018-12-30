@@ -1,6 +1,7 @@
 import os
 from django.shortcuts import render, get_object_or_404, HttpResponse
 from django.template.context_processors import csrf
+from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 import lasair.settings
 from lasair.models import Objects, Myqueries, Comments
@@ -163,6 +164,7 @@ def record_query(request, query):
     f.write(s)
     f.close()
 
+@csrf_exempt
 def objlist(request):
     perpage = 1000
     # if this is a POST request we need to process the form data

@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.template.context_processors import csrf
+from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 from django.db.models import Q
 from lasair.models import Candidates
@@ -129,6 +130,7 @@ def readcone(cone):
         message += 'RA,Dec,radius=%.5f,%.5f,%.1f' % (ra, de, radius)
         return {'ra':ra, 'dec':de, 'radius':radius, 'message':message}
 
+@csrf_exempt
 def conesearch(request):
     if request.method == 'POST':
         cone = request.POST['cone']
