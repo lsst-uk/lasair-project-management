@@ -60,6 +60,10 @@ def run_tns_crossmatch(radius):
         n_tns += 1
 
         iso = str(disc_date).replace(' ', 'T')
+# ancient supernovae breaks the date functions!
+        if iso.startswith('1604'): continue
+        if iso.startswith('1572'): continue
+        if iso.startswith('10'): continue
         jd = jd_from_iso(iso)
         mjd = jd - 2400000.5
     
