@@ -1,0 +1,74 @@
+{% extends "base.html"%}
+{% block content %}
+
+<link rel="stylesheet" href="//aladin.u-strasbg.fr/AladinLite/api/v2/latest/aladin.min.css" />
+<script src="/lasair/static/js/jquery-3.3.1.js"></script>
+<script src="/lasair/static/js/surveys.js"></script>
+<script src="/lasair/static/js/aladin.js"></script>
+<script src="/lasair/static/js/coverage.js"></script>
+<script src="/lasair/static/js/skymap.js"></script>
+
+<div class="row">
+<h3>Gravitational Wave Skymap: {{ skymap_id }}</h3>
+</div>
+<div class="row">
+<table>
+<tr><td>ISO Date:</td><td>{{ isodate }}</td></tr>
+<tr><td>Julian date:</td><td>{{ jd|floatformat:3 }}</td></tr>
+</table>
+</div>
+
+<div class="row">
+<form class="form-inline" method="POST" action="/skymap/{{ skymap_id }}/"/>
+{% csrf_token %}
+<table>
+<tr><td><input type="checkbox" name="coverage_wanted" {% if coverage_wanted %}CHECKED{% endif %}> Coverage of ZTF</td><td>
+From <input class="form-control" size="14" name="niddate1" type="text" value="{{ niddate1 }}"/>
+</td><td>
+To <input class="form-control" size="14" name="niddate2" type="text" value="{{ niddate2 }}"/>
+</td></tr>
+
+<tr><td><input type="checkbox" name="ztf_wanted" {% if ztf_wanted %}CHECKED{% endif %}> Show ZTF candidates</td>
+<td>From <input class="form-control" value="{{ jd1|floatformat:3 }}" size="14" name="jd1" type="text"/>
+</td>
+<td> To <input class="form-control" value="{{ jd2|floatformat:3 }}" size="14" name="jd2" type="text"/>
+</td></tr>
+<tr><td><input type="submit" value="Submit"></td></tr>
+</table>
+</form>
+</div>
+{{ nztf }} ZTF sources found
+<!--<pre>
+{{ query }}
+</pre> -->
+
+<div class="row">
+  <div id="SV-layerBox"> </div><br/>
+</div>
+<div class="row">
+  <div id="aladin-lite-div" style="width:700px;height:700px;"></div>
+</div>
+
+<font size=-2><a href=/lasair/static/ztf/skymap/{{ skymap_id }}.json>json</a></font>
+
+<script>
+function drawLayers(skymapData){
+    console.log('drawLayers');
+    makeContours(skymapData);
+//    tileMarkers();
+
+    var cd = "{{ coverage }}";
+    cd = cd.replace(/&quot;/g,'"')
+    var coverage_json_data = JSON.parse(cd);
+    drawMarkersFromData(coverage_json_data);
+}
+
+$(document).ready(function() {
+    var zd = "{{ ztf_data }}";
+    zd = zd.replace(/&quot;/g,'"')
+    var ztf_json_data = JSON.parse(zd);
+    setup("{{ skymap_id }}", ztf_json_data);
+});
+</script>
+
+{% endblock %}

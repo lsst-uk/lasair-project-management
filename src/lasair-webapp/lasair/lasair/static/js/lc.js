@@ -26,7 +26,7 @@ first_dec = Number(data.objectData.decmean)*3600;
 
 candidates.forEach(function(item){
     y = Number(item.magpsf);
-    x = Number(item.jd)-2400000.5;
+    x = Number(item.mjd);
     e = Number(item.sigmapsf);
     x2 = first_ra - Number(item.ra)*3600;
     y2 = first_dec - Number (item.decl)*3600;

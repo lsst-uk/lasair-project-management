@@ -33,12 +33,6 @@ function handleCoverage(data){
         console.log("Found " + data.result.length + " entries");
     }
     storedData = data;
-    maxn = 0;
-    for(var k=0; k<storedData.result.length; k++){
-        if(storedData.result[k].n > maxn){
-            maxn = storedData.result[k].n;
-        }
-    }
 }
 
 function drawPlate(overlay, ra, de, size){
@@ -52,11 +46,21 @@ function drawPlate(overlay, ra, de, size){
 }
 
 function drawMarkers(){
-    console.log("drawMarkers with " + storedData.result.length);
+    drawMarkersFromData(storedData.result)
+}
+
+function drawMarkersFromData(data){
+    console.log("drawMarkers with " + data.length);
+    maxn = 0;
+    for(var k=0; k<data.length; k++){
+        if(data[k].n > maxn){
+            maxn = data[k].n;
+        }
+    }
     var overlay = A.graphicOverlay({color: "#ff0000", lineWidth: 2});
     aladin.addOverlay(overlay);
-    for(var k=0; k<storedData.result.length; k++){
-        row = storedData.result[k];
+    for(var k=0; k<data.length; k++){
+        row = data[k];
         if(row.fid == 1){
             drawPlate(overlay, row.ra, row.dec, 3.0*Math.sqrt(row.n/maxn));
         }
@@ -64,8 +68,8 @@ function drawMarkers(){
 
     var overlay = A.graphicOverlay({color: "#00ff00", lineWidth: 2});
     aladin.addOverlay(overlay);
-    for(var k=0; k<storedData.result.length; k++){
-        row = storedData.result[k];
+    for(var k=0; k<data.length; k++){
+        row = data[k];
         if(row.fid == 2){
             drawPlate(overlay, row.ra, row.dec, 3.0*Math.sqrt(row.n/maxn));
         }

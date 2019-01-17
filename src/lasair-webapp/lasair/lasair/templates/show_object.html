@@ -45,11 +45,11 @@ Moving object, MPC name is <a href="#" onclick="document.forms[0].submit()">{{ d
 
 <li>Information on this webpage also&nbsp; <a href="/object/{{ data.objectId }}/json/">available as JSON.</a></li>
 
-<li>Conesearch Links:
+<li>Conesearch Links (at 5 arcsec):
 &nbsp;&nbsp;|&nbsp;&nbsp;
 <a href="http://simbad.u-strasbg.fr/simbad/sim-coo?Coord={{ data.objectData.ramean }}%20{{ data.objectData.decmean }}&Radius=0.08" target="new">Simbad</a>
 &nbsp;&nbsp;|&nbsp;&nbsp;
-<a href="http://ned.ipac.caltech.edu/cgi-bin/nph-objsearch?lon={{ data.objectData.ramean|floatformat:6 }}d&lat={{ data.objectData.decmean|floatformat:6 }}d&radius=10.0&search_type=Near+Position+Search" target="new">NED</a>
+<a href="http://ned.ipac.caltech.edu/cgi-bin/nph-objsearch?lon={{ data.objectData.ramean|floatformat:6 }}d&lat={{ data.objectData.decmean|floatformat:6 }}d&radius=0.08&search_type=Near+Position+Search" target="new">NED</a>
 &nbsp;&nbsp;|&nbsp;&nbsp;
 <a href="https://wis-tns.weizmann.ac.il/search?ra={{ data.objectData.ramean }}&decl={{ data.objectData.decmean }}&radius=5&coords_unit=arcsec" target="new">Transient Name Server</a>
 </li>
@@ -101,19 +101,11 @@ You must be signed in to post comments.
 <h4>AladinLite</h4>
 <!-- insert this snippet where you want Aladin Lite viewer to appear and after the loading of jQuery -->
 <div class="row">
-        <div class="col-sm-3">
-                <form>
-                <div class="form-group"> <input id="DSS" type="radio" name="survey" value="P/DSS2/color"><label for="DSS">DSS color<label> </div>
-                <div class="form-group"> <input id="SDSS" type="radio" name="survey" value="P/SDSS9/color"><label for="SDSS">SDSS color<label> </div>
-                <div class="form-group"> <input id="2MASS" type="radio" name="survey" value="P/2MASS/color"><label for="2MASS">2MASS<label> </div>
-                <div> <input id="allwise" type="radio" name="survey" value="P/allWISE/color"><label for="allwise">AllWISE<label> </div>
-                <div class="form-group"> <input id="galex" type="radio" name="survey" value="P/GALEXGR6/AIS/color"><label for="galex">GALEX<label> </div>
-                <div class="form-group"> <input id="glimpse" type="radio" name="survey" value="P/GLIMPSE360"><label for="glimpse">GLIMPSE 360<label> </div>
-                </form>    
-        </div> 
-        <div class ="col-sm-9">
-                <div id="aladin-lite-div" style="width:300px;height:300px;"></div>
-        </div>
+  <div class ="col-sm-12">
+Image layer is PanSTARRS DR1; use the layers icon to change it &nbsp;(<img src=/lasair/static/img/layers.png>). You can also overlay PanSTARRS and/or Gaia DR2 catalog.
+<p>
+    <div id="aladin-lite-div" style="width:400px;height:400px;"></div>
+  </div>
 </div>
 
 
@@ -124,18 +116,18 @@ You must be signed in to post comments.
 	<div class="col-sm-12">
 		<table id=candidates_table class="table">
 		<thead><tr>
-		<th>JD</th>
+		<th>MJD</th>
 		<th>UTC</th>
 		<th>Filter</th>
 		<th>magpsf</th>
 		<th>candidate</th>
-		<th>Image</th>
+		<th>Image(target, ref, diff)</th>
 		</tr></thead>
                 <tbody>
 		{% for cand in data.candidates %}
 
 			<tr>
-			<td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{{ cand.jd|floatformat:3 }}{% if not cand.candid %}</font>{% endif %}</td>
+			<td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{{ cand.mjd|floatformat:3 }}{% if not cand.candid %}</font>{% endif %}</td>
 			<td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{{ cand.utc }}{% if not cand.candid %}</font>{% endif %}</td>
 			<td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{% if cand.fid == 1 %}g{% else %}r{% endif %}{% if not cand.candid %}</font>{% endif %}</td>
 			<td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{{ cand.magpsf|floatformat:3 }} {% if cand.candid %}&plusmn; {{ cand.sigmapsf|floatformat:3 }}{% endif %}{% if not cand.candid %}</font>{% endif %}</td>

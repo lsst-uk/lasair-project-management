@@ -18,7 +18,7 @@ from django.contrib.auth import views as authviews
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from lasair import views, services, candidates, objects, watchlists, myqueries, comments
+from lasair import views, services, candidates, objects, watchlists, myqueries, comments, skymap
 
 from django.contrib import admin
 #admin.autodiscover()
@@ -45,6 +45,9 @@ urlpatterns = [
 
     path('coverage/',               views.coverage,             name='coverage'),
     path('status/',                 views.status,               name='status'),
+
+    path('skymap/',                 skymap.skymap,              name='skymap'),
+    path('skymap/<skymap_id>/',     skymap.show_skymap,         name='show_skymap'),
 
     path('schema',   TemplateView.as_view(template_name='schema.html')),
     path('jupyter',  TemplateView.as_view(template_name='jupyter.html')),

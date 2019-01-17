@@ -10,6 +10,15 @@ def distance(ra1, de1, ra2, de2):
     dde = (de1 - de2)
     return math.sqrt(dra*dra + dde*dde)
 
+import dateutil.parser as dp
+def jd_from_iso(date):
+    if not date.endswith('Z'):
+        date += 'Z'
+    parsed_t = dp.parse(date)
+    unix = int(parsed_t.strftime('%s'))
+    jd = unix/86400 + 2440587.5
+    return jd
+
 # setup database connection
 import mysql.connector
 config = {
@@ -38,7 +47,7 @@ def run_tns_crossmatch(radius):
     n_hits = 0
     n_newhits = 0
     # get all the cones and run them
-    query = 'SELECT tns_prefix, tns_name, ra,decl, disc_date, host_name FROM crossmatch_tns'
+    query = 'SELECT tns_prefix, tns_name, ra,decl, disc_date, host_name, discovering_groups FROM crossmatch_tns'
     cursor.execute(query)
     for row in cursor:
         tns_name  = row['tns_name']
@@ -47,7 +56,12 @@ def run_tns_crossmatch(radius):
         host_name = row['host_name']
         myRA      = row['ra']
         myDecl    = row['decl']
+        discover = row['discovering_groups']
         n_tns += 1
+
+        iso = str(disc_date).replace(' ', 'T')
+        jd = jd_from_iso(iso)
+        mjd = jd - 2400000.5
     
         subClause = htmCircle.htmCircleRegion(16, myRA, myDecl, radius)
         subClause = subClause.replace('htm16ID', 'htm16')
@@ -60,7 +74,7 @@ def run_tns_crossmatch(radius):
             if arcsec > radius:
                 continue
             n_hits += 1
-            content = 'In TNS as <a href=https://wis-tns.weizmann.ac.il/object/%s>%s%s</a> at %.1f arcsec, discovered %s' % (tns_name, tns_prefix, tns_name, arcsec, disc_date)
+            content = 'In TNS as <a href=https://wis-tns.weizmann.ac.il/object/%s>%s%s</a> at %.1f arcsec, discovered %s (MJD %.2f) by %s' % (tns_name, tns_prefix, tns_name, arcsec, disc_date, mjd, discover)
             if objectId in already_commented:
                 if already_commented[objectId] == content:
                     continue

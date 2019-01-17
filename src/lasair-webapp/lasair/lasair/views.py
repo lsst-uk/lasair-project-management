@@ -10,6 +10,7 @@ import mysql.connector
 import json
 import math
 import time
+import date_nid
 
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
@@ -152,7 +153,9 @@ def conesearch_impl(cone):
     hitlist = []
     d = readcone(cone)
     if 'objectId' in d:
-        return redirect('/object/%s/' % d['objectId'])
+        data = {'cone':cone, 'hitlist': [d['objectId']], 
+            'message': 'Found object name'}
+        return data
     if 'ra' in d:
         ra = d['ra']
         dec = d['dec']

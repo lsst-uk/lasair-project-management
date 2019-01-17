@@ -95,16 +95,16 @@ def obj(request, objectId):
         query += 'ORDER BY -rank DESC'
         cursor.execute(query)
         for row in cursor:
-            crossmatches.append(row)
+            if row['rank']:
+                crossmatches.append(row)
     message += ' and %d crossmatches' % len(crossmatches)
 
     candidates = []
-    query = 'SELECT candid, jd, ra, decl, fid, nid, magpsf, sigmapsf, ssdistnr, ssnamenr '
+    query = 'SELECT candid, jd-2400000.5 as mjd, ra, decl, fid, nid, magpsf, sigmapsf, ssdistnr, ssnamenr '
     query += 'FROM candidates WHERE objectId = "%s" ' % objectId
     cursor.execute(query)
     for row in cursor:
-        jd = float(row['jd'])
-        mjd = jd - 2400000.5
+        mjd = float(row['mjd'])
         date = datetime.strptime("1858/11/17", "%Y/%m/%d")
         date += timedelta(mjd)
         row['utc'] = date.strftime("%Y-%m-%d %H:%M:%S")
@@ -125,12 +125,11 @@ def obj(request, objectId):
 
     message += 'Got %d candidates' % len(candidates)
 
-    query = 'SELECT jd, fid, diffmaglim '
+    query = 'SELECT jd-2400000.5 as mjd, fid, diffmaglim '
     query += 'FROM noncandidates WHERE objectId = "%s"' % objectId
     cursor.execute(query)
     for row in cursor:
-        jd = float(row['jd'])
-        mjd = jd - 2400000.5
+        mjd = float(row['mjd'])
         date = datetime.strptime("1858/11/17", "%Y/%m/%d")
         date += timedelta(mjd)
         row['utc'] = date.strftime("%Y-%m-%d %H:%M:%S")
@@ -138,7 +137,7 @@ def obj(request, objectId):
         candidates.append(row)
     message += 'Got %d candidates and noncandidates' % len(candidates)
 
-    candidates.sort(key= lambda c: c['jd'], reverse=True)
+    candidates.sort(key= lambda c: c['mjd'], reverse=True)
 
     data = {'objectId':objectId, 'objectData': objectData, 'candidates': candidates, 
         'crossmatches': crossmatches, 'comments':comments}
