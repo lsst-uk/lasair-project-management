@@ -1,0 +1,16 @@
+{% extends "base.html"%}
+{% block content %}
+<div class="row">
+	<h3>Gravitational Wave Skymaps</h3>
+</div>
+<div class="row">
+	<div class="col-sm">
+{{ message }}
+<ul>
+{% for skymap_id in skymap_list %}
+    <li><a href=/skymap/{{ skymap_id }}/>{{ skymap_id }}</a></li>
+{% endfor %}
+</ul>
+</div>
+</div>
+{% endblock %}
