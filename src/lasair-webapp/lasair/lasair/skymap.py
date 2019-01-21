@@ -42,18 +42,24 @@ def show_skymap(request, skymap_id):
     json_text = open("/mnt/lasair-head-data/ztf/skymap/%s.json" % skymap_id).read()
     skymap_data = json.loads(json_text)
     isodate = skymap_data['meta']['DATE-OBS']
+    skymap_distance = 'Skymap is 2D -- no distance available'
+    if 'DISTMEAN' in skymap_data['meta']:
+        skymap_distance = 'Skymap is 3D and mean distance is %.1f Mpc' % float(skymap_data['meta']['DISTMEAN'])
     niddate1 = niddate2 = isodate.split('T')[0].replace('-', '')
     tilelist = skymap_data['meta']['histogram']
-    jd1 = jd2 = jd = jd_from_iso(isodate)
-    ztf_wanted = coverage_wanted = False
+    jd = jd_from_iso(isodate)
+    jd1delta = -1.0
+    jd2delta =  1.0
+    ztf_wanted = coverage_wanted = galaxies_wanted = False
 
     if request.method == 'POST':
         ztf_wanted = (request.POST.get('ztf_wanted','off') == 'on')
-        jd1 = float(request.POST['jd1'])
-        jd2 = float(request.POST['jd2'])
+        jd1delta = float(request.POST['jd1delta'])
+        jd2delta = float(request.POST['jd2delta'])
         coverage_wanted = (request.POST.get('coverage_wanted','off')  == 'on')
         niddate1 = request.POST['niddate1']
         niddate2 = request.POST['niddate2']
+        galaxies_wanted = (request.POST.get('galaxies_wanted','off')  == 'on')
 
     nid1 = date_nid.date_to_nid(niddate1)
     nid2 = date_nid.date_to_nid(niddate2)
@@ -65,7 +71,7 @@ def show_skymap(request, skymap_id):
     ztf_data = []
     if ztf_wanted:
         query = "SELECT objectId,jd,ra,decl,fid,magpsf "
-        query += "FROM candidates WHERE jd BETWEEN %f and %f AND (" % (jd1, jd2)
+        query += "FROM candidates WHERE jd BETWEEN %f and %f AND (" % (jd+jd1delta, jd+jd2delta)
         constraint_list = []
         for tile in tilelist:
             constraint = "(ra BETWEEN %.1f and %.1f AND decl BETWEEN %.1f AND %.1f)"
@@ -102,8 +108,10 @@ def show_skymap(request, skymap_id):
     return render(request, 'show_skymap.html', 
         {'skymap_id': skymap_id, 'isodate':isodate, 
             'niddate1':niddate1, 'niddate2':niddate2, 
-            'jd':jd, 'jd1':jd1, 'jd2':jd2,
+            'skymap_distance':skymap_distance,
+            'jd':jd, 'jd1delta':jd1delta, 'jd2delta':jd2delta,
             'coverage_wanted': coverage_wanted,
             'coverage': json.dumps(coverage),
             'ztf_wanted': ztf_wanted,
-            'nztf': len(ztf_data), 'ztf_data':json.dumps(ztf_data)})
+            'nztf': len(ztf_data), 'ztf_data':json.dumps(ztf_data),
+            'galaxies_wanted':galaxies_wanted})

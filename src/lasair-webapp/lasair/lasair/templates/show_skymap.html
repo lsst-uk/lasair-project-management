@@ -17,11 +17,14 @@
 <tr><td>Julian date:</td><td>{{ jd|floatformat:3 }}</td></tr>
 </table>
 </div>
+<div class="row">
+{{ skymap_distance }}
+</div>
 
 <div class="row">
 <form class="form-inline" method="POST" action="/skymap/{{ skymap_id }}/"/>
 {% csrf_token %}
-<table>
+<table cellpadding=10>
 <tr><td><input type="checkbox" name="coverage_wanted" {% if coverage_wanted %}CHECKED{% endif %}> Coverage of ZTF</td><td>
 From <input class="form-control" size="14" name="niddate1" type="text" value="{{ niddate1 }}"/>
 </td><td>
@@ -29,18 +32,18 @@ To <input class="form-control" size="14" name="niddate2" type="text" value="{{ n
 </td></tr>
 
 <tr><td><input type="checkbox" name="ztf_wanted" {% if ztf_wanted %}CHECKED{% endif %}> Show ZTF candidates</td>
-<td>From <input class="form-control" value="{{ jd1|floatformat:3 }}" size="14" name="jd1" type="text"/>
+<td>From <input class="form-control" value="{{ jd1delta|floatformat:3 }}" size="14" name="jd1delta" type="text"/>
 </td>
-<td> To <input class="form-control" value="{{ jd2|floatformat:3 }}" size="14" name="jd2" type="text"/>
+<td> To <input class="form-control" value="{{ jd2delta|floatformat:3 }}" size="14" name="jd2delta" type="text"/>
 </td></tr>
+<tr><td><input type="checkbox" name="galaxies_wanted" {% if galaxies_wanted %}CHECKED{% endif %}> Show galaxies from <a href=http://aquarius.elte.hu/glade/>GLADE</a></td><td>{% if galaxies_wanted %}<span id='galaxy_info'><i>doubleclick a galaxy</i></span>{% endif %}</td></tr>
 <tr><td><input type="submit" value="Submit"></td></tr>
 </table>
 </form>
 </div>
+{% if ztf_wanted %}
 {{ nztf }} ZTF sources found
-<!--<pre>
-{{ query }}
-</pre> -->
+{% endif %}
 
 <div class="row">
   <div id="SV-layerBox"> </div><br/>
@@ -55,12 +58,15 @@ To <input class="form-control" size="14" name="niddate2" type="text" value="{{ n
 function drawLayers(skymapData){
     console.log('drawLayers');
     makeContours(skymapData);
-//    tileMarkers();
+{% if galaxies_wanted %}
+    makeGalaxies(skymapData);
+{% endif %}
 
     var cd = "{{ coverage }}";
     cd = cd.replace(/&quot;/g,'"')
     var coverage_json_data = JSON.parse(cd);
     drawMarkersFromData(coverage_json_data);
+
 }
 
 $(document).ready(function() {

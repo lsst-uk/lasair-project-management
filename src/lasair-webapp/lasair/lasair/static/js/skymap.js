@@ -36,6 +36,58 @@ function handleSkymap(data){
     console.log("Imported the JSON " + data['datetime']);
 }
 
+var square_size = 0.08;
+var color = 'yellow';
+
+function makeGalaxies(data){
+    console.log('found ' + data.sources.length + ' galaxies');
+    var overlay = aladin.createOverlay({color: color});
+    aladin.addOverlay(overlay);
+    for(var i=0; i<data.sources.length; i++){
+        t = data.sources[i];
+        square = makeSquare(t.coords[0], t.coords[1], square_size*t.sw);
+        overlay.addFootprints([A.polygon(square)]);
+    }
+}
+
+function makeSquare(ra, de, r){
+    poly = [];
+    rr = r/Math.cos(de*Math.PI/180);
+    poly.push([ra-rr, de-r]);
+    poly.push([ra+rr, de-r]);
+    poly.push([ra+rr, de+r]);
+    poly.push([ra-rr, de+r]);
+   return poly;
+}
+
+function handleDblclick(offsetX, offsetY){
+    var coo = aladin.pix2world(offsetX,offsetY);
+    var p = coo[0];
+    var q = coo[1];
+    console.log('handleDblClick ' + p + ' ' + q);
+    ra_ratio = 1.0/Math.cos(q*Math.PI/180);
+    sources = currentJsonData.sources;
+
+    selected_sources = [];
+    for(var i=0; i<sources.length; i++){
+        t = sources[i];
+        var sw = t.sw*square_size;
+        var ra = t.coords[0]
+        var de = t.coords[1];
+        if(Math.abs(ra-p)<sw*ra_ratio && Math.abs(de-q)<sw){
+            gotoradec(ra, de);
+            var url = 'http://ned.ipac.caltech.edu/cgi-bin/nph-objsearch?lon='+ra+'d&lat='+de+'d&radius=0.25&search_type=Near+Position+Search';
+            if(t.distance < 0.0001){
+                dist = 'Galaxy. ';
+            } else {
+                dist = 'Galaxy at ' + (t.distance).toFixed(1) + ' Mpc. ';
+            }
+            document.getElementById("galaxy_info").innerHTML = 
+                dist + 'Search <a href="' + url + '" target="_blank">NED</a>';
+        }
+    }
+}
+
 function moveCenter(){
     gotoradec(currentJsonData.meta.apointRA, currentJsonData.meta.apointDec);
 }
