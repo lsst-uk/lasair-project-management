@@ -43,7 +43,7 @@ Thus a light curve can be obtained from all the candidates that have a given obj
 The highest quality candidates satisfy the criterion 
 <tt>rb &gt;= 0.65 and nbad = 0 and fwhm &lt;= 5 and elong &lt;= 1.2 and abs(magdiff) &lt;= 0.1</tt>. See example below.
 <li> In the example queries below, you can see the expression 
-<tt>(unix_timestamp(now())/86400 + 2440587.5)</tt>. 
+<tt>jdnow()</tt>. 
 This evaluates to the current Julian Day: in short, it means simply <i>now</i>.
 <li>If you would like to learn the SQL language, <a href=http://cas.sdss.org/dr6/en/help/howto/search/>this</a>
 is a good resource.

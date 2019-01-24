@@ -100,9 +100,10 @@ def obj(request, objectId):
     message += ' and %d crossmatches' % len(crossmatches)
 
     candidates = []
-    query = 'SELECT candid, jd-2400000.5 as mjd, ra, decl, fid, nid, magpsf, sigmapsf, ssdistnr, ssnamenr '
+    query = 'SELECT candid, jd-2400000.5 as mjd, ra, decl, fid, nid, magpsf, sigmapsf, ssdistnr, ssnamenr, isdiffpos '
     query += 'FROM candidates WHERE objectId = "%s" ' % objectId
     cursor.execute(query)
+    count_isdiffpos = count_real_candidates = 0
     for row in cursor:
         mjd = float(row['mjd'])
         date = datetime.strptime("1858/11/17", "%Y/%m/%d")
@@ -112,6 +113,8 @@ def obj(request, objectId):
         ssnamenr = row['ssnamenr']
         if ssnamenr == 'null':
             ssnamenr = None
+        if row['candid'] and row['isdiffpos'] == 'f':
+            count_isdiffpos += 1
 
     if not objectData:
         ra = float(row['ra'])
@@ -140,6 +143,7 @@ def obj(request, objectId):
     candidates.sort(key= lambda c: c['mjd'], reverse=True)
 
     data = {'objectId':objectId, 'objectData': objectData, 'candidates': candidates, 
+        'count_isdiffpos': count_isdiffpos, 'count_real_candidates':count_real_candidates,
         'crossmatches': crossmatches, 'comments':comments}
     return data
 
@@ -162,6 +166,10 @@ def record_query(request, query):
     s = '%s| %s| %s| %s\n' % (IP, name, time, onelinequery)
     f.write(s)
     f.close()
+
+def streams(request):
+    public_queries = Myqueries.objects.filter(public=2)
+    return render(request, 'streams.html', {'public_queries':public_queries})
 
 @csrf_exempt
 def objlist(request):
@@ -225,7 +233,7 @@ def objlist(request):
         else:
             myqueries    = None
 
-        public_queries = Myqueries.objects.filter(public=1)
+        public_queries = Myqueries.objects.filter(public__gte=1)
         return render(request, 'objlistquery.html', {
             'is_authenticated': request.user.is_authenticated,
             'myqueries':myqueries, 

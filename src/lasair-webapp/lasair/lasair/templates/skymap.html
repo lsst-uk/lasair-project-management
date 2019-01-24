@@ -6,6 +6,9 @@
 <div class="row">
 	<div class="col-sm">
 {{ message }}
+The following LIGO-Virgo skymaps have been released, and are available 
+<a href=https://dcc.ligo.org/LIGO-P1800381/public>here</a> as fits files.
+Each is encoded by the event date as GWyymmdd.
 <ul>
 {% for skymap_id in skymap_list %}
     <li><a href=/skymap/{{ skymap_id }}/>{{ skymap_id }}</a></li>

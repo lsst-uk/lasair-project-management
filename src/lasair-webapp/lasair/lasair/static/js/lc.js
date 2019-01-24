@@ -1,16 +1,25 @@
 function plotlc(data){
 gmag = []
+gfmag = []
 ngmag = []
 gt = []
+gft = []
 ngt = []
 gerror = []
+gferror = []
+
 gra = []
 gdec = []
+
 rmag = []
+rfmag = []
 nrmag = []
 rt = []
+rft = []
 nrt = []
 rerror = []
+rferror = []
+
 rra = []
 rdec = [] 
 g = 'rgb(104,139,46)';
@@ -33,17 +42,31 @@ candidates.forEach(function(item){
     fid = Number(item.fid);
     det = (item.candid)
     if(det){
-        if(fid == 1){
+        if(fid == 1 && item.isdiffpos == 't'){
             gmag.push(y);
             gt.push(x);
             gerror.push(e);
             gra.push(x2);
             gdec.push(y2);
         }
-        else if(fid ==2){
+        else if(fid ==2 && item.isdiffpos == 't'){
             rmag.push(y);
             rt.push(x);
             rerror.push(e);
+            rra.push(x2);
+            rdec.push(y2);
+        }
+        if(fid == 1 && item.isdiffpos == 'f'){
+            gfmag.push(y);
+            gft.push(x);
+            gferror.push(e);
+            gra.push(x2);
+            gdec.push(y2);
+        }
+        else if(fid ==2 && item.isdiffpos == 'f'){
+            rfmag.push(y);
+            rft.push(x);
+            rferror.push(e);
             rra.push(x2);
             rdec.push(y2);
         }
@@ -70,7 +93,7 @@ var lcg = {x:gt, y: gmag, error_y:{
         visible: true
         },
     mode:'markers',
-    marker: { color:g },
+    marker: { color:g, size: 12 },
     type:'scatter'
 }
 var lcr = {x:rt, y: rmag, error_y:{
@@ -81,7 +104,29 @@ var lcr = {x:rt, y: rmag, error_y:{
         visible: true
         },
         mode:'markers',
-    marker: { color:r },
+    marker: { color:r, size: 12 },
+        type:'scatter'
+}
+var lcfg = {x:gft, y: gfmag, error_y:{
+        type:'data',
+        color: g,
+        opacity: 0.7,
+        array: gferror,
+        visible: true
+        },
+    mode:'markers',
+    marker: { color:g, size: 12, symbol: "circle-open" },
+    type:'scatter'
+}
+var lcfr = {x:rft, y: rfmag, error_y:{
+        type:'data',
+        color: r,
+        array: rferror,
+        opacity: 0.7,
+        visible: true
+        },
+        mode:'markers',
+    marker: { color:r, size: 12, symbol: "circle-open" },
         type:'scatter'
 }
 var nlcg = {x:ngt, y: ngmag,
@@ -95,7 +140,7 @@ var nlcr = {x:nrt, y: nrmag,
     type:'scatter'
 }
 
-Plotly.plot(lc_div, [lcg, lcr, nlcg, nlcr], {
+Plotly.plot(lc_div, [lcg, lcr, lcfg, lcfr, nlcg, nlcr], {
     margin: { t: 0 }, 
     displayModeBar: false, 
     showlegend: false,

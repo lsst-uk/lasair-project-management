@@ -12,6 +12,25 @@
 <h3>Gravitational Wave Skymap: {{ skymap_id }}</h3>
 </div>
 <div class="row">
+<font size=-1>
+The probability contours of the location of the gravitational-wave
+counterpart are shown below; the sky background can be changed with the 
+selector, and the interface allows arbitary zooming. The three checkboxes below
+are as follows:
+<ul>
+<li>Coverage: shows if the ZTF survey has covered the skymap in the date 
+range specified. Note that ZTF did not start until 20180527.</li>
+<li>Candidates: Shows the ZTF candidates surrounding the skymap and in
+a time window around the event time. The form fields are in days, as 
+differences from the event time.</li>
+<li>Galaxies: Shows galaxies that may have the counterpart, with the 
+size of the symbol as the 3D probability density at that galaxy position 
+and distance.</li>
+</ul>
+Remember to click "submit" to refresh the page.
+<hr/>
+</font>
+
 <table>
 <tr><td>ISO Date:</td><td>{{ isodate }}</td></tr>
 <tr><td>Julian date:</td><td>{{ jd|floatformat:3 }}</td></tr>

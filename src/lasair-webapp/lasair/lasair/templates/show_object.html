@@ -7,18 +7,18 @@
 <script type="text/javascript" src="{% static "/js/jquery.tablesorter.min.js" %}" ></script>
 
 <div class="row">
-	<div class="col-sm">
-		<h3>Object {{ data.objectId }}</h3>
-	</div>
+    <div class="col-sm">
+        <h3>Object {{ data.objectId }}</h3>
+    </div>
 </div>
 
 <div class="row">
         <div class="col-sm-8">
-		<div id="lc" style="width:100%;height:300px;"></div>
+        <div id="lc" style="width:100%;height:300px;"></div>
         </div>
-	<div class = "col-sm-4">
-		<div id="radec" style="width:100%;height:300px;"></div>
-	</div>
+    <div class = "col-sm-4">
+        <div id="radec" style="width:100%;height:300px;"></div>
+    </div>
 </div>
 
 <hr/>
@@ -30,6 +30,10 @@
 <li> (RA, Dec) = ({{ data.objectData.rasex }}, {{ data.objectData.decsex }})</li>
 {% if data.objectData.glonmean %}<li> (l, b) = ({{ data.objectData.glonmean|floatformat:6 }}, {{ data.objectData.glatmean|floatformat:6 }})</li> {% endif %}
 </ul>
+
+{% if data.count_isdiffpos %}
+<li>NOTE: There are {{ data.count_isdiffpos }} of {{ data.objectData.ncand }} candidates (below) where the detected brightness is less than the reference brightness (where the magnitude is followed by "f"), also indicated by an open circle in the light curve above.</li>
+{% endif %}
 
 {% if data.objectData.classification %}
 <li>Classified as {{ data.objectData.classification }}{% if data.objectData.separationArcsec %} at distance {{ data.objectData.separationArcsec|floatformat:2 }} arcsec.</li> {% endif %}{% endif %}
@@ -113,32 +117,36 @@ Image layer is PanSTARRS DR1; use the layers icon to change it &nbsp;(<img src=/
 <div class ="row">
 <h4>Candidates</h4>&nbsp;&nbsp;
 (To sort, click the column headings)
-	<div class="col-sm-12">
-		<table id=candidates_table class="table">
-		<thead><tr>
-		<th>MJD</th>
-		<th>UTC</th>
-		<th>Filter</th>
-		<th>magpsf</th>
-		<th>candidate</th>
-		<th>Image(target, ref, diff)</th>
-		</tr></thead>
+    <div class="col-sm-12">
+        <table id=candidates_table class="table">
+        <thead><tr>
+        <th>MJD</th>
+        <th>UTC</th>
+        <th>Filter</th>
+        <th>magpsf</th>
+        <th></th>
+        <th>candidate</th>
+        <th>Image(target, ref, diff)</th>
+        </tr></thead>
                 <tbody>
-		{% for cand in data.candidates %}
+        {% for cand in data.candidates %}
 
-			<tr>
-			<td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{{ cand.mjd|floatformat:3 }}{% if not cand.candid %}</font>{% endif %}</td>
-			<td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{{ cand.utc }}{% if not cand.candid %}</font>{% endif %}</td>
-			<td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{% if cand.fid == 1 %}g{% else %}r{% endif %}{% if not cand.candid %}</font>{% endif %}</td>
-			<td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{{ cand.magpsf|floatformat:3 }} {% if cand.candid %}&plusmn; {{ cand.sigmapsf|floatformat:3 }}{% endif %}{% if not cand.candid %}</font>{% endif %}</td>
-			<td> {% if not cand.candid %}<font color="gray" size=-2>non-detection</font>{% else %}<a href="/cand/{{ cand.candid }}/">{{ cand.candid }}</a>{% endif %}</td>
-			<td>{% if cand.candid %}<a href=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg><img src=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg></a>{% endif %}</td>
-			</tr>
+            <tr>
+            <td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{{ cand.mjd|floatformat:3 }}{% if not cand.candid %}</font>{% endif %}</td>
+            <td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{{ cand.utc }}{% if not cand.candid %}</font>{% endif %}</td>
+            <td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{% if cand.fid == 1 %}g{% else %}r{% endif %}{% if not cand.candid %}</font>{% endif %}</td>
+            <td>{% if not cand.candid %}<font color="gray" size=-2>{% endif %}{{ cand.magpsf|floatformat:3 }} {% if cand.candid %}&plusmn; {{ cand.sigmapsf|floatformat:3 }}{% endif %}{% if not cand.candid %}</font>{% endif %}</td>
 
-		{% endfor %}
+            <td> {% if cand.candid %}{{ cand.isdiffpos }}{% endif %}</td>
+
+            <td> {% if not cand.candid %}<font color="gray" size=-2>non-detection</font>{% else %}<a href="/cand/{{ cand.candid }}/">{{ cand.candid }}</a>{% endif %}</td>
+            <td>{% if cand.candid %}<a href=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg><img src=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg></a>{% endif %}</td>
+            </tr>
+
+        {% endfor %}
                 </tbody>
-		</table>
-	</div>
+        </table>
+    </div>
 </div>
 
 <script type="text/javascript">
