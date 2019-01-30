@@ -25,7 +25,7 @@ from django.contrib import admin
 
 urlpatterns = [
     path('',                        views.index,                name='index'),
-#    path('candlist/',               candidates.candlist,        name='candlist'),
+    path('about',                   views.about,                name='about'),
     path('cand/<int:candid>/',      candidates.cand,            name='cand'),
 
     path('objlist/',                objects.objlist,            name='objlist'),

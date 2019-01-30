@@ -4,7 +4,7 @@ from django.template.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 from django.db.models import Q
-from lasair.models import Candidates
+from lasair.models import Candidates, Myqueries
 import lasair.settings
 import mysql.connector
 import json
@@ -60,10 +60,14 @@ def status(request):
 
 def index(request):
     web_domain = lasair.settings.WEB_DOMAIN
+    public_queries = Myqueries.objects.filter(public=2)
+    return render(request, 'index.html', {'web_domain': web_domain, 'public_queries':public_queries})
+
+def about(request):
     jsonstr = open('/mnt/lasair-head-data/ztf/system_status.json').read()
     j = json.loads(jsonstr)
     n_candidates = j['total_candidates']
-    return render(request, 'index.html', {'web_domain': web_domain, 'n_candidates':n_candidates})
+    return render(request, 'about.html', {'n_candidates':n_candidates})
 
 def distance(ra1, de1, ra2, de2):
     dra = (ra1 - ra2)*math.cos(de1*math.pi/180)
@@ -87,12 +91,13 @@ def readcone(cone):
     tok = cone.strip().split()
 #    message += str(tok)
 
-# if only one token, must be a ZTF identifier
-    if len(tok) == 1:
-        if tok[0].startswith('ZTF'):
-            return {'objectId': tok[0], 'message':'ZTF object'}
-        else:
-            error = True
+# if tokens begin with 'ZTF', must be list of ZTF identifier
+    allztf = True
+    for t in tok:
+        if not t.startswith('ZTF'):
+            allztf = False
+    if allztf:
+        return {'objectIds': tok, 'message':'ZTF object list'}
 
 # if odd number of tokens, must end with radius in arcsec
     radius = 5.0
@@ -152,9 +157,9 @@ def conesearch_impl(cone):
 #    hitdict = {}
     hitlist = []
     d = readcone(cone)
-    if 'objectId' in d:
-        data = {'cone':cone, 'hitlist': [d['objectId']], 
-            'message': 'Found object name'}
+    if 'objectIds' in d:
+        data = {'cone':cone, 'hitlist': d['objectIds'], 
+            'message': 'Found ZTF object names'}
         return data
     if 'ra' in d:
         ra = d['ra']
