@@ -36,10 +36,13 @@ os.system(cmd)
 tail = 'tail -2 /data/ztf/logs/' + topic + '.log'
 os.system(tail)
 
+cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/coverage.py %d' % nid
+os.system(cmd)
+
 cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/check_status.py %d' % nid
 os.system(cmd)
 
-cmd = 'mkdir /data/ztf/stamps/jpg/%d; /home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid, nid)
+cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid)
 os.system(cmd)
 
 cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/update_objects.py'

@@ -58,6 +58,7 @@ dict = {
     'update_time'            : update_time,
     'update_time_unix'       : update_time_unix,
     'nid'                    : nid,
+    'date'                   : date,
 }
 
 dictstr = json.dumps(dict)

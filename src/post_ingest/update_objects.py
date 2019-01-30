@@ -3,8 +3,9 @@ import math
 import numpy as np
 import time
 import ephem
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
 import settings
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
 import htmCircle
 
 # setup database connection
@@ -19,7 +20,7 @@ msl = mysql.connector.connect(**config)
 
 def make_object(objectId, candlist, debug=False):
     ncand = len(candlist)
-    if ncand < 3:
+    if ncand < 2:
         if debug: 
             print('object %s has too few (%d) candidates, exiting' % (objectId, ncand))
         query = 'DELETE FROM objects WHERE objectId="%s"' % objectId
@@ -122,7 +123,8 @@ def update_objects(debug=False):
     ntotalcand = nupdate = ndelete = 0
     while(1):
         query =  'SELECT candid, objectId,ra,decl,jd,fid,magpsf FROM candidates NATURAL JOIN objects '
-        query += 'WHERE stale=1 ORDER BY objectId LIMIT %d ' % nbatch
+        query += 'WHERE stale=1 ORDER BY objectId,jd LIMIT %d ' % nbatch
+
         if debug:
             print(query)
         cursor.execute(query)
@@ -140,7 +142,7 @@ def update_objects(debug=False):
                 result = make_object(oldObjectId, candlist)
                 if result > 0: nupdate += 1
                 else:          ndelete += 1
-                candlist = []
+                candlist = [cand]
                 oldObjectId = objectId
         if debug:
             print('Iteration %d: %d candidates, %d updated objects, %d deleted objects' % (k, ntotalcand, nupdate, ndelete))

@@ -1,4 +1,7 @@
+import sys
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
 import settings
+
 import mysql.connector
 msl = mysql.connector.connect(\
             user    =settings.DB_USER, \

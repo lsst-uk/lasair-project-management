@@ -240,7 +240,7 @@ def main(args):
         logging.error(e.message)
         sys.exit()
 
-    nalert = 0
+    nalert = oldnalert = oldoldnalert = 0
     while nalert < 50000:   # run for an hour at 1320 per minute then do post processing
         try:
 #            msg = streamReader.poll(decode=args.avroFlag)
@@ -262,8 +262,14 @@ def main(args):
         except alertConsumer.EopError as e:
             # Write when reaching end of partition
             logger.error(e.message)
-            logger.info("End of stream reached after %d alerts" % nalert)
-            return
+            if nalert == 0 or (nalert == oldnalert and nalert == oldoldnalert):
+                logger.info("Finished stream after %d alerts" % nalert)
+                return
+            else:
+                logger.info("Pausing stream after %d alerts" % nalert)
+                time.sleep(10)
+                oldoldnalert = oldnalert
+                oldnalert = nalert
         except IndexError:
             logger.error('%% Data cannot be decoded\n')
         except UnicodeDecodeError:

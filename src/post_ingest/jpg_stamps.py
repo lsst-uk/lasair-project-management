@@ -9,7 +9,10 @@ def open_fits(filename):
     data = fits.getdata(filename)
     img = Image.fromarray(data)
     y=numpy.asarray(img.getdata(),dtype=numpy.float64).reshape((img.size[1],img.size[0]))
+
+    y = numpy.nan_to_num(y)
     numpy.seterr(invalid='ignore')
+#    print numpy.isnan(y)
     y = numpy.abs(y)
 #    y = numpy.sqrt(y)
     med = numpy.median(y)
@@ -36,11 +39,11 @@ def convert_fits(dirfits, dirjpg, name):
     size = 63
     new = Image.new('L', (4*border+3*size,2*border+size))
     
-    ref = open_fits(file_ref)
-    new.paste(ref, (border, border))
-    
     sci = open_fits(file_sci)
-    new.paste(sci, (size+2*border, border))
+    new.paste(sci, (border, border))
+    
+    ref = open_fits(file_ref)
+    new.paste(ref, (size+2*border, border))
     
     try:    diff = open_fits(file_scimref)
     except: diff = open_fits(file_refmsci)
@@ -58,7 +61,12 @@ def main():
     day_total = 0
     run_total = 0
     t = time.time()
-    if os.path.isfile(dirfits):
+
+    if not os.path.exists(dirjpg):
+        print('making jpg directory')
+        os.system('mkdir %s' % dirjpg)
+
+    if os.path.exists(dirfits):
         for file in os.listdir(dirfits):
             if file.endswith('_targ_sci.fits.gz'):
                 day_total += 1
