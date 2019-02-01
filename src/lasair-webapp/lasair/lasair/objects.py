@@ -197,7 +197,7 @@ def objlist(request):
             message = 'You must start the query with the word "SELECT"'
             return render(request, 'error.html', {'message': message})
 
-        sqlquery_real = 'SELECT /*+ MAX_EXECUTION_TIME(60000) */ ' + ' '.join(tokens[1:])
+        sqlquery_real = 'SELECT /*+ MAX_EXECUTION_TIME(300000) */ ' + ' '.join(tokens[1:])
 
         sqlquery_real += ' LIMIT %d OFFSET %d' % (perpage, page*perpage)
         message = sqlquery_real

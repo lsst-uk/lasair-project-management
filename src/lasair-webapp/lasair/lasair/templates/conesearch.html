@@ -10,13 +10,12 @@ objects in ZTF in that cone. They can be separated by spaces, commas, semicolons
 They can be in decimal degrees (floating point number), 
 or sexagesimal in the form hh:mm:ss and dd:mm:ss or 
 hh mm ss and dd mm ss. If the radius is not specified, it defaults to 5 arcsec.
-You can also enter an objectId, beginning with 'ZTF'.
+You can also enter an objectId, or a list of object Id, each beginning with 'ZTF'.
 <form method="POST"  action="/conesearch/">
-<table class="table" style="width:60%">
+<table class="table" style="width:80%">
 {% csrf_token %}
-<tr><td>RA Dec radius:</td><td> <input size=60 name="cone" value="{{ data.cone }}"></td></tr>
-
-<tr><td/><td><font size=-2>(check this box for JSON output <input type="checkbox" name="json">)</font></td></tr>
+<tr><td> <input size=40 name="cone" value="{{ data.cone }}"></td>
+<td class="w-30"><font size=-2>(check this box for JSON output <input type="checkbox" name="json">)</font></td></tr>
 <tr><td><input type="submit" class="button" style="color: blue; background-color: #EEEEFF;" value="Run Cone Search"></td></tr>
 </td></tr>
 </form>
@@ -43,16 +42,17 @@ You can also enter an objectId, beginning with 'ZTF'.
 <font size=-2>
 Examples of searches:
 <ul><tt>
-<li>ZTF18acsovsw
-<li>141.15725 25.39508 
-<li>141.15725;25.39508 
-<li>141.15725| 25.39508 
-<li>141.15725,  25.39508, 5.0
-<li>09:24:37.74 | +25:23:42.3
-<li>09:24:37.74 | +25:23:42.3 10.0
-<li>09 24 37.74   +25 23 42.3
-<li>09 24 37.74 | +25 23 42.3 5
-<li>09 24 37.74 ; +25 23 42.3 5
+<li>ZTF18acsovsw</li>
+<li>ZTF18acsovsw, ZTF19aagqkrq, ZTF18aawohdr</li>
+<li>141.15725 25.39508 </li>
+<li>141.15725;25.39508 </li>
+<li>141.15725| 25.39508 </li>
+<li>141.15725,  25.39508, 5.0</li>
+<li>09:24:37.74 | +25:23:42.3</li>
+<li>09:24:37.74 | +25:23:42.3 10.0</li>
+<li>09 24 37.74   +25 23 42.3</li>
+<li>09 24 37.74 | +25 23 42.3 5</li>
+<li>09 24 37.74 ; +25 23 42.3 5</li>
 </tt></ul>
 </font>
 {% endblock %}

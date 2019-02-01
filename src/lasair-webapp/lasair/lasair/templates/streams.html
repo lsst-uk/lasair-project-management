@@ -4,7 +4,8 @@
   <div class="col-sm">
 <h3>Lasair Streams</h3>
 The following is a small selection of streams that Lasair can produce. 
-Lasair also provides a <a href=/objlist><b>more powerful freeform SQL interface</b></a>.
+<p>
+<b><i>The following queries may take up to a minute to execute. Please be patient.</i></b>
   </div>	
 </div>
 <div class="row">
@@ -24,13 +25,31 @@ Lasair also provides a <a href=/objlist><b>more powerful freeform SQL interface<
   <input type="hidden" name="sqlquery" value="{{ mq.query }}"/>
   <input type="hidden" name="page"     value="0"/>
   </form>
-<a href="#" onclick="document.getElementById('runquery{{ mq.mq_id }}').submit()"><b>{{ mq.name }}</b></a>
+<a href="#" onclick="runquery({{ mq.mq_id }});"><b>{{ mq.name }}</b></a>
+<div id="spinner{{ mq.mq_id }}"></div>
 </td>
-<td>{{ mq.description }}</td>
+<td>{{ mq.description|safe }}</td>
 </tr>
 {% endfor %}
 </table>
   </div>
 </div>
+<div class="row">
+  <div class="col-sm">
+<h3>Lasair Queries</h3>
+Lasair also provides a more powerful freeform SQL interface
+where you can see the SQL for these queries, customise for yourself, make and save your own queries.<br/>
+<a href=/objlist><b>Click Here to Build Your Own Query</b></a> 
+<p>&nbsp;</p>
+  </div>
+</div>
+
+<script>
+function runquery(mq_id){
+    document.getElementById('spinner' + mq_id).innerHTML = 
+        '<img src="/lasair/static/img/loading-gears-animation-10-2.gif">';
+    document.getElementById('runquery' + mq_id).submit();
+}
+</script>
 
 {% endblock %}

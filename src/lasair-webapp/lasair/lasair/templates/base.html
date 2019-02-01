@@ -40,6 +40,17 @@
         <div class="col-sm-2">
             <img src={% static "img/lasair-font.png" %} class="lasair-logo">
         </div>
+
+        <div class="col-sm-6">
+<form method="POST"  action="/conesearch/">
+{% csrf_token %}
+<input size=40 name="cone"> <font size=-2><a href=/conesearch>how to search</a></font>
+</form>
+        </div>
+
+
+
+
         <div class="col-sm text-right">
 <a href=http://www.roe.ac.uk/ifa/wfau/><img src={% static "img/uoe.png" %} width=70></a>
 <a href=https://star.pst.qub.ac.uk/wiki/doku.php/public/research_areas/supernovae/start><img src={% static "img/qub.png" %} width=100></a>
@@ -59,17 +70,17 @@ Logged in as {{ user.get_username }}
     <div class="row content">
         <div class="col-sm-2">
                <nav class="nav flex-column menu">
-                   <a class="nav-link active" href="/">Home</a>
-                   <a class="nav-link" href="/about">About Lasair</a>
-<!--                   <a class="nav-link" href="/streams">Latest Streams</a> 
-                   <a class="nav-link" href="/conesearch">Cone Search</a> -->
-                   <a class="nav-link" href="/coverage">Coverage</a>
-                   <a class="nav-link" href="/watchlist">Watchlists</a>
-                   <a class="nav-link" href="/skymap">Skymaps</a>
-                   <a class="nav-link" href="/jupyter">Jupyter</a>
-                   <a class="nav-link" href="/status">Ingestion Status</a>
-                   <a class="nav-link" href="/release">Release Notes</a>
-                   <a class="nav-link" href="/contact">Team and Contact</a>
+                   <a class="nav-link active small" href="/">Home</a>
+                   <a class="nav-link small" href="/about">About Lasair</a>
+                   <a class="nav-link small" href="/streams">Streams & Queries</a> 
+                   <a class="nav-link small" href="/conesearch">Search</a>
+                   <a class="nav-link small" href="/coverage">Coverage</a>
+                   <a class="nav-link small" href="/watchlist">Watchlists</a>
+                   <a class="nav-link small" href="/skymap">Skymaps</a>
+                   <a class="nav-link small" href="/jupyter">Jupyter</a>
+                   <a class="nav-link small" href="/status">Ingestion Status</a>
+                   <a class="nav-link small" href="/release">Release Notes</a>
+                   <a class="nav-link small" href="/contact">Team & Contact</a>
             </nav>
         </div>
 

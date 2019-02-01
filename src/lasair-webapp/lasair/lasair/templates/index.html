@@ -25,65 +25,6 @@ try it and tell us what more you need to do your science -- use the <i><b>Contac
 </p><p>
 For more information, click <a href=/about>About Lasair</a>.
 </p>
-<h3>Streams</h3>
-The following is a small selection of streams that Lasair can produce.<br/>
-Lasair also provides a <a href=/objlist>more powerful freeform SQL interface</a>.
-<table class="table table-bordered" style="width:80%">
-  <thead>
-    <tr>
-      <th style="width:20%">Name</th>
-      <th class="width:70%">Description</th>
-    </tr>
-  </thead>
-{% for mq in public_queries %}
-<tr><td>
-  <form method="POST" id="runquery{{ mq.mq_id }}" action="/objlist/">
-  {% csrf_token %}
-  <input type="hidden" name="sqlquery" value="{{ mq.query }}"/>
-  <input type="hidden" name="page"     value="0"/>
-  </form>
-<a href="#" onclick="document.getElementById('runquery{{ mq.mq_id }}').submit()"><b>{{ mq.name }}</b></a>
-</td>
-<td>{{ mq.description|safe }}</td>
-</tr>
-{% endfor %}
-</table>
-
-
-<h3>Cone Search</h3>
-Enter RA and Dec and optionally radius in arcseconds, to search for
-objects in ZTF in that cone. They can be separated by spaces, commas, semicolons, or vertical bars.
-They can be in decimal degrees (floating point number),
-or sexagesimal in the form hh:mm:ss and dd:mm:ss or
-hh mm ss and dd mm ss. If the radius is not specified, it defaults to 5 arcsec.
-You can also enter a list of objectIds, each beginning with 'ZTF'.
-<form method="POST"  action="/conesearch/">
-<table class="table" style="width:80%">
-{% csrf_token %}
-<tr>
-<td> <input size=40 name="cone" value="{{ data.cone }}"></td>
-<td><font size=-2>(check this box <br/>for JSON output <input type="checkbox" name="json">)</font></td>
-</tr>
-<tr><td><input type="submit" class="button" style="color: blue; background-color: #EEEEFF;" value="Run Search"></td></tr>
-</form>
-</table>
-<font size=-2>
-Examples of searches:
-<ul><tt>
-<li>ZTF18acsovsw, ZTF18abzikwz, ZTF18acbxsge</li>
-<li>141.15725 25.39508</li>
-<li>141.15725;25.39508</li>
-<li>141.15725| 25.39508</li>
-<li>141.15725,  25.39508, 5.0</li>
-<li>09:24:37.74 | +25:23:42.3</li>
-<li>09:24:37.74 | +25:23:42.3 10.0</li>
-<li>09 24 37.74   +25 23 42.3</li>
-<li>09 24 37.74 | +25 23 42.3 5</li>
-<li>09 24 37.74 ; +25 23 42.3 5</li>
-</tt></ul>
-</font>
-
-
 
 <hr/>
 <font size=-3>
