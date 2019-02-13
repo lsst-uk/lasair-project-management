@@ -116,6 +116,11 @@ def obj(request, objectId):
         if row['candid'] and row['isdiffpos'] == 'f':
             count_isdiffpos += 1
 
+    if len(candidates) == 0:
+        message = 'objectId %s does not exist'%objectId
+        data = {'objectId':objectId, 'message':message}
+        return data
+
     if not objectData:
         ra = float(row['ra'])
         dec = float(row['decl'])
