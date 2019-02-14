@@ -29,19 +29,18 @@ Lasair can do cone searches on all of these together.
 Power users can use a <a href= http://jupyter.org/>Jupyter</a> notebook interface, 
 click <i><b>Jupyter</b></i> for more information and to see the capabilities.
 </p>
-<p>
-<b>Important note about photometry</b>. Magnitudes from ZTF, such as the 
-attribute <tt>magpsf</tt>, are <i>difference magnitudes</i>, NOT apparent magnitudes. 
-As we learn in elementary astronomy, magnitude is a constant minus 5/2 times the 
-log10 of the flux. However a difference magnitude uses this relationship 
-with a <i>difference</i> in fluxes between the reference epoch and the measurement. 
-If a source has brightened from reference epoch it has solid symbols in the 
-Lasair light curve corresponding to that difference, and the difference 
-magnitude goes up and down with the apparent magnitude. 
-However, if the source is fainter than the reference epoch, it is shown with 
-open circles, and the difference magnitude moves <i>opposite</i> to the apparent magnitude.
-</p>
-
+<table>
+<tr><td>
+<b>Important note:</b>ZTF photometry is measured after subtraction of a template image. 
+Thus the reported magnitudes correspond to the difference in flux with respect 
+to the template. Positive differences are shown as solid symbols, negative 
+differences are shown as empty symbols. For variable (rather than transient) sources, 
+reported magnitudes here can therefore be significantly fainter than the average 
+magnitude of the source. See image at right.
+</td>
+<td><a href="/lasair/static/img/apparent_difference.png"><img width=200 style="border: 2px blue solid;" src="/lasair/static/img/apparent_difference.png"></a></td></tr>
+</table>
+<p>&nbsp;</p>
 
 <ul>
 
