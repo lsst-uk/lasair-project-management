@@ -148,7 +148,7 @@ Plotly.plot(lc_div, [lcg, lcr, lcfg, lcfr, nlcg, nlcr], {
         title:'MJD',
         tickformat :".f" },
     yaxis: {
-        title: 'Magnitude',
+        title: 'Difference Magnitude',
         autorange: 'reversed'    
     }
      },

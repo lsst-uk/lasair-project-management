@@ -28,7 +28,22 @@ A <i><b>Watchlist</b></i> is a collection of sky positions that you find interes
 Lasair can do cone searches on all of these together.
 Power users can use a <a href= http://jupyter.org/>Jupyter</a> notebook interface, 
 click <i><b>Jupyter</b></i> for more information and to see the capabilities.
-</p><ul>
+</p>
+<p>
+<b>Important note about photometry</b>. Magnitudes from ZTF, such as the 
+attribute <tt>magpsf</tt>, are <i>difference magnitudes</i>, NOT apparent magnitudes. 
+As we learn in elementary astronomy, magnitude is a constant minus 5/2 times the 
+log10 of the flux. However a difference magnitude uses this relationship 
+with a <i>difference</i> in fluxes between the reference epoch and the measurement. 
+If a source has brightened from reference epoch it has solid symbols in the 
+Lasair light curve corresponding to that difference, and the difference 
+magnitude goes up and down with the apparent magnitude. 
+However, if the source is fainter than the reference epoch, it is shown with 
+open circles, and the difference magnitude moves <i>opposite</i> to the apparent magnitude.
+</p>
+
+
+<ul>
 
 <li>Each ZTF alert is an information package that includes a rich set of parameters for 
 candidate transient or variable objects. These are assimilated into <i>objects</i> and users can 
