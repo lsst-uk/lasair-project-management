@@ -75,7 +75,7 @@ def insert_sql_candidate(alert):
     values.append(str(htmID))
 
 # and here is the SQL
-    return 'INSERT INTO candidates \n(%s) \nVALUES \n(%s)' % (','.join(names), ','.join(values))
+    return 'INSERT INTO candidates_test \n(%s) \nVALUES \n(%s)' % (','.join(names), ','.join(values))
 
 def msg_text(message):
     """Remove postage stamp cutouts from an alert message.
@@ -127,7 +127,7 @@ def alert_filter(alert, msl, stampdir=None):
                     diffmaglim = prv['diffmaglim']
                     noncanlist.append('("%s", %.5f, %d, %.3f)' % (objectId, jd, fid, diffmaglim))
             if len(noncanlist) > 0:
-                query4 = 'INSERT INTO noncandidates (objectId, jd, fid, diffmaglim) VALUES '
+                query4 = 'INSERT INTO noncandidates_test (objectId, jd, fid, diffmaglim) VALUES '
                 query4 += ', '.join(noncanlist)
                 logger.debug(query4)
                 try:
@@ -140,7 +140,7 @@ def alert_filter(alert, msl, stampdir=None):
 # insert the candidate record
         query  = insert_sql_candidate(data)
 # for new objects 
-        query2 = 'INSERT IGNORE INTO objects (objectId, stale) VALUES ("%s", 1)' % objectId
+        query2 = 'INSERT IGNORE INTO objects_test (objectId, stale) VALUES ("%s", 1)' % objectId
 # for existing objects
         query3 = 'UPDATE objects set stale=1 where objectId="%s"' % objectId
 
