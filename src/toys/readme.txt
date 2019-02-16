@@ -34,4 +34,24 @@ is simply to recompute the max of the payload numbers of the candidates.
 -- print_numbers()
 Prints out the number of candidates and number of objects.
 
+Output
+---- Tables remade
+---- 25000000 candidates made in 38087.86 seconds
+  25000000 candidates and 1000000 objects
+---- objects freshened in 8120.85 seconds
+---- 10 candidates made in 0.04 seconds
+  25000010 candidates and 1000000 objects
+---- objects freshened in 148.16 seconds
+---- 100 candidates made in 0.16 seconds
+  25000110 candidates and 1000000 objects
+---- objects freshened in 148.72 seconds
+---- 1000 candidates made in 1.56 seconds
+  25001110 candidates and 1000000 objects
+---- objects freshened in 148.03 seconds
+---- 10000 candidates made in 15.43 seconds
+  25011110 candidates and 1000000 objects
+---- objects freshened in 167.69 seconds
+---- 100000 candidates made in 150.87 seconds
+  25111110 candidates and 1000000 objects
+---- objects freshened in 791.10 seconds
 

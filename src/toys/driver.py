@@ -20,6 +20,9 @@ def addem(n_candidates):
     toys.update_objects(debug=False)
     print("---- objects freshened in %.2f seconds" % (time.time()-t))
 
-addem(10000)
+addem(25000000)
+addem(10)
+addem(100)
 addem(1000)
 addem(10000)
+addem(100000)
