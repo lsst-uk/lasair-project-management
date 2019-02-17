@@ -156,7 +156,7 @@ def alert_filter(alert, msl, stampdir=None):
                 if prv['candid']:
                     if prv['magpsf']:
                         insert_candidate(msl, prv, objectId)
-                        print('%s %s' % (objectId, str(prv['candid'])))
+#                        print('%s %s' % (objectId, str(prv['candid'])))
                 else:
                     jd         = prv['jd']
                     fid        = prv['fid']
@@ -176,7 +176,7 @@ def alert_filter(alert, msl, stampdir=None):
                 time_insert += time.time() - t
 
         candid = insert_candidate(msl, data['candidate'], objectId)
-        print('--> %s %s' % (objectId, str(candid)))
+#        print('--> %s %s' % (objectId, str(candid)))
 
         t = time.time()
         if stampdir:  # Collect all postage stamps
