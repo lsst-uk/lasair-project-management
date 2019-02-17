@@ -17,6 +17,7 @@ import settings
 import logging
 logger = logging.getLogger('ztf_ingestion')
 
+# attributes from the ZTF schema that the database knows about
 wanted_attributes = [
 'objectId', 'jd', 'fid', 'pid', 'diffmaglim', 'pdiffimfilename', 'programpi',
 'programid', 'candid', 'isdiffpos', 'tblid', 'nid', 'rcid', 'field', 'xpos',
@@ -35,20 +36,20 @@ wanted_attributes = [
 'htmid16']
 
 import time
-time_insert = 0.0
-time_stamp  = 0.0
-time_fetch  = 0.0
+time_insert = 0.0  # time for database inserts
+time_stamp  = 0.0  # time to store the stamps
+time_fetch  = 0.0  # time to fetch data packets from uw.edu
 
-def insert_sql_candidate(alert):
+def insert_sql_candidate(candidate, objectId):
     """ Creates an insert sql statement for insering the canditate info
-        Stamps and prv_candidates are discarded
+        Also works foe candidates in the prv
     """
     names = []
     values = []
 
     names.append('objectId')
-    values.append('"' + alert['objectId'] + '"')
-    for name,value in alert['candidate'].items():
+    values.append('"' + objectId + '"')
+    for name,value in candidate.items():
 
         # Must not use 'dec' in mysql, so use 'decl' instead
         if name == 'dec': 
@@ -61,6 +62,8 @@ def insert_sql_candidate(alert):
             names.append(name)
             if isinstance(value, str):
                 values.append('"' + value + '"')
+            elif name.startswith('ss') and not value:
+                values.append('-999.0')
             else:
                 values.append(str(value))
 
@@ -101,6 +104,37 @@ def write_stamp_file(stamp_dict, output_dir):
         logger.error('%% Cannot get stamp\n')
     return
 
+def insert_candidate(msl, candidate, objectId):
+    """ gets the SQL for insertion, then inserts the candidate
+        and makes the ojects stale
+    """
+    global time_insert
+    global time_stamp
+# insert the candidate record
+    query  = insert_sql_candidate(candidate, objectId)
+# for new objects 
+    query2 = 'INSERT IGNORE INTO objects (objectId, stale) VALUES ("%s", 1)' % objectId
+# for existing objects
+    query3 = 'UPDATE objects set stale=1 where objectId="%s"' % objectId
+
+    logger.debug(query)
+    logger.debug(query2)
+    logger.debug(query3)
+    t = time.time()
+    try:
+        cursor = msl.cursor(buffered=True)
+        cursor.execute(query)
+        cursor.execute(query2)
+        cursor.execute(query3)
+        msl.commit()
+    except mysql.connector.Error as err:
+        logger.error("Database insert failed: %s" % str(err))
+
+#    candid = alert.get('candid')
+#    logger.debug('inserted %d' % candid)
+
+    time_insert += time.time() - t
+
 def alert_filter(alert, msl, stampdir=None):
     """Filter to apply to each alert.
        See schemas: https://github.com/ZwickyTransientFacility/ztf-avro-alert
@@ -111,9 +145,7 @@ def alert_filter(alert, msl, stampdir=None):
     data = msg_text(alert)
     if data:  # Write your condition statement here
 
-        t = time.time()
         objectId = data['objectId']
-
 
 # look for non detection limiting magnitude
         prv_array = data['prv_candidates']
@@ -121,12 +153,17 @@ def alert_filter(alert, msl, stampdir=None):
             noncanlist = []
             query4 = ''
             for prv in prv_array:
-                if not prv['candid']:
+                if prv['candid']:
+                    if prv['magpsf']:
+                        insert_candidate(msl, prv, objectId)
+                        print('%s %s' % (objectId, str(prv['candid'])))
+                else:
                     jd         = prv['jd']
                     fid        = prv['fid']
                     diffmaglim = prv['diffmaglim']
                     noncanlist.append('("%s", %.5f, %d, %.3f)' % (objectId, jd, fid, diffmaglim))
             if len(noncanlist) > 0:
+                t = time.time()
                 query4 = 'INSERT INTO noncandidates (objectId, jd, fid, diffmaglim) VALUES '
                 query4 += ', '.join(noncanlist)
                 logger.debug(query4)
@@ -136,30 +173,10 @@ def alert_filter(alert, msl, stampdir=None):
                     msl.commit()
                 except mysql.connector.Error as err:
                     logger.debug("Noncandidate insert failed: %s" % str(err))
+                time_insert += time.time() - t
 
-# insert the candidate record
-        query  = insert_sql_candidate(data)
-# for new objects 
-        query2 = 'INSERT IGNORE INTO objects (objectId, stale) VALUES ("%s", 1)' % objectId
-# for existing objects
-        query3 = 'UPDATE objects set stale=1 where objectId="%s"' % objectId
-
-        logger.debug(query)
-        logger.debug(query2)
-        logger.debug(query3)
-        try:
-            cursor = msl.cursor(buffered=True)
-            cursor.execute(query)
-            cursor.execute(query2)
-            cursor.execute(query3)
-            msl.commit()
-        except mysql.connector.Error as err:
-            logger.error("Database insert failed: %s" % str(err))
-
-        candid = alert.get('candid')
-        logger.debug('inserted %d' % candid)
-
-        time_insert += time.time() - t
+        candid = insert_candidate(msl, data['candidate'], objectId)
+        print('--> %s %s' % (objectId, str(candid)))
 
         t = time.time()
         if stampdir:  # Collect all postage stamps
@@ -168,7 +185,7 @@ def alert_filter(alert, msl, stampdir=None):
             write_stamp_file( alert.get('cutoutScience'),    stampdir)
         time_stamp += time.time() - t
 
-    return candid
+        return candid
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
