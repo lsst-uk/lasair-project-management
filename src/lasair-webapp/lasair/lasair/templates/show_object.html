@@ -143,7 +143,7 @@ Image layer is PanSTARRS DR1; use the layers icon to change it &nbsp;(<img src=/
             <td> {% if cand.candid %}{{ cand.isdiffpos }}{% endif %}</td>
 
             <td> {% if not cand.candid %}<font color="gray" size=-2>non-detection</font>{% else %}<a href="/cand/{{ cand.candid }}/">{{ cand.candid }}</a>{% endif %}</td>
-            <td>{% if cand.candid %}<a href=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg><img src=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg></a>{% endif %}</td>
+            <td>{% if cand.candid and cand.ndethist > 0 %}<a href=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg><img src=/lasair/static/ztf/stamps/jpg/{{ cand.nid }}/candid{{ cand.candid }}.jpg></a>{% endif %}</td>
             </tr>
 
         {% endfor %}
