@@ -39,9 +39,9 @@ var lcg = {x:gt, y: gmag, error_y:{
         array: gerror,
         visible: true
         },
-    mode:'lines+markers',
+    mode:'markers',
     marker: { color:g, size: 12 },
-    type:'lines+markers'
+    type:'markers'
 }
 var lcr = {x:rt, y: rmag, error_y:{
         type:'data',
@@ -50,9 +50,9 @@ var lcr = {x:rt, y: rmag, error_y:{
         opacity: 0.7,
         visible: true
         },
-        mode:'lines+markers',
+        mode:'markers',
     marker: { color:r, size: 12 },
-        type:'lines+markers'
+        type:'markers'
 }
 
 Plotly.plot(lc_div, [lcg, lcr], {
