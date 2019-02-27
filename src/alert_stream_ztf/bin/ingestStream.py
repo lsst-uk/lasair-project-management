@@ -40,6 +40,10 @@ time_insert = 0.0  # time for database inserts
 time_stamp  = 0.0  # time to store the stamps
 time_fetch  = 0.0  # time to fetch data packets from uw.edu
 
+candidates    = 'candidates'
+objects       = 'objects'
+noncandidates = 'noncandidates'
+
 def insert_sql_candidate(candidate, objectId):
     """ Creates an insert sql statement for insering the canditate info
         Also works foe candidates in the prv
@@ -78,7 +82,7 @@ def insert_sql_candidate(candidate, objectId):
     values.append(str(htmID))
 
 # and here is the SQL
-    return 'INSERT INTO candidates \n(%s) \nVALUES \n(%s)' % (','.join(names), ','.join(values))
+    return 'INSERT IGNORE INTO %s \n(%s) \nVALUES \n(%s)' % (candidates, ','.join(names), ','.join(values))
 
 def msg_text(message):
     """Remove postage stamp cutouts from an alert message.
@@ -113,9 +117,9 @@ def insert_candidate(msl, candidate, objectId):
 # insert the candidate record
     query  = insert_sql_candidate(candidate, objectId)
 # for new objects 
-    query2 = 'INSERT IGNORE INTO objects (objectId, stale) VALUES ("%s", 1)' % objectId
+    query2 = 'INSERT IGNORE INTO %s (objectId, stale) VALUES ("%s", 1)' % (objects, objectId)
 # for existing objects
-    query3 = 'UPDATE objects set stale=1 where objectId="%s"' % objectId
+    query3 = 'UPDATE %s set stale=1 where objectId="%s"' % (objects, objectId)
 
     logger.debug(query)
     logger.debug(query2)
@@ -164,7 +168,7 @@ def alert_filter(alert, msl, stampdir=None):
                     noncanlist.append('("%s", %.5f, %d, %.3f)' % (objectId, jd, fid, diffmaglim))
             if len(noncanlist) > 0:
                 t = time.time()
-                query4 = 'INSERT INTO noncandidates (objectId, jd, fid, diffmaglim) VALUES '
+                query4 = 'INSERT INTO %s (objectId, jd, fid, diffmaglim) VALUES ' % noncandidates
                 query4 += ', '.join(noncanlist)
                 logger.debug(query4)
                 try:
