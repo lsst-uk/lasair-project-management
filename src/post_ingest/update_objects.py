@@ -8,6 +8,9 @@ import settings
 sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
 import htmCircle
 
+candidates = 'candidates'
+objects    = 'objects'
+
 # setup database connection
 import mysql.connector
 config = {
@@ -20,10 +23,10 @@ msl = mysql.connector.connect(**config)
 
 def make_object(objectId, candlist, debug=False):
     ncand = len(candlist)
-    if ncand < 2:
+    if ncand < 3:
         if debug: 
             print('object %s has too few (%d) candidates, exiting' % (objectId, ncand))
-        query = 'DELETE FROM objects WHERE objectId="%s"' % objectId
+        query = 'DELETE FROM %s WHERE objectId="%s"' % (objects, objectId)
         if debug: print(query)
         cursor  = msl.cursor(buffered=True, dictionary=True)
         cursor.execute(query)
@@ -100,7 +103,7 @@ def make_object(objectId, candlist, debug=False):
     sets['htm16']      = htm16
 
     list = []
-    query = 'UPDATE objects SET '
+    query = 'UPDATE %s SET ' % objects
     for key,value in sets.items():
         list.append(key + '=' + str(value))
     query += ', '.join(list)
@@ -120,9 +123,9 @@ def update_objects(debug=False):
     nbatch = 500000
     oldObjectId = ''
     candlist = []
-    ntotalcand = nupdate = ndelete = 0
+    ntotalcand = nupdate = ndelete = oldnstale = 0
     while(1):
-        query =  'SELECT candid, objectId,ra,decl,jd,fid,magpsf FROM candidates NATURAL JOIN objects '
+        query =  'SELECT candid, objectId,ra,decl,jd,fid,magpsf FROM %s NATURAL JOIN %s ' % (candidates, objects)
         query += 'WHERE stale=1 ORDER BY objectId,jd LIMIT %d ' % nbatch
 
         if debug:
@@ -146,18 +149,19 @@ def update_objects(debug=False):
                 oldObjectId = objectId
         if debug:
             print('Iteration %d: %d candidates, %d updated objects, %d deleted objects' % (k, ntotalcand, nupdate, ndelete))
-        query = 'SELECT COUNT(*) AS nobj FROM objects WHERE stale=1'
+        query = 'SELECT COUNT(*) AS nstale FROM %s WHERE stale=1' % objects
         cursor.execute(query)
         for record in cursor:
             break
-        nobj = record['nobj']
-        if nobj == 1:
+        nstale = record['nstale']
+        if nstale == 1:
             result = make_object(oldObjectId, candlist)
-            nobj -= 1
+            nstale -= 1
 
-        print('%d objects still stale' % nobj)
-        if nobj == 0:
+        print('%d objects still stale' % nstale)
+        if nstale == 0 or nstale == oldnstale:
             break
+        oldnstale = nstale
 
     print('-------------- UPDATE OBJECTS --------------')
     print('%d candidates, %d updated objects, %d deleted objects' % (ntotalcand, nupdate, ndelete))
