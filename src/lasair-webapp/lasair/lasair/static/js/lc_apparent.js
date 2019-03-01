@@ -12,9 +12,9 @@ r = 'rgb(244,2,52)';
 candidates = data.candidates;
 
 candidates.forEach(function(item){
-    y = Number(item.mag_apparent);
+    y = Number(item.dc_mag);
     x = Number(item.mjd);
-    e = Number(0.0);
+    e = Number(item.dc_sigmag);
     fid = Number(item.fid);
     det = (item.candid)
     if(det){
@@ -40,7 +40,7 @@ var lcg = {x:gt, y: gmag, error_y:{
         visible: true
         },
     mode:'markers',
-    marker: { color:g, size: 12 },
+    marker: { color:g, size: 8 },
     type:'markers'
 }
 var lcr = {x:rt, y: rmag, error_y:{
@@ -51,7 +51,7 @@ var lcr = {x:rt, y: rmag, error_y:{
         visible: true
         },
         mode:'markers',
-    marker: { color:r, size: 12 },
+    marker: { color:r, size: 8 },
         type:'markers'
 }
 
