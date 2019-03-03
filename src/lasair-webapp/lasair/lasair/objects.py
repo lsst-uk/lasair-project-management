@@ -1,4 +1,4 @@
-import os
+import os, sys
 from django.shortcuts import render, get_object_or_404, HttpResponse
 from django.template.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
@@ -10,7 +10,8 @@ import ephem, math
 from datetime import datetime, timedelta
 import json
 import date_nid
-from lasair.mag import dc_mag
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
+from mag import dc_mag
 
 def connect_db():
     msl = mysql.connector.connect(
