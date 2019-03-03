@@ -10,6 +10,7 @@ import ephem, math
 from datetime import datetime, timedelta
 import json
 import date_nid
+from lasair.mag import dc_mag
 
 def connect_db():
     msl = mysql.connector.connect(
@@ -38,36 +39,6 @@ def decsex(de):
         return '%02d:%02d:%.3f' % (d, m, s)
     else:
         return '-%02d:%02d:%.3f' % (d, m, s)
-
-def dc_mag(fid, magpsf,sigmapsf, magnr,sigmagnr, magzpsci, isdiffpos):
-    # zero points. Looks like they are fixed.
-    ref_zps = {1:26.325, 2:26.275, 3:25.660}
-    magzpref = ref_zps[fid]
-
-    # reference flux and its error
-    ref_flux = 10**( 0.4* ( magzpref - magnr) )
-    ref_sigflux = (sigmagnr/1.0857)*ref_flux
-    
-    # difference flux and its error
-    if magzpsci == 0.0: magzpsci = magzpref
-    difference_flux = 10**( 0.4* ( magzpsci - magpsf) )
-    difference_sigflux = (sigmapsf/1.0857)*difference_flux
-
-    # add or subract difference flux based on isdiffpos
-    if isdiffpos == 't': dc_flux = ref_flux + difference_flux
-    else:                dc_flux = ref_flux - difference_flux
-    
-    # assumes errors are independent. Maybe too conservative.
-    dc_sigflux =  math.sqrt( difference_sigflux**2 + ref_sigflux**2 )
-    
-    # apparent mag and its error from fluxes
-    if dc_flux > 0.0:
-        dc_mag = magzpsci - 2.5 * math.log10(dc_flux)
-    else:
-        dc_mag = magzpsci
-    dc_sigmag = dc_sigflux/dc_flux*1.0857
-    
-    return {'dc_mag':dc_mag, 'dc_sigmag':dc_sigmag}
 
 def objhtml(request, objectId):
     data = obj(request, objectId)
