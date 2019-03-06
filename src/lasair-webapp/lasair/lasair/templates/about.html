@@ -31,7 +31,8 @@ click <i><b>Jupyter</b></i> for more information and to see the capabilities.
 </p>
 <table>
 <tr><td>
-<b>Important note:</b>ZTF photometry is measured after subtraction of a template image. 
+<a name="photometry"></a>
+<b>Note about Photometry:</b>ZTF photometry is measured after subtraction of a template image. 
 Thus the reported magnitudes correspond to the difference in flux with respect 
 to the template. Positive differences are shown as solid symbols, negative 
 differences are shown as empty symbols. For variable (rather than transient) sources, 
@@ -40,6 +41,17 @@ magnitude of the source. See image at right.
 </td>
 <td><a href="/lasair/static/img/apparent_difference.png"><img width=200 style="border: 2px blue solid;" src="/lasair/static/img/apparent_difference.png"></a></td></tr>
 </table>
+In addition to the difference magnitude that ZTF provides, Lasair has computed 
+apparent magnitude, or DC magnitude. It uses the reference magnitude of the nearest 
+object at reference epoch -- for a variable star this will be the same astrophysical 
+object as for the science image. It also uses zero point magnitudes. 
+Note that objects that get processed with different reference images -- and hence the 
+difference fluxes -- are offsets from different magnitudes. This re-engineered 
+magnitude is NOT a forced PSF flux measurement on the unsubtracted science image. 
+The code that converts the attributes supplied by ZTF to the DC magnitude and its error can be 
+found <a href=https://github.com/lsst-uk/lasair/blob/master/src/alert_stream_ztf/common/mag.py>here</a>. To reconstruct the apparent magnitude, the zero point of the science image is 
+required, which ZTF did not make available before Nov 2018. 
+Therefore the apparant magnitudes are not reliable before this time.
 <p>&nbsp;</p>
 
 <ul>
