@@ -51,27 +51,33 @@ function makeGalaxies(data){
 }
 
 function makeGalaxyTable(data){
-    var s = 'Galaxies with more than 1% probability: <table cellpadding=5>';
-    s += '<tr><th>Percent</th><th>Link to NED</th><th>Distance (Mpc)</th></tr>';
-    for(var i=0; i<data.sources.length; i++){
-        t = data.sources[i];
-        var aw = t.absw*100;
-        if(aw < 1) {
-            continue;
+    t = data.sources[0];
+    var aw = t.absw*100;
+    if(aw < 1) {
+        var s = 'No galaxy has more than 1% probability of containing the counterpart';
+    } else {
+        var s = 'Galaxies with more than 1% probability: <table cellpadding=5>';
+        s += '<tr><th>Percent</th><th>Link to NED</th><th>Distance (Mpc)</th></tr>';
+        for(var i=0; i<data.sources.length; i++){
+            t = data.sources[i];
+            var aw = t.absw*100;
+            if(aw < 1) {
+                continue;
+            }
+            distance = (t.distance).toString().substring(0,5);
+            aw = aw.toString();
+            aw = aw.substring(0,4);
+            var ra = t.coords[0];
+            var de = t.coords[1];
+            url = 'http://ned.ipac.caltech.edu/cgi-bin/nph-objsearch?lon='+ra+'d&lat='+de+'d&radius=0.25&search_type=Near+Position+Search';
+            s += '<tr>';
+            s += '<td>' + aw + '</td>';
+            s += '<td><a href="' + url + '">NED</a></td>';
+            s += '<td>' + distance + '</td>';
+            s += '</tr>';
         }
-        distance = (t.distance).toString().substring(0,5);
-        aw = aw.toString();
-        aw = aw.substring(0,4);
-        var ra = t.coords[0];
-        var de = t.coords[1];
-        url = 'http://ned.ipac.caltech.edu/cgi-bin/nph-objsearch?lon='+ra+'d&lat='+de+'d&radius=0.25&search_type=Near+Position+Search';
-        s += '<tr>';
-        s += '<td>' + aw + '</td>';
-        s += '<td><a href="' + url + '">NED</a></td>';
-        s += '<td>' + distance + '</td>';
-        s += '</tr>';
+        s += '</table>';
     }
-    s += '</table>';
     document.getElementById("galaxies_table").innerHTML = s;
 }
 
