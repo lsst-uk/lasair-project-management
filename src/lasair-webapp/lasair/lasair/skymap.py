@@ -50,7 +50,8 @@ def show_skymap(request, skymap_id):
     jd = jd_from_iso(isodate)
     jd1delta = -1.0
     jd2delta =  1.0
-    ztf_wanted = coverage_wanted = galaxies_wanted = False
+    ztf_wanted = coverage_wanted = False
+    galaxies_wanted = True
 
     if request.method == 'POST':
         ztf_wanted = (request.POST.get('ztf_wanted','off') == 'on')
