@@ -71,6 +71,8 @@ To <input class="form-control" size="14" name="niddate2" type="text" value="{{ n
   <div id="aladin-lite-div" style="width:700px;height:700px;"></div>
 </div>
 
+<div id="galaxies_table"></div>
+
 <font size=-2><a href=/lasair/static/ztf/skymap/{{ skymap_id }}.json>json</a></font>
 
 <script>
@@ -79,6 +81,7 @@ function drawLayers(skymapData){
     makeContours(skymapData);
 {% if galaxies_wanted %}
     makeGalaxies(skymapData);
+    makeGalaxyTable(skymapData);
 {% endif %}
 
     var cd = "{{ coverage }}";
