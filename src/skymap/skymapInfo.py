@@ -38,11 +38,11 @@ def splitPaths(path):
     return paths
 
 def makeFile(infile, outfile, language='json'):
-    print "From ", infile, " to ", outfile
+    print("From ", infile, " to ", outfile)
     s = generate_from_fitsfile(infile, language)
 
     f= open(outfile, 'w')
-    print>>f, s
+    f.write(s)
     f.close()
     return 1
 
@@ -54,14 +54,14 @@ def generate_from_fitsfile(filename, language):
     except:
         dim = 2
 
-    print "dimension = %d" % dim
+    print("dimension = %d" % dim)
     if dim == 3:
         ii = (~numpy.isinf(distmu)) & (distmu > 0.0)
-        print "good percent %.2f" % (numpy.sum(ii)*100.0/len(distmu))
+        print("good percent %.2f" % (numpy.sum(ii)*100.0/len(distmu)))
         dm = distmu[ii]
         prob = healpix_data[ii]
         x = numpy.multiply(prob,dm)
-        print "Average distance %.2f " % (numpy.sum(x)/numpy.sum(prob))
+        print("Average distance %.2f " % (numpy.sum(x)/numpy.sum(prob)))
 
     wanted = ['DATE', 'DATE-OBS', 'INSTRUME', 'MJD-OBS', 'DISTMEAN', 'DISTSTD', 'REFERENC']
     meta = {}
@@ -69,7 +69,7 @@ def generate_from_fitsfile(filename, language):
         if k in wanted:
             meta[k] = v
 
-    print "Generating contours..."
+    print("Generating contours...")
     skymapID = get_md(filename)
 
     contours = []
@@ -98,7 +98,7 @@ def generate_from_fitsfile(filename, language):
             if pair not in h:
                 h.append(pair)
 
-    print h
+    print(h)
     meta['histogram'] = h
     
 # make countours
@@ -126,7 +126,7 @@ def generate_from_fitsfile(filename, language):
                 if apointRA == -999:
                     apointRA = sp[0][0]
                     apointDec = sp[0][1]
-    print "made %d polylines" % numcontours
+    print("made %d polylines" % numcontours)
     meta['apointRA'] = apointRA
     meta['apointDec'] = apointDec
 
@@ -137,7 +137,7 @@ def generate_from_fitsfile(filename, language):
 
     de = gc.declination
     ra = gc.right_ascension
-    print "has %d sources" % len(ra)
+    print("has %d sources" % len(ra))
 
     ph_at_sources = ra/radian
     th_at_sources = (90 - de)/radian
@@ -178,14 +178,15 @@ def generate_from_fitsfile(filename, language):
 
     weighted_sources = numpy.array(weighted_sources)
     maxw = numpy.max(weighted_sources)
-    print 'max weight = ', maxw
+    sumw = numpy.sum(weighted_sources)
+    print('max weight = ', maxw)
 
     index = numpy.argsort(-weighted_sources)
     
     num = len(index)
     if num > 200: num = 200 
     selected_sources = (index[:num])
-    print "Selected %d galaxies" % len(selected_sources)
+    print("Selected %d galaxies" % len(selected_sources))
 
     sources = []
     for de, ra, w, distance in zip(
@@ -194,19 +195,20 @@ def generate_from_fitsfile(filename, language):
         weighted_sources[selected_sources],
         distance[selected_sources]):
         
+        absw = w/sumw           # weight compared to total weight
         sw = math.sqrt(w/maxw)  # normalized sqrt of weight
         if sw < 1.e-3: continue
         if math.isnan(distance): distance = 0.0
-        sources.append({"coords": [ra, de], "sw":sw, "distance":distance})
+        sources.append({"coords": [ra, de], "sw":sw, "absw":absw, "distance":distance})
         n += 1
 
-    print "Sources complete with %d" % n
+    print("Sources complete with %d" % n)
 
-    print "Language = ",language
+    print("Language = ",language)
     return make_json(meta, contours, sources)
 
 def make_json(meta, contours, sources):
-    print "building json"
+    print("building json")
     return json.dumps({"meta":meta, "contours":contours, "sources": sources})
 
 def get_level(m, p):
@@ -234,7 +236,7 @@ def hsv2rgb(h, s, v):
 if __name__ == "__main__":
     import os, sys
     if len(sys.argv) < 2:
-        print "Usage: python skymapInfo.py fitsfiles"
+        print("Usage: python skymapInfo.py fitsfiles")
         sys.exit()
 
     infile = sys.argv[1]
@@ -245,7 +247,7 @@ if __name__ == "__main__":
         makeFile(infile, outfile, 'json')
 
     if os.path.isdir(infile):   # whole collection .../fits/name/123.fits --> .../json/name/123.json
-        print "directory"
+        print("directory")
         for file in os.listdir(infile):
             if file.endswith('.fits') or file.endswith('.fits.gz'):
                 name = infile + file.replace('.fits.gz', '').replace('.fits', '')

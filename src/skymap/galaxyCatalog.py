@@ -59,16 +59,16 @@ class gc(object):
         and declination data.
         """
         ptp_info = gc.ptp(self.right_ascension)
-        print>>sys.stderr, "RA   range: {0[0]:7.2f} - {0[1]:7.2f}".format(ptp_info)
+        print("RA   range: {0[0]:7.2f} - {0[1]:7.2f}".format(ptp_info))
 
         ptp_info = gc.ptp(self.declination)
-        print>>sys.stderr, "Dec  range: {0[0]:6.2f} - {0[1]:6.2f}".format(ptp_info)
+        print("Dec  range: {0[0]:6.2f} - {0[1]:6.2f}".format(ptp_info))
 
         ptp_info = gc.ptp(self.distance)
-        print>>sys.stderr, "Dist range: {0[0]:8.4f} - {0[1]:8.4f}".format(ptp_info)
+        print("Dist range: {0[0]:8.4f} - {0[1]:8.4f}".format(ptp_info))
 
         ptp_info = gc.ptp(self.Kmag)
-        print>>sys.stderr, "Kmag range: {0[0]:8.4f} - {0[1]:8.4f}".format(ptp_info)
+        print("Kmag range: {0[0]:8.4f} - {0[1]:8.4f}".format(ptp_info))
 
 
 if __name__ == "__main__":
