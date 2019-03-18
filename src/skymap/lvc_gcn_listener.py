@@ -25,6 +25,9 @@ import os
 from fundamentals import tools
 import requests
 import gcn
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/')
+import settings
+import slack_sender
 
 # VARIABLES
 downloadPath = "/data/ztf/skymap/"
@@ -142,6 +145,8 @@ class gcnListener():
                 self.log.info(cmd)
                 os.system(cmd)
 
+                ss = slack_sender.SlackSender(settings.SLACKURL)
+                ss.send('New LVC skymap available at https://lasair.roe.ac.uk/skymap/%s/' % params['GraceID'])
 
         # START THE LISTENER - WILL RECONNECT AUTOMATICALLY IF CONNECTION DROPS
         gcn.listen(handler=process_gcn, host=gcn_host)
