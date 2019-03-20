@@ -65,7 +65,7 @@ Watchlist has {{ count }} sources under watch.
 <td>{{ c.ra }}</td>
 <td>{{ c.decl }}</td>
 <td><a href=/object/{{ c.objectId }}/>{{ c.objectId }}</a></td>
-<td>{% if c.ncand %}{{ c.ncand }}{% endif %}</td>
+<td>{% if c.ncand %}{{ c.ncand }}{% else %}{% if c.objectId %}&lt; 3{% endif %}{% endif %}</td>
 <td>{{ c.range|floatformat:1 }}</td>
 <td>{{ c.sherlock_classification }}</td>
 </tr>
