@@ -24,10 +24,10 @@ class EopError(AlertError):
         The Kafka message result from consumer.poll().
     """
     def __init__(self, msg):
-        message = 'topic:%s, partition:%d, status:end, ' \
-                  'offset:%d, key:%s, time:%.3f\n' \
-                  % (msg.topic(), msg.partition(),
-                     msg.offset(), str(msg.key()), time.time())
+        message = 'partition:%d, status:end, ' \
+                  'offset:%d, key:%s' \
+                  % (msg.partition(),
+                     msg.offset(), str(msg.key()))
         self.message = message
 
     def __str__(self):
