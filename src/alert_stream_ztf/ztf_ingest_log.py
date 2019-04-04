@@ -21,7 +21,7 @@ while 1:
     logger.addHandler(fh)
     logger.setLevel(logging.INFO)
 
-    process = Popen(['/home/roy/lasair/src/alert_stream_ztf/ztf_ingest.py'], stdout=PIPE, stderr=PIPE)
+    process = Popen(['/home/roy/anaconda3/bin/python', '/home/roy/lasair/src/alert_stream_ztf/ztf_ingest.py'], stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     logger.info(stdout)
     logger.info(stderr)

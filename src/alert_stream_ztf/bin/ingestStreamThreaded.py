@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """Consumes stream for ingesting to database
 
 """
@@ -10,6 +8,7 @@ import sys
 import os
 import time
 import logging
+sys.path.append('/home/roy/lasair/alert_stream/common/htm/python')
 import htmCircle
 import mysql.connector
 import settings
@@ -117,7 +116,7 @@ def write_stamp_file(stamp_dict, output_dir, times):
         times['log'] += ('%% Cannot get stamp\n')
     return times
 
-def insert_candidate(msl, candidate, objectId, times):
+def insert_candidate(msl, candidate, objectId, stalefile, times):
     """ gets the SQL for insertion, then inserts the candidate
         and makes the ojects stale
     """
@@ -126,9 +125,9 @@ def insert_candidate(msl, candidate, objectId, times):
     query = d['sql']
     times = d['times']
 # for new objects 
-    query2 = 'INSERT IGNORE INTO %s (objectId, stale) VALUES ("%s", 1)' % (objects, objectId)
+#    query2 = 'INSERT IGNORE INTO %s (objectId, stale) VALUES ("%s", 1)' % (objects, objectId)
 # for existing objects
-    query3 = 'UPDATE %s set stale=1 where objectId="%s"' % (objects, objectId)
+#    query3 = 'UPDATE %s set stale=1 where objectId="%s"' % (objects, objectId)
 
 #    logger.debug(query)
 #    logger.debug(query2)
@@ -137,19 +136,38 @@ def insert_candidate(msl, candidate, objectId, times):
     try:
         cursor = msl.cursor(buffered=True)
         cursor.execute(query)
-        cursor.execute(query2)
-        cursor.execute(query3)
-        msl.commit()
+        cursor.close()
     except mysql.connector.Error as err:
-        times['log'] += ('Database insert failed: %s' % str(err))
+        times['log'] += ('Database insert candidate failed: %s' % str(err))
 
+    try:
+        stalefile.write('%s\n' % objectId)
+    except:
+        times['log'] += ('Stalefile write failed: %s' % objectId)
+    
+
+#    try:
+#        cursor = msl.cursor(buffered=True)
+#        cursor.execute(query2)
+#        cursor.close()
+#    except mysql.connector.Error as err:
+#        times['log'] += ('Database insert object failed: %s' % str(err))
+
+#    try:
+#        cursor = msl.cursor(buffered=True)
+#        cursor.execute(query3)
+#        cursor.close()
+#    except mysql.connector.Error as err:
+#        times['log'] += ('Database update object failed: %s' % str(err))
+
+    msl.commit()
 #    candid = alert.get('candid')
 #    logger.debug('inserted %d' % candid)
 
     times['insert'] += time.time() - t
     return times
 
-def alert_filter(alert, msl, times, stampdir=None):
+def alert_filter(alert, msl, times, stalefile, stampdir=None):
     """Filter to apply to each alert.
        See schemas: https://github.com/ZwickyTransientFacility/ztf-avro-alert
     """
@@ -168,7 +186,7 @@ def alert_filter(alert, msl, times, stampdir=None):
             for prv in prv_array:
                 if prv['candid']:
                     if prv['magpsf']:
-                        times = insert_candidate(msl, prv, objectId, times)
+                        times = insert_candidate(msl, prv, objectId, stalefile, times)
 #                        print('%s %s' % (objectId, str(prv['candid'])))
                 else:
                     jd         = prv['jd']
@@ -183,13 +201,13 @@ def alert_filter(alert, msl, times, stampdir=None):
                 try:
                     cursor = msl.cursor(buffered=True)
                     cursor.execute(query4)
-                    msl.commit()
+                    cursor.close()
                 except mysql.connector.Error as err:
 #                    logger.debug('Noncandidate insert failed: %s' % str(err))
-                     pass
+                    pass
                 times['insert'] += time.time() - t
 
-        times = insert_candidate(msl, data['candidate'], objectId, times)
+        times = insert_candidate(msl, data['candidate'], objectId, stalefile, times)
 
         t = time.time()
         if stampdir:  # Collect all postage stamps
@@ -254,7 +272,7 @@ class Consumer(threading.Thread):
             streamReader = alertConsumer.AlertConsumer(self.args.topic, self.args.frombeginning, schema_files, **self.conf)
             streamReader.__enter__()
         except alertConsumer.EopError as e:
-            self.times['log'] += '%d: %s\n' % (threadID, e.message)
+            self.times['log'] += '%d: %s\n' % (self.threadID, e.message)
             sys.exit()
     
         if self.args.maxalert:
@@ -262,7 +280,8 @@ class Consumer(threading.Thread):
         else:
             maxalert = 50000
     
-        nalert = oldnalert = oldoldnalert = 0
+        stalefile = open('/data/ztf/stale/file%02d'%self.threadID, 'w')
+        nalert = 0
         while nalert < maxalert:
             try:
                 t = time.time()
@@ -275,9 +294,9 @@ class Consumer(threading.Thread):
                     for record in msg:
                         # Apply filter to each alert
                         if self.args.stampdump:
-                            d = alert_filter(record, msl, self.times, '/data/ztf/stamps/fits/' + self.args.stampdump)
+                            d = alert_filter(record, msl, self.times, stalefile, '/data/ztf/stamps/fits/' + self.args.stampdump)
                         else:
-                            d = alert_filter(record, msl, self.times)
+                            d = alert_filter(record, msl, self.times, stalefile)
                         candid = d['candid']
                         self.times = d['times']
                         nalert += 1
@@ -285,14 +304,10 @@ class Consumer(threading.Thread):
             except alertConsumer.EopError as e:
                 # Write when reaching end of partition
                 self.times['log'] += '%d: %s\n' % (self.threadID, e.message)
-                if nalert == 0 or (nalert == oldnalert and nalert == oldoldnalert):
-                    self.times['log'] += 'Finished after %d ' % nalert
-                    streamReader.__exit__(0,0,0)
-                else:
-                    self.times['log'] += 'Pausing after %d ' % nalert
-                    time.sleep(10)
-                    oldoldnalert = oldnalert
-                    oldnalert = nalert
+                self.times['log'] += 'Finished after %d ' % nalert
+                print('%d: %s\n' % (self.threadID, e.message))
+                print('Finished after %d ' % nalert)
+                break
             except IndexError:
                 self.times['log'] += 'Data cannot be decoded '
             except UnicodeDecodeError:
@@ -313,7 +328,9 @@ class Consumer(threading.Thread):
                 f.write(streamReader.raw_msg)
                 f.close()
         streamReader.__exit__(0,0,0)
+        stalefile.close()
         self.times['log'] += ('T%d got %d' % (self.threadID, nalert))
+        print(self.times['log'])
         return self.times
 
 def main():
@@ -356,6 +373,8 @@ def main():
     else:
         nthread = 1
     logger.info('Threads = %d' % nthread)
+
+    os.system('rm -f /data/ztf/stale/*')
 
     timeses = []
     for i in range(nthread):

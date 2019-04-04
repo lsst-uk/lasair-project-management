@@ -1,4 +1,4 @@
-import sys
+import os, sys
 import math
 import numpy as np
 import time
@@ -7,27 +7,18 @@ sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
 import settings
 sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
 import htmCircle
+import threading
 
-candidates = 'candidates'
-objects    = 'objects'
+candidates = 'candidates_test'
+objects    = 'objects_test'
 
 # setup database connection
 import mysql.connector
-config = {
-    'user'    : settings.DB_USER_WRITE,
-    'password': settings.DB_PASS_WRITE,
-    'host'    : settings.DB_HOST,
-    'database': 'ztf'
-}
-msl = mysql.connector.connect(**config)
 
-def make_object(objectId, candlist, debug=False):
+def make_object(objectId, candlist, msl):
     ncand = len(candlist)
     if ncand < 3:
-        if debug: 
-            print('object %s has too few (%d) candidates, exiting' % (objectId, ncand))
         query = 'DELETE FROM %s WHERE objectId="%s"' % (objects, objectId)
-        if debug: print(query)
         cursor  = msl.cursor(buffered=True, dictionary=True)
         cursor.execute(query)
         msl.commit()
@@ -109,63 +100,107 @@ def make_object(objectId, candlist, debug=False):
     query += ', '.join(list)
     query += ' WHERE objectId="' + objectId + '"'
 
-    if debug: print(query)
     cursor  = msl.cursor(buffered=True, dictionary=True)
     cursor.execute(query)
     msl.commit()
     return 1
 
-def update_objects(debug=False):
-    t = time.time()
-    cursor  = msl.cursor(buffered=True, dictionary=True)
-    n = 0
-    k = 0
-    nbatch = 500000
-    oldObjectId = ''
-    candlist = []
-    ntotalcand = nupdate = ndelete = oldnstale = 0
-    while(1):
-        query =  'SELECT candid, objectId,ra,decl,jd,fid,magpsf FROM %s NATURAL JOIN %s ' % (candidates, objects)
-        query += 'WHERE stale=1 ORDER BY objectId,jd LIMIT %d ' % nbatch
+class Updater(threading.Thread):
+    def __init__(self, threadID, objectIds, times):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.objectIds = objectIds
+        self.times = times
 
-        if debug:
-            print(query)
-        cursor.execute(query)
-        ncand = 0
-        for cand in cursor:
-            ntotalcand += 1
-            ncand += 1
-            objectId = cand['objectId']
-#            print objectId, cand['candid']   ########################
-            if oldObjectId == '':    # the first record
-                oldObjectId = objectId
-            if objectId == oldObjectId:  # same again
+    def run(self):
+        config = {
+            'user'    : settings.DB_USER_WRITE,
+            'password': settings.DB_PASS_WRITE,
+            'host'    : settings.DB_HOST,
+            'database': 'ztf'
+        }
+        msl = mysql.connector.connect(**config)
+
+        t = time.time()
+        ntotalcand = nupdate = ndelete = 0
+        cursor   = msl.cursor(buffered=True, dictionary=True)
+        cursor2  = msl.cursor(buffered=True, dictionary=True)
+        for objectId in self.objectIds:
+            query = 'SELECT candid, objectId,ra,decl,jd,fid,magpsf from %s WHERE objectId="%s" ORDER BY jd'        
+            query = query % (candidates, objectId)
+            cursor.execute(query)
+            candlist = []
+            for cand in cursor:
                 candlist.append(cand)
+            ntotalcand += len(candlist)
+    
+            query2 = 'INSERT IGNORE INTO %s (objectId) VALUES ("%s")' % (objects, objectId)
+            cursor2.execute(query2)
+            result = make_object(objectId, candlist, msl)
+            if result < 0:   # deleted the object
+                ndelete += 1
             else:
-                result = make_object(oldObjectId, candlist)
-                if result > 0: nupdate += 1
-                else:          ndelete += 1
-                candlist = [cand]
-                oldObjectId = objectId
-        if debug:
-            print('Iteration %d: %d candidates, %d updated objects, %d deleted objects' % (k, ntotalcand, nupdate, ndelete))
-        query = 'SELECT COUNT(*) AS nstale FROM %s WHERE stale=1' % objects
-        cursor.execute(query)
-        for record in cursor:
-            break
-        nstale = record['nstale']
-        if nstale == 1:
-            result = make_object(oldObjectId, candlist)
-            nstale -= 1
+                nupdate += 1
+    
+        self.times['log'] += ('%d candidates, %d updated objects, %d deleted objects' % (ntotalcand, nupdate, ndelete))
+        self.times['time'] = (time.time() - t)
 
-        print('%d objects still stale' % nstale)
-        if nstale == 0 or nstale == oldnstale:
-            break
-        oldnstale = nstale
 
-    print('-------------- UPDATE OBJECTS --------------')
-    print('%d candidates, %d updated objects, %d deleted objects' % (ntotalcand, nupdate, ndelete))
-    print('Time %.1f seconds' % (time.time() - t))
+def splitList(objectsForUpdate, bins = None):
+
+   # Break the list of candidates up into the number of CPUs
+    listLength = len(objectsForUpdate)
+
+    nProcessors = bins
+
+    if listLength <= nProcessors:
+        nProcessors = listLength
+
+   # Create nProcessors x empty arrays
+    listChunks = [ [] for i in range(nProcessors) ]
+
+    i = 0
+
+    for item in objectsForUpdate:
+        listChunks[i].append(item)
+        i += 1
+        if i >= nProcessors:
+            i = 0
+
+    return nProcessors, listChunks
+
 
 if __name__ == "__main__":
-    update_objects(debug=True)
+    os.system('cd /data/ztf/stale; cat file* | sort | uniq > all_file')
+    lines = open('/data/ztf/stale/all_file').readlines()
+    objectIds = []
+    for line in lines:
+        objectIds.append(line.strip())
+
+    nthread = 8
+    print('%d threads' % nthread)
+    nProcessors, listChunks = splitList(objectIds, bins=nthread)
+    nthread = nProcessors
+
+    timeses = []
+    for i in range(nthread):
+        timeses.append({'time':0.0, 'log':''})
+
+    # make the thread list
+    thread_list = []
+    for th in range(nthread):
+        print('Thread %d starting with %d objectIds' % (th, len(listChunks[th])))
+        thread_list.append(Updater(th, listChunks[th], timeses[th]))
+
+    # start them up
+    for th in thread_list:
+         th.start()
+    
+    # wait for them to finish
+    for th in thread_list:
+         th.join()
+
+    for th in range(nthread):
+        ti = timeses[th]
+        print('Thread %d %7.1f sec %s' % (th, ti['time'], ti['log']))
+

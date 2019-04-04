@@ -17,38 +17,37 @@ else:
 
 date = date_nid.nid_to_date(nid)
 topic  = 'ztf_' + date + '_programid1'
-print "Topic is %s, nid is %d" % (topic, nid)
+print("Topic is %s, nid is %d" % (topic, nid))
 
-cmd = 'docker run --rm '
-cmd += '--mount type=bind,source=/data/ztf/logs,target=/logs '
-cmd += '--mount type=bind,source=/data/ztf/avros,target=/avros '
-cmd += '--mount type=bind,source=/data/ztf/stamps/fits,target=/stamps '
-cmd += 'ztf-listener python bin/ingestStream.py '
+cmd =  '/home/roy/anaconda3/bin/python bin/ingestStreamThreaded.py '
 cmd += '--logging INFO '
 cmd += '--stampdump %d ' % nid
-cmd += '--group LASAIR '
+cmd += '--maxalert 20000 '
+cmd += '--nthread 4 '
+cmd += '--group LASAIR_test0 '
 cmd += '--host public.alerts.ztf.uw.edu '
 cmd += '--topic ' + topic
 
 os.system('date')
+print(cmd)
 os.system(cmd)
 
 tail = 'tail -2 /data/ztf/logs/' + topic + '.log'
 os.system(tail)
 
-cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/coverage.py %d' % nid
+cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/coverage.py %d' % nid
 os.system(cmd)
 
-cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/check_status.py %d' % nid
+cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/check_status.py %d' % nid
 os.system(cmd)
 
-cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid)
+cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid)
 os.system(cmd)
 
-cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/update_objects.py'
+cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/update_objects.py'
 os.system(cmd)
 
-cmd = '/home/roy/anaconda2/bin/python /home/roy/lasair/src/post_ingest/get_number_candidates.py'
+cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/get_number_candidates.py'
 os.system(cmd)
 
 os.system('date')
