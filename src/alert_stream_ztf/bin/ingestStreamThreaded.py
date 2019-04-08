@@ -303,10 +303,7 @@ class Consumer(threading.Thread):
     
             except alertConsumer.EopError as e:
                 # Write when reaching end of partition
-                self.times['log'] += '%d: %s\n' % (self.threadID, e.message)
-                self.times['log'] += 'Finished after %d ' % nalert
-                print('%d: %s\n' % (self.threadID, e.message))
-                print('Finished after %d ' % nalert)
+                self.times['log'] += '%d got %d: %s\n' % (self.threadID, nalert, e.message)
                 break
             except IndexError:
                 self.times['log'] += 'Data cannot be decoded '
@@ -329,8 +326,6 @@ class Consumer(threading.Thread):
                 f.close()
         streamReader.__exit__(0,0,0)
         stalefile.close()
-        self.times['log'] += ('T%d got %d' % (self.threadID, nalert))
-        print(self.times['log'])
         return self.times
 
 def main():
@@ -397,11 +392,10 @@ def main():
 
     time_total = time.time() - t
     logger.info('Run time %f' % time_total)
-    s = '\n  Insert  Stamp   Fetch   Log\n'
+    logger.info('\n  Insert  Stamp   Fetch   Log')
     for t in range(nthread):
         ti = timeses[t]
-        s += '%7.1f %7.1f %7.1f %s\n' % (ti['insert'], ti['stamp'], ti['fetch'], ti['log'])
-    logger.info(s)
+        logger.info('%7.1f %7.1f %7.1f %s' % (ti['insert'], ti['stamp'], ti['fetch'], ti['log'].strip()))
 
 if __name__ == '__main__':
     main()

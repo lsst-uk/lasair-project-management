@@ -23,8 +23,13 @@ while 1:
 
     process = Popen(['/home/roy/anaconda3/bin/python', '/home/roy/lasair/src/alert_stream_ztf/ztf_ingest.py'], stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
-    logger.info(stdout)
-    logger.info(stderr)
+
+    stdout = stdout.decode('utf-8')
+    for line in stdout.split('\n'): logger.info(line)
+
+    stderr = stderr.decode('utf-8')
+    for line in stderr.split('\n'): logger.info(line)
+
     logger.info("waiting 10 minutes ...")
     logger.removeHandler(fh)
     fh.close()

@@ -177,7 +177,7 @@ if __name__ == "__main__":
     for line in lines:
         objectIds.append(line.strip())
 
-    nthread = 8
+    nthread = 4
     print('%d threads' % nthread)
     nProcessors, listChunks = splitList(objectIds, bins=nthread)
     nthread = nProcessors
