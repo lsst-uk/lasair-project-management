@@ -56,9 +56,6 @@ function makeGalaxyTable(data){
     for(var i=0; i<data.sources.length; i++){
         t = data.sources[i];
         var aw = t.absw*100;
-        if(aw < 1) {
-            continue;
-        }
         distance = (t.distance).toString().substring(0,5);
         aw = aw.toString();
         aw = aw.substring(0,4);
@@ -103,12 +100,12 @@ function handleDblclick(offsetX, offsetY){
             gotoradec(ra, de);
             var url = 'http://ned.ipac.caltech.edu/cgi-bin/nph-objsearch?lon='+ra+'d&lat='+de+'d&radius=0.25&search_type=Near+Position+Search';
             if(t.distance < 0.0001){
-                dist = 'Galaxy. ';
+                dist = '';
             } else {
-                dist = 'Galaxy at ' + (t.distance).toFixed(1) + ' Mpc. ';
+                dist = ' at ' + (t.distance).toFixed(1) + ' Mpc. ';
             }
             document.getElementById("galaxy_info").innerHTML = 
-                dist + 'Search <a href="' + url + '" target="_blank">NED</a>';
+                'You chose galaxy <a href="' + url + '" target="_blank">' + t.name + '</a>' + dist;
         }
     }
 }
