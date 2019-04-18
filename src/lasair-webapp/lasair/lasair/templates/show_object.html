@@ -48,7 +48,7 @@
 {% if data.objectData.MPCname %}
 <li><form method="post" id="JPLsearch" action="https://ssd.jpl.nasa.gov/sbdb.cgi">
 <input type="hidden" name="sstr" value="{{ data.objectData.MPCname }}"></form>
-Moving object, MPC name is <a href="#" onclick="document.forms[0].submit()">{{ data.objectData.MPCname }}</a></li>
+Moving object, MPC name is <a href="#" onclick="document.forms[1].submit();">{{ data.objectData.MPCname }}</a></li>
 {% else %}
 {% if data.objectData.annotation %}
 <li>{{ data.objectData.annotation|safe }}{% endif %}</li>
