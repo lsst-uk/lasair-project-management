@@ -243,9 +243,9 @@ def getMJDFromSqlDate(sqlDate):
       t = (int(year), int(month), int(day), int(hours), int(minutes), int(seconds), 0, 0, 0)
       unixtime = int(time.mktime(t))
       mjd = unixtime/86400.0 - 2400000.5 + 2440587.5
-   except ValueError, e:
+   except ValueError as e:
       mjd = None
-      print "String is not in SQL Date format."
+      print("String is not in SQL Date format.")
 
    return mjd
 
@@ -257,9 +257,9 @@ def getUnixTimeFromSQLDate(sqlDate):
       hours, minutes, seconds = sqlDate[11:19].split(':')
       t = (int(year), int(month), int(day), int(hours), int(minutes), int(seconds), 0, 0, 0)
       unixTime = int(time.mktime(t))
-   except ValueError, e:
+   except ValueError as e:
       unixTime = None
-      print "String is not in SQL Date format."
+      print("String is not in SQL Date format.")
 
    return unixTime
 
@@ -267,9 +267,9 @@ def getSQLDateFromUnixTime(unixTime):
    sqlDate = None
    try:
       sqlDate = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(unixTime)))
-   except ValueError, e:
+   except ValueError as e:
       sqlDate = None
-      print "Unix time must be an integer."
+      print("Unix time must be an integer.")
    return sqlDate
 
 def getDateFractionMJD(mjd, delimiter = ' ', decimalPlaces = 2):
@@ -619,7 +619,7 @@ def enum(**enums):
    return type('Enum', (), enums)
 
 def ra_dec_id(ra, dec):
-   id = 1000000000000000000L
+   id = 1000000000000000000
 
    # Calculation from Decimal Degrees:
 
@@ -641,15 +641,15 @@ def ra_dec_id(ra, dec):
    dec_ss  = int(((dec - dec_deg)*60.0 - dec_mm)*60.0)
    dec_ff  = int(((((dec - dec_deg)*60.0 - dec_mm)*60.0) - dec_ss)*100.0)
 
-   id += (ra_hh *   10000000000000000L)
-   id += (ra_mm *     100000000000000L)
-   id += (ra_ss *       1000000000000L)
-   id += (ra_fff *         1000000000L)
+   id += (ra_hh *   10000000000000000)
+   id += (ra_mm *     100000000000000)
+   id += (ra_ss *       1000000000000)
+   id += (ra_fff *         1000000000)
 
-   id += (h *               100000000L)
-   id += (dec_deg *           1000000L)
-   id += (dec_mm *              10000L)
-   id += (dec_ss *                100L)
+   id += (h *               100000000)
+   id += (dec_deg *           1000000)
+   id += (dec_mm *              10000)
+   id += (dec_ss *                100)
    id += dec_ff
 
    return id
@@ -850,7 +850,7 @@ class SetupMySQLSSHTunnel:
             s.connect((address, port))
             sys.stderr.write("Connected to %s on port %s\n" % (address, port))
             return True
-        except socket.error, e:
+        except socket.error as e:
             sys.stderr.write("Connection to %s on port %s failed: %s\n" % (address, port, e))
             return False
 
@@ -1135,7 +1135,7 @@ def floatValue(value):
          f = float(value)
          if n.isfinite(f):
              returnValue = f
-      except ValueError, e:
+      except ValueError as e:
          pass
 
    return returnValue
@@ -1150,7 +1150,7 @@ def intValue(value):
              returnValue = int(value, 16)
          else:
              returnValue = int(value)
-      except ValueError, e:
+      except ValueError as e:
          pass
 
    return returnValue

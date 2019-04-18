@@ -1,6 +1,7 @@
 import sys
 import requests
 import urllib
+import urllib.parse
 import json
 import time
 import mysql.connector
@@ -40,7 +41,7 @@ date = date_nid.nid_to_date(nid)
 url = 'https://monitor.alerts.ztf.uw.edu/api/datasources/proxy/7/api/v1/query?query='
 urltail = 'sum(kafka_log_log_value{ name="LogEndOffset" , night = "%s", program = "MSIP" }) - sum(kafka_log_log_value{ name="LogStartOffset", night = "%s", program="MSIP" })' % (date, date)
 
-urlquote = url + urllib.quote(urltail)
+urlquote = url + urllib.parse.quote(urltail)
 resultjson = requests.get(urlquote, 
     auth=(settings.GRAFANA_USERNAME, settings.GRAFANA_PASSWORD))
 result = json.loads(resultjson.text)

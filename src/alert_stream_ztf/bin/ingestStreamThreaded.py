@@ -8,7 +8,7 @@ import sys
 import os
 import time
 import logging
-sys.path.append('/home/roy/lasair/alert_stream/common/htm/python')
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
 import htmCircle
 import mysql.connector
 import settings
@@ -39,12 +39,12 @@ wanted_attributes = [
 
 
 # which tables to use
-#candidates    = 'candidates'
-#objects       = 'objects'
-#noncandidates = 'noncandidates'
-candidates    = 'candidates_test'
-objects       = 'objects_test'
-noncandidates = 'noncandidates_test'
+candidates    = 'candidates'
+objects       = 'objects'
+noncandidates = 'noncandidates'
+#candidates    = 'candidates_test'
+#objects       = 'objects_test'
+#noncandidates = 'noncandidates_test'
 
 # Configure Avro reader schema
 schema_files = ['ztf-avro-alert/schema/candidate.avsc',

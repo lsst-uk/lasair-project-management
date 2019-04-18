@@ -9,8 +9,10 @@ sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
 import htmCircle
 import threading
 
-candidates = 'candidates_test'
-objects    = 'objects_test'
+#candidates = 'candidates_test'
+#objects    = 'objects_test'
+candidates = 'candidates'
+objects    = 'objects'
 
 # setup database connection
 import mysql.connector

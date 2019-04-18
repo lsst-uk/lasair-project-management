@@ -15,6 +15,6 @@ for row in cursor:
     n = row['n']
     break
 f = open('/data/ztf/number_candidates.txt', 'w')
-print>>f, n
+f.write('%d' % n)
 print('------------- NUMBER OF CANDIDATES -------------')
 print('Number of candidates = %d' % n)

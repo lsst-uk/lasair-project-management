@@ -2,7 +2,7 @@ import sys
 import math
 import settings
 
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python2')
 import htmCircle
 
 def distance(ra1, de1, ra2, de2):
@@ -27,13 +27,11 @@ config = {
     'host'    : settings.DB_HOST,
     'database': 'ztf'
 }
-msl = mysql.connector.connect(**config)
 
 def run_tns_crossmatch(radius):
 # runs the crossmatch of TNS with all the objects
+    msl = mysql.connector.connect(**config)
     cursor  = msl.cursor(buffered=True, dictionary=True)
-    cursor2 = msl.cursor(buffered=True, dictionary=True)
-    cursor3 = msl.cursor(buffered=True, dictionary=True)
 
 # get user id of user lasair, named "Lasair Bot"
     already_commented = {}
@@ -42,7 +40,13 @@ def run_tns_crossmatch(radius):
     for row in cursor:
         already_commented[row['objectId']] = row['content']
 #    print("%d comments already from Lasair Bot" % len(already_commented))
+    cursor.close()
+    msl.close()
 
+    msl = mysql.connector.connect(**config)
+    cursor  = msl.cursor(buffered=True, dictionary=True)
+    cursor2 = msl.cursor(buffered=True, dictionary=True)
+    cursor3 = msl.cursor(buffered=True, dictionary=True)
     n_tns = 0
     n_hits = 0
     n_newhits = 0

@@ -12,13 +12,13 @@ def open_fits(filename):
 
     y = numpy.nan_to_num(y)
     numpy.seterr(invalid='ignore')
-#    print numpy.isnan(y)
+#    print(numpy.isnan(y))
     y = numpy.abs(y)
 #    y = numpy.sqrt(y)
     med = numpy.median(y)
     mymin = 0
     mymax = 3*med
-#    print '%.1f %s' % (med, filename)
+#    print('%.1f %s' % (med, filename))
     y = (y-mymin)*255/(mymax-mymin)
     y = numpy.maximum(y, 0)
     y = numpy.minimum(y, 255)
@@ -54,7 +54,7 @@ def convert_fits(dirfits, dirjpg, name):
 
 def main():
     if len(sys.argv) < 2:
-        print 'Usage: python jpg_stamps.py fitsdir jpgdir'
+        print('Usage: python jpg_stamps.py fitsdir jpgdir')
         sys.exit()
     dirfits = sys.argv[1]
     dirjpg  = sys.argv[2]

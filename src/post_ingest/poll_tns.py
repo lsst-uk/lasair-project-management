@@ -15,7 +15,6 @@ Options:
 
 """
 
-# THIS CODE is PYTHON 2.7.  It should be converted into Python 3
 import sys
 __doc__ = __doc__ % (sys.argv[0], sys.argv[0], sys.argv[0])
 from docopt import docopt
@@ -23,7 +22,7 @@ import os
 #import MySQLdb
 import mysql.connector as MySQLdb
 from gkutils import Struct, cleanOptions, dbConnect, coords_sex_to_dec, floatValue, intValue, nullValue
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python2')
 import requests
 import csv
 import htmCircle
@@ -48,8 +47,8 @@ def getTNSRow(conn, tnsName):
 
       cursor.close ()
 
-   except MySQLdb.Error, e:
-      print "Error %d: %s" % (e.args[0], e.args[1])
+   except MySQLdb.Error as e:
+      print("Error %d: %s" % (e.args[0], e.args[1]))
       sys.exit (1)
 
    return resultSet
@@ -65,8 +64,8 @@ def deleteTNSRow(conn, tnsName):
             where tns_name = %s
             """, (tnsName,))
 
-    except MySQLdb.Error, e:
-        print "Error %d: %s" % (e.args[0], e.args[1])
+    except MySQLdb.Error as e:
+        print("Error %d: %s" % (e.args[0], e.args[1]))
 
     cursor.close ()
     conn.commit()
@@ -134,9 +133,9 @@ def insertTNS(conn, tnsEntry):
 
     except MySQLdb.Error as e:
         if e[0] == 1142: # Can't insert - don't have permission
-            print "Can't insert.  User doesn't have permission."
+            print("Can't insert.  User doesn't have permission.")
         else:
-            print e
+            print(e)
 
     #insertId = conn.insert_id()
     conn.commit()
@@ -202,7 +201,8 @@ def pollTNS(page=0, resultSize=50, inLastNumberDays=None):
             },
         )
 
-        content = response.content
+#        content = response.content
+        content = response.text
         status_code = response.status_code
     except requests.exceptions.RequestException:
         print('HTTP Request failed')
@@ -216,7 +216,7 @@ def getTNSData(opts):
     else:
         options = opts
 
-    import yaml
+#    import yaml
 #    with open(options.configFile) as yaml_file:
 #        config = yaml.load(yaml_file)
 
@@ -242,8 +242,9 @@ def getTNSData(opts):
 
     status_code, content = pollTNS(page = int(options.pageNumber), resultSize = int(options.pageSize), inLastNumberDays = inLastNumberOfDays)
 
-    csvEntries = csv.DictReader(content.splitlines(), delimiter=',')
-    data = list(csvEntries)
+#    csvEntries = csv.DictReader(content.splitlines(), delimiter=',')
+#    data = csvEntries
+    data = csv.DictReader(content.splitlines(), delimiter=',')
     rowsAdded = 0
     for row in data:
         name = row['Name'].strip().split()
@@ -267,7 +268,7 @@ def getTNSData(opts):
         row['suffix'] = suffix
         ra, dec = coords_sex_to_dec(row['RA'], row['DEC'])
         if ra == 0 and dec == 0:
-            print "Cannot store record for %s. No coordinates provided!" % row['Name'].strip()
+            print("Cannot store record for %s. No coordinates provided!" % row['Name'].strip())
             continue
 
         row['ra'] = ra
@@ -280,15 +281,15 @@ def getTNSData(opts):
                 # The entry has been updated on TNS - classified! Otherwise do nothing!
                 deleteTNSRow(conn, suffix)
                 insertTNS(conn, row)
-                print "Object %s has been updated" % row['suffix']
+                print("Object %s has been updated" % row['suffix'])
                 rowsAdded += 1
         else:
             insertTNS(conn, row)
-            print "Object %s has been added" % row['suffix']
+            print("Object %s has been added" % row['suffix'])
             rowsAdded += 1
         #print prefix, suffix, ra, dec, htm16, row['Discovery Date (UT)']
 
-    print "Total rows added or modified = %d" % rowsAdded
+    print("Total rows added or modified = %d" % rowsAdded)
 
     conn.commit()
     conn.close()

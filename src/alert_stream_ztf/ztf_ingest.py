@@ -24,7 +24,7 @@ cmd += '--logging INFO '
 cmd += '--stampdump %d ' % nid
 cmd += '--maxalert 20000 '
 cmd += '--nthread 4 '
-cmd += '--group LASAIR_test0 '
+cmd += '--group LASAIR '
 cmd += '--host public.alerts.ztf.uw.edu '
 cmd += '--topic ' + topic
 
