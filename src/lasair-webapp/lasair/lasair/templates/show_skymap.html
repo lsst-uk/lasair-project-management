@@ -28,16 +28,19 @@ size of the symbol as the 3D probability density at that galaxy position
 and distance.</li>
 </ul>
 Remember to click "submit" to refresh the page.
-<hr/>
 </font>
-
-<table>
-<tr><td>ISO Date:</td><td>{{ isodate }}</td></tr>
-<tr><td>Julian date:</td><td>{{ jd|floatformat:3 }}</td></tr>
-</table>
 </div>
+
 <div class="row">
 {{ skymap_distance }}
+</div>
+
+<div class="row">
+<table cellpadding=8 border=1>
+<tr><td>ISO Date:</td><td>{{ isodate }}</td></tr>
+<tr><td>Julian date:</td><td>{{ jd|floatformat:3 }}</td></tr>
+<tr><td>max prob RA,Dec</td><td>{{ maxRA|floatformat:1 }}, {{ maxDE|floatformat:1 }}</td></tr>
+</table>
 </div>
 
 <div class="row">

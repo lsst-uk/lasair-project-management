@@ -62,6 +62,7 @@ function drawMarkersFromData(data){
     for(var k=0; k<data.length; k++){
         row = data[k];
         if(row.fid == 1){
+console.log(row.ra +" | "+ row.dec);
             drawPlate(overlay, row.ra, row.dec, 3.0*Math.sqrt(row.n/maxn));
         }
     }

@@ -42,6 +42,8 @@ def show_skymap(request, skymap_id):
     json_text = open("/mnt/lasair-head-data/ztf/skymap/%s.json" % skymap_id).read()
     skymap_data = json.loads(json_text)
     isodate = skymap_data['meta']['DATE-OBS']
+    maxRA = skymap_data['meta']['apointRA']
+    maxDE = skymap_data['meta']['apointDec']
     skymap_distance = 'Skymap is 2D -- no distance available'
     if 'DISTMEAN' in skymap_data['meta']:
         skymap_distance = 'Skymap is 3D and mean distance is %.1f Mpc' % float(skymap_data['meta']['DISTMEAN'])
@@ -111,6 +113,7 @@ def show_skymap(request, skymap_id):
             'niddate1':niddate1, 'niddate2':niddate2, 
             'skymap_distance':skymap_distance,
             'jd':jd, 'jd1delta':jd1delta, 'jd2delta':jd2delta,
+            'maxRA':maxRA, 'maxDE':maxDE,
             'coverage_wanted': coverage_wanted,
             'coverage': json.dumps(coverage),
             'ztf_wanted': ztf_wanted,
