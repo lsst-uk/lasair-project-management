@@ -44,10 +44,14 @@ def show_skymap(request, skymap_id):
     isodate = skymap_data['meta']['DATE-OBS']
     maxRA = skymap_data['meta']['apointRA']
     maxDE = skymap_data['meta']['apointDec']
-    classification = {
-        'BNS' :int(100*float(skymap_data['meta']['classification']['BNS'])),
-        'NSBH':int(100*float(skymap_data['meta']['classification']['NSBH'])),
-        'BBH' :int(100*float(skymap_data['meta']['classification']['BBH']))}
+    try:
+        classification = {
+            'BNS' :int(100*float(skymap_data['meta']['classification']['BNS'])),
+            'NSBH':int(100*float(skymap_data['meta']['classification']['NSBH'])),
+            'BBH' :int(100*float(skymap_data['meta']['classification']['BBH']))}
+    except:
+        classification = {'BNS':0.0, 'NSBH':0.0, 'BBH':0.0}
+
     skymap_distance = 'Skymap is 2D -- no distance available'
     if 'DISTMEAN' in skymap_data['meta']:
         skymap_distance = 'Skymap is 3D and mean distance is %.1f Mpc' % float(skymap_data['meta']['DISTMEAN'])
