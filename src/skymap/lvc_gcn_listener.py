@@ -22,6 +22,7 @@ Options:
 ################# GLOBAL IMPORTS ####################
 import sys
 import os
+import json
 from fundamentals import tools
 import requests
 import gcn
@@ -127,7 +128,7 @@ class gcnListener():
 
             # PRINT ALL PARAMETERS.
             for key, value in params.items():
-                print key, ':', value
+                print(key, ':', value)
 
             # DOWNLOAD THE FITS MAP
             if 'skymap_fits' in params:
@@ -145,8 +146,23 @@ class gcnListener():
                 self.log.info(cmd)
                 os.system(cmd)
 
+                classification = {'BNS':0.0, 'NSBH':0.0, 'BBH':0.0}
+                if 'BNS'  in params: classification['BNS']  = params['BNS']
+                if 'NSBH' in params: classification['NSBH'] = params['NSBH']
+                if 'BBH'  in params: classification['BBH']  = params['BBH']
+                # now modify the json file
+                filenamejson = filename.replace('fits.gz', 'json').replace('fits','json')
+                dict = json.loads(open(filenamejson).read())
+                dict['meta']['classification'] = classification
+                print(dict['meta'])
+                s = json.dumps(dict)
+                f = open(filenamejson, 'w')
+                f.write(s)
+                f.close()
+
+                bbh = int(100*float(classification['BNS']))
                 ss = slack_sender.SlackSender(settings.SLACKURL)
-                ss.send('New LVC skymap available at https://lasair.roe.ac.uk/skymap/%s/' % params['GraceID'])
+                ss.send('New LVC skymap (%d%% prob BNS) at https://lasair.roe.ac.uk/skymap/%s/' % (bbh, params['GraceID']))
 
         # START THE LISTENER - WILL RECONNECT AUTOMATICALLY IF CONNECTION DROPS
         gcn.listen(handler=process_gcn, host=gcn_host)
