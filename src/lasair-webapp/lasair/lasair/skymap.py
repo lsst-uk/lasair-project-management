@@ -44,6 +44,10 @@ def show_skymap(request, skymap_id):
     isodate = skymap_data['meta']['DATE-OBS']
     maxRA = skymap_data['meta']['apointRA']
     maxDE = skymap_data['meta']['apointDec']
+    classification = {
+        'BNS' :int(100*float(skymap_data['meta']['classification']['BNS'])),
+        'NSBH':int(100*float(skymap_data['meta']['classification']['NSBH'])),
+        'BBH' :int(100*float(skymap_data['meta']['classification']['BBH']))}
     skymap_distance = 'Skymap is 2D -- no distance available'
     if 'DISTMEAN' in skymap_data['meta']:
         skymap_distance = 'Skymap is 3D and mean distance is %.1f Mpc' % float(skymap_data['meta']['DISTMEAN'])
@@ -113,6 +117,7 @@ def show_skymap(request, skymap_id):
             'niddate1':niddate1, 'niddate2':niddate2, 
             'skymap_distance':skymap_distance,
             'jd':jd, 'jd1delta':jd1delta, 'jd2delta':jd2delta,
+            'classification': classification,
             'maxRA':maxRA, 'maxDE':maxDE,
             'coverage_wanted': coverage_wanted,
             'coverage': json.dumps(coverage),

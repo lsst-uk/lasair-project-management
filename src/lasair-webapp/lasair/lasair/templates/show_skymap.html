@@ -39,6 +39,7 @@ Remember to click "submit" to refresh the page.
 <table cellpadding=8 border=1>
 <tr><td>ISO Date:</td><td>{{ isodate }}</td></tr>
 <tr><td>Julian date:</td><td>{{ jd|floatformat:3 }}</td></tr>
+<tr><td>Percent probability:</td><td> BNS={{ classification.BNS }}, NSBH={{ classification.NSBH }}, BBH={{ classification.BBH }} </td></tr>
 <tr><td>max prob RA,Dec</td><td>{{ maxRA|floatformat:1 }}, {{ maxDE|floatformat:1 }}</td></tr>
 </table>
 </div>
