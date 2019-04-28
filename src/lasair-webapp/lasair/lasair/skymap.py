@@ -52,9 +52,9 @@ def show_skymap(request, skymap_id):
     except:
         classification = {'BNS':0.0, 'NSBH':0.0, 'BBH':0.0}
 
-    skymap_distance = 'Skymap is 2D -- no distance available'
+    skymap_distance = 'unknown'
     if 'DISTMEAN' in skymap_data['meta']:
-        skymap_distance = 'Skymap is 3D and mean distance is %.1f Mpc' % float(skymap_data['meta']['DISTMEAN'])
+        skymap_distance = '%.1f &plusmn %.1f Mpc' % (float(skymap_data['meta']['DISTMEAN']), float(skymap_data['meta']['DISTSTD']))
     niddate1 = niddate2 = isodate.split('T')[0].replace('-', '')
     tilelist = skymap_data['meta']['histogram']
     jd = jd_from_iso(isodate)
@@ -80,17 +80,17 @@ def show_skymap(request, skymap_id):
 
 # ZTF candidates
     ztf_data = []
-    if ztf_wanted:
-        query = "SELECT objectId,jd,ra,decl,fid,magpsf "
-        query += "FROM candidates WHERE jd BETWEEN %f and %f AND (" % (jd+jd1delta, jd+jd2delta)
-        constraint_list = []
-        for tile in tilelist:
-            constraint = "(ra BETWEEN %.1f and %.1f AND decl BETWEEN %.1f AND %.1f)"
-            constraint = constraint % (5*tile[0], 5*tile[0]+5, 90-5*tile[1]-5, 90-5*tile[1])
-            constraint_list.append(constraint)
-        query += " OR ".join(constraint_list) + ") ORDER BY objectId"
+    ztfquery = "SELECT objectId,jd,ra,decl,fid,magpsf "
+    ztfquery += "FROM candidates WHERE jd BETWEEN %f and %f AND \n(" % (jd+jd1delta, jd+jd2delta)
+    constraint_list = []
+    for tile in tilelist:
+        constraint = "(ra BETWEEN %.1f and %.1f AND decl BETWEEN %.1f AND %.1f)\n"
+        constraint = constraint % (5*tile[0], 5*tile[0]+5, 90-5*tile[1]-5, 90-5*tile[1])
+        constraint_list.append(constraint)
+    ztfquery += " OR ".join(constraint_list) + ") ORDER BY objectId"
     
-        cursor.execute(query)
+    if ztf_wanted:
+        cursor.execute(ztfquery)
         for row in cursor:
             ztf_data.append({\
                 'objectId'   :row['objectId'], \
@@ -126,5 +126,6 @@ def show_skymap(request, skymap_id):
             'coverage_wanted': coverage_wanted,
             'coverage': json.dumps(coverage),
             'ztf_wanted': ztf_wanted,
+            'ztfquery': ztfquery,
             'nztf': len(ztf_data), 'ztf_data':json.dumps(ztf_data),
             'galaxies_wanted':galaxies_wanted})

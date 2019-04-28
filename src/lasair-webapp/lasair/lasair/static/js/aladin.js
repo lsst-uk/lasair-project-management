@@ -11215,7 +11215,7 @@ var projectionBox = $("#SV-projectionBox");
                  */
 
         console.log("make projection choice box");
-         projectionBox.append('Choose the projection to use: <select id="projectionChoice"><option>SINUS</option><option>AITOFF</option></select><br/>')
+//         projectionBox.append('Choose the projection to use: <select id="projectionChoice"><option>SINUS</option><option>AITOFF</option></select><br/>')
 
 //         layerBox.find('.aladin-closeBtn').click(function() {self.hideBoxes();return false;});
          

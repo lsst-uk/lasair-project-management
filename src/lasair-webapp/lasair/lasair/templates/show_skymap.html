@@ -32,11 +32,8 @@ Remember to click "submit" to refresh the page.
 </div>
 
 <div class="row">
-{{ skymap_distance }}
-</div>
-
-<div class="row">
 <table cellpadding=8 border=1>
+<tr><td>Distance</td><td>{{ skymap_distance|safe }}</td></tr>
 <tr><td>ISO Date:</td><td>{{ isodate }}</td></tr>
 <tr><td>Julian date:</td><td>{{ jd|floatformat:3 }}</td></tr>
 <tr><td>Percent probability:</td><td> BNS={{ classification.BNS }}, NSBH={{ classification.NSBH }}, BBH={{ classification.BBH }} </td></tr>
@@ -71,15 +68,39 @@ To <input class="form-control" size="14" name="niddate2" type="text" value="{{ n
 <div class="row">
   <div id="SV-layerBox"> </div><br/>
 </div>
+
+<div id="SV-projectionBox"> Projection: 
+<select id="projectionChoice">
+<option>SINUS</option>
+<option>AITOFF</option>
+</select><br>
+</div>
+
 <div class="row">
   <div id="aladin-lite-div" style="width:700px;height:700px;"></div>
 </div>
 
 <div id="galaxies_table"></div>
 
-<font size=-2><a href=/lasair/static/ztf/skymap/{{ skymap_id }}.json>json</a></font>
+<font size=-2><a href=/lasair/static/ztf/skymap/{{ skymap_id }}.json>json</a>&nbsp;&nbsp;
+<a href="#" onclick="exposeDiv('ztfquery');">ztfquery</a> </font>
+<div id="ztfquery" style="display:none">
+<pre>
+{{ ztfquery }}
+</pre>
+</div>
+
 
 <script>
+function exposeDiv(id) {
+    obj = document.getElementById(id);
+    if(obj.style.display == "none") {
+        obj.style.display = "block";
+    } else {
+        obj.style.display = "none";
+    }
+}
+
 function drawLayers(skymapData){
     console.log('drawLayers');
     makeContours(skymapData);

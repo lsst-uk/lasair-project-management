@@ -187,6 +187,10 @@ function setup(passSkymap_id, ztf_json_data) {
         aladin.setImageSurvey($(this).val());
     });
 
+    $('#projectionChoice').change(function() {
+        aladin.setProjection($(this).val());
+    });
+
     aladin.setProjection("sinus");
     setAladinSkymaps(aladin);
 
