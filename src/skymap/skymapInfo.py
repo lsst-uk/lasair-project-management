@@ -82,7 +82,7 @@ def generate_from_fitsfile(filename, language):
         deciles.append([p*100, area])
     meta['deciles'] = deciles
     
-#    for l in levels: print l
+    for l in levels: print(l)
 
 # make latitude histogram
     nside = healpy.get_nside(healpix_data)
@@ -90,7 +90,11 @@ def generate_from_fitsfile(filename, language):
     (th, ph) = healpy.pix2ang(nside, allipix)
 
     h = []
+    max = 0
     for i in range(len(healpix_data)):
+        if healpix_data[i] > max:
+            max = healpix_data[i]
+            imax = i
         if healpix_data[i] > levels[2]:
             ira  = int(ph[i]*radian/5.0)
             idec = int(th[i]*radian/5.0)
@@ -103,8 +107,12 @@ def generate_from_fitsfile(filename, language):
     
 # make countours
     ngrid = 800
-    apointRA = -999;
-    apointDec = -999;
+    apointRA  = ph[imax]*radian
+    apointDec = 90 - th[imax]*radian
+    meta['apointRA'] = apointRA
+    meta['apointDec'] = apointDec
+    print('max prob %f %f' % (apointRA, apointDec))
+
     theta = numpy.linspace(0, numpy.pi, ngrid)
     phi = numpy.linspace(0, 2*numpy.pi, 2*ngrid)
     p,t = numpy.meshgrid(phi, theta)
@@ -123,20 +131,15 @@ def generate_from_fitsfile(filename, language):
                 contours.append({"name":"%d-percentile"%((n+1)*10), "color":color, "coords":sp})
 #            contours.append({"name":"%d-percentile"%((n+1)*10), "color":color, "coords":plist})
                 numcontours+=1
-                if apointRA == -999:
-                    apointRA = sp[0][0]
-                    apointDec = sp[0][1]
     print("made %d polylines" % numcontours)
-    meta['apointRA'] = apointRA
-    meta['apointDec'] = apointDec
 
 # galaxies from Glade
     gc = galaxyCatalog.gc(glade_filename)
     gc.info()
 
-
     de = gc.declination
     ra = gc.right_ascension
+    name = numpy.array(gc.name)
     print("has %d sources" % len(ra))
 
     ph_at_sources = ra/radian
@@ -189,9 +192,10 @@ def generate_from_fitsfile(filename, language):
     print("Selected %d galaxies" % len(selected_sources))
 
     sources = []
-    for de, ra, w, distance in zip(
+    for de, ra, nm, w, distance in zip(
         de[selected_sources],
         ra[selected_sources],
+        name[selected_sources], 
         weighted_sources[selected_sources],
         distance[selected_sources]):
         
@@ -199,7 +203,7 @@ def generate_from_fitsfile(filename, language):
         sw = math.sqrt(w/maxw)  # normalized sqrt of weight
         if sw < 1.e-3: continue
         if math.isnan(distance): distance = 0.0
-        sources.append({"coords": [ra, de], "sw":sw, "absw":absw, "distance":distance})
+        sources.append({"coords": [ra, de], "name":nm, "sw":sw, "absw":absw, "distance":distance})
         n += 1
 
     print("Sources complete with %d" % n)

@@ -15,6 +15,21 @@ class gc(object):
         self.right_ascension = data.field('RAJ2000')
         self.declination =     data.field('DEJ2000')
 
+        self.name = []
+        name1 = data.field('GWGC')
+        name2 = data.field('HyperLEDA')
+        name3 = data.field('_2MASS')
+        name4 = data.field('SDSS-DR12')
+        for i in range(len(name1)):
+            if   name1[i] != '---': self.name.append(name1[i])
+            elif name2[i] != '---': self.name.append('LEDA '+name2[i])
+            elif name3[i] != '---': self.name.append(name3[i])
+            elif name4[i] != '---': self.name.append(name4[i])
+            else:                   self.name.append('no_name')
+
+#        for i in range(30000):
+#            if self.name[i].startswith('LEDA'):
+#                print(name1[i], name2[i], name3[i], name4[i], self.name[i])
 
         self.distance =        data.field('Dist')
         got_distance = self.distance[~numpy.isnan(self.distance)]
