@@ -260,8 +260,8 @@ class Consumer(threading.Thread):
     def run(self):
         # Configure database connection
         msl = mysql.connector.connect(
-            user     = settings.DB_USER, 
-            password = settings.DB_PASSWORD, 
+            user     = settings.DB_USER_WRITE, 
+            password = settings.DB_PASS_WRITE, 
             host     = settings.DB_HOST, 
             database = settings.DB_DATABASE,
             )
