@@ -20,13 +20,16 @@ def connect_db():
 from subprocess import Popen, PIPE
 def skymap(request):
     message = ''
-    p = Popen(['ls', '/mnt/lasair-head-data/ztf/skymap/'], stdout=PIPE)
+    p = Popen(['ls', '-lrt', '/mnt/lasair-head-data/ztf/skymap/'], stdout=PIPE)
     skymap_list = []
     result = p.communicate()[0].decode("utf-8")
-    for file in result.split('\n'):
-        tok = file.split('.')
-        if len(tok) == 2 and tok[1] == 'json':
-            skymap_list.append(tok[0])
+    for line in result.split('\n'):
+        tok = line.split()
+        if len(tok) > 7:
+            name = tok[8]
+            t = name.split('.')
+            if len(t) > 1 and t[1] == 'json':
+                skymap_list.append(t[0])
     return render(request, 'skymap.html', {'skymap_list': skymap_list, 'message': message})
 
 import dateutil.parser as dp
