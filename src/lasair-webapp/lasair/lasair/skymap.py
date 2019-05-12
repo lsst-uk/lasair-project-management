@@ -118,9 +118,9 @@ def show_skymap(request, skymap_id):
                 'ra'   :row['ra'], \
                 'dec'  :row['decl'],
                 'n'    :int(row['sum'])})
-
+    tok = skymap_id.split('_')
     return render(request, 'show_skymap.html', 
-        {'skymap_id': skymap_id, 'isodate':isodate, 
+        {'skymap_id': tok[0], 'isodate':isodate, 
             'niddate1':niddate1, 'niddate2':niddate2, 
             'skymap_distance':skymap_distance,
             'jd':jd, 'jd1delta':jd1delta, 'jd2delta':jd2delta,
