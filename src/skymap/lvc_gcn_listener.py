@@ -132,12 +132,17 @@ class gcnListener():
 
             # DOWNLOAD THE FITS MAP
             if 'skymap_fits' in params:
-                local_filename = params['skymap_fits'].split('/')[-1]
+                graceid = params['GraceID']
+                for i in range(10):
+                    if i==0: filename = "%s/%s.fits.gz" % (downloadPath, graceid)
+                    else:    filename = "%s/%s_%d.fits.gz" % (downloadPath, graceid, i)
+                    if not os.path.isfile(filename):
+                        break
+
+                event_name = "%s_%d" % (graceid, i)
+                local_filename = event_name + '.fits.gz'
+
                 self.log.info(local_filename)
-                if local_filename == 'bayestar.fits.gz':
-#                    local_filename = 'test_%d.fits.gz' % int(time.time())
-                    local_filename = params['GraceID'] + '.fits.gz'
-                    self.log.info(local_filename)
                 r = requests.get(params['skymap_fits'], allow_redirects=True)
                 filename = downloadPath + "/" + local_filename
                 self.log.info(filename)
@@ -151,7 +156,7 @@ class gcnListener():
                 if 'NSBH' in params: classification['NSBH'] = params['NSBH']
                 if 'BBH'  in params: classification['BBH']  = params['BBH']
                 # now modify the json file
-                filenamejson = filename.replace('fits.gz', 'json').replace('fits','json')
+                filenamejson = event_name + '.json'
                 dict = json.loads(open(filenamejson).read())
                 dict['meta']['classification'] = classification
                 print(dict['meta'])
@@ -162,7 +167,7 @@ class gcnListener():
 
                 bbh = int(100*float(classification['BNS']))
                 ss = slack_sender.SlackSender(settings.SLACKURL)
-                ss.send('New LVC skymap (%d%% prob BNS) at https://lasair.roe.ac.uk/skymap/%s/' % (bbh, params['GraceID']))
+                ss.send('New LVC skymap (%d%% prob BNS) at https://lasair.roe.ac.uk/skymap/%s/' % (bbh, event_name))
 
         # START THE LISTENER - WILL RECONNECT AUTOMATICALLY IF CONNECTION DROPS
         gcn.listen(handler=process_gcn, host=gcn_host)
