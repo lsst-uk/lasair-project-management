@@ -139,7 +139,10 @@ class gcnListener():
                     if not os.path.isfile(filename):
                         break
 
-                event_name = "%s_%d" % (graceid, i)
+                if i==0:
+                    event_name = graceid
+                else:
+                    event_name = "%s_%d" % (graceid, i)
                 local_filename = event_name + '.fits.gz'
 
                 self.log.info(local_filename)
