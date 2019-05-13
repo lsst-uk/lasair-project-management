@@ -39,6 +39,7 @@
     <div class="row header align-items-center">
         <div class="col-sm-2">
             <img src={% static "img/lasair-font.png" %} class="lasair-logo">
+	    {% if WEB_DOMAIN == 'lasair-dev' %} <font color="red"><h1>DEVELOPMENT</h1></font> {% endif %}
         </div>
 
         <div class="col-sm-6">
