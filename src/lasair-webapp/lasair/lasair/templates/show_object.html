@@ -45,9 +45,9 @@
 {% if data.objectData.classification %}
 <li>Classified as {{ data.objectData.classification }}{% if data.objectData.separationArcsec %} at distance {{ data.objectData.separationArcsec|floatformat:2 }} arcsec.</li> {% endif %}{% endif %}
 
-{% if data.objectData.MPCname %}
 <li><form method="post" id="JPLsearch" action="https://ssd.jpl.nasa.gov/sbdb.cgi">
 <input type="hidden" name="sstr" value="{{ data.objectData.MPCname }}"></form>
+{% if data.objectData.MPCname %}
 Moving object, MPC name is <a href="#" onclick="document.forms[1].submit();">{{ data.objectData.MPCname }}</a></li>
 {% else %}
 {% if data.objectData.annotation %}
@@ -56,6 +56,11 @@ Moving object, MPC name is <a href="#" onclick="document.forms[1].submit();">{{ 
 
 <li>Information on this webpage also&nbsp; <a href="/object/{{ data.objectId }}/json/">available as JSON.</a></li>
 
+<form method="post" name="ZTFDR1" action="https://irsa.ipac.caltech.edu/cgi-bin/Gator/nph-query" enctype="multipart/form-data">
+<input type="hidden" name="objstr" value="{{ data.objectData.ramean|floatformat:6 }} {{ data.objectData.decmean|floatformat:6 }}" />
+<input type="hidden" name="radius" value="1" />
+<input type="hidden" name="catalog" value="ztf_objects_dr1" />
+</form>
 <li>Conesearch Links (at 5 arcsec):
 &nbsp;&nbsp;|&nbsp;&nbsp;
 <a href="http://simbad.u-strasbg.fr/simbad/sim-coo?Coord={{ data.objectData.ramean }}%20{{ data.objectData.decmean }}&Radius=0.08" target="new">Simbad</a>
@@ -63,6 +68,8 @@ Moving object, MPC name is <a href="#" onclick="document.forms[1].submit();">{{ 
 <a href="http://ned.ipac.caltech.edu/cgi-bin/nph-objsearch?lon={{ data.objectData.ramean|floatformat:6 }}d&lat={{ data.objectData.decmean|floatformat:6 }}d&radius=0.08&search_type=Near+Position+Search" target="new">NED</a>
 &nbsp;&nbsp;|&nbsp;&nbsp;
 <a href="https://wis-tns.weizmann.ac.il/search?ra={{ data.objectData.ramean }}&decl={{ data.objectData.decmean }}&radius=5&coords_unit=arcsec" target="new">Transient Name Server</a>
+&nbsp;&nbsp;|&nbsp;&nbsp;
+<a href="#" onclick="document.forms[2].submit();" target="new">ZTF DR1</a></li>
 </li>
 
 </ul>
