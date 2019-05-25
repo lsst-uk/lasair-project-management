@@ -24,7 +24,7 @@ cmd += '--logging INFO '
 cmd += '--stampdump %d ' % nid
 cmd += '--maxalert 20000 '
 cmd += '--nthread 4 '
-cmd += '--group LASAIR '
+cmd += '--group LASAIR-DEV '
 cmd += '--host public.alerts.ztf.uw.edu '
 cmd += '--topic ' + topic
 
@@ -45,6 +45,9 @@ cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/jpg_stamp
 os.system(cmd)
 
 cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/update_objects.py'
+os.system(cmd)
+
+cmd = '/home/roy/anaconda3/envs/sherlock/bin/sherlock -N dbmatch --update'
 os.system(cmd)
 
 cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/get_number_candidates.py'
