@@ -13,7 +13,7 @@ def distance(ra1, de1, ra2, de2):
 # setup database connection
 import mysql.connector
 config = {
-    'user'    :settings.DB_USER_WRITE,
+    'user'    : settings.DB_USER_WRITE,
     'password': settings.DB_PASS_WRITE,
     'host'    : settings.DB_HOST,
     'database': 'ztf'
@@ -32,12 +32,13 @@ def run_watchlist(wl_id, delete_old=True):
     for watchlist in cursor:
         wl_name   = watchlist['name']
         wl_radius = watchlist['radius']
-    print ("Running Watchlist '%s' at radius %.1f" % (wl_name, wl_radius))
+    print ("radius = %.1f" % wl_radius)
     
     # clean out previous hits
     if delete_old:
         query = 'DELETE FROM watchlist_hits WHERE wl_id=%d' % wl_id
         cursor.execute(query)
+        msl.commit()
 
     # make a list of all the hits to return it
     newhitlist = []
@@ -45,6 +46,7 @@ def run_watchlist(wl_id, delete_old=True):
     # get all the cones and run them
     query = 'SELECT cone_id,name,ra,decl FROM watchlist_cones WHERE wl_id=%d' % wl_id
     cursor.execute(query)
+    ncandidate = 0
     for watch_pos in cursor:
         cone_id  = watch_pos['cone_id']
         name     = watch_pos['name']
@@ -70,10 +72,13 @@ def run_watchlist(wl_id, delete_old=True):
             arcsec = 3600*distance(myRA, myDecl, row['ra'], row['decl'])
             if arcsec > wl_radius:
                 continue
+
+            ncandidate += ndethist
     
             query3 = 'INSERT INTO watchlist_hits (wl_id, cone_id, objectId, ndethist, arcsec) '
             query3 += 'VALUES (%d, %d, "%s", %d, %f)' % (wl_id, cone_id, objectId, ndethist, arcsec)
 #            print(query3)
+            print ('insering ', objectId)
             try:
                 cursor3.execute(query3)
                 msl.commit()
@@ -85,9 +90,10 @@ def run_watchlist(wl_id, delete_old=True):
                     'ndethist':ndethist, 
                     'arcsec':arcsec
                 })
-            except mysql.connector.errors.IntegrityError:
+            except mysql.connector.errors.IntegrityError as e:
+                print(e)
                 pass  # this objectId is already recorded as a hit for this watchlist
-    return newhitlist
+    return {'newhitlist':newhitlist, 'ncandidate':ncandidate}
 
 if __name__ == "__main__":
     if len(sys.argv) < 1:
@@ -95,5 +101,6 @@ if __name__ == "__main__":
         sys.exit(1)
     wl_id = int(sys.argv[1])
 # run the crossmatch for this watchlist
-    hitlist = run_watchlist(wl_id)
-    print('Found %d matches' % len(hitlist))
+    ret = run_watchlist(wl_id)
+    hitlist = ret['newhitlist']
+    print('Found %d candidates, %d objects' % (ret['ncandidate'], len(hitlist)))

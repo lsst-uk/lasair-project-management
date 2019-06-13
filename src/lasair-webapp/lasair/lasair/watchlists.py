@@ -6,6 +6,7 @@ import lasair.settings
 from lasair.models import Watchlists, WatchlistCones, WatchlistHits
 import mysql.connector
 import json
+from subprocess import Popen, PIPE
 
 def connect_db():
     msl = mysql.connector.connect(
@@ -97,9 +98,14 @@ def show_watchlist(request, wl_id):
             import os
 #            from run_crossmatch import run_watchlist
 #            hitlist = run_watchlist(wl_id)
-            cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair-dev/src/alert_stream_ztf/common/run_crossmatch.py %d' % wl_id
-            os.system(cmd)
-            message += 'watchlist crossmatched'
+            process = Popen(['/home/roy/anaconda3/envs/lasair/bin/python', '/home/roy/lasair/src/alert_stream_ztf/common/run_crossmatch.py', '%d'%wl_id], stdout=PIPE, stderr=PIPE)
+            stdout, stderr = process.communicate()
+
+#            cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/alert_stream_ztf/common/run_crossmatch.py %d' % wl_id
+#            os.system(cmd)
+            stdout = stdout.decode('utf-8')
+            stderr = stderr.decode('utf-8')
+            message += 'watchlist crossmatched [%s, %s]' % (stdout, stderr)
 
     cursor = connection.cursor()
 #    cursor.execute('SELECT * FROM watchlist_cones AS c LEFT JOIN watchlist_hits AS h ON c.cone_id = h.cone_id WHERE c.wl_id=%d ORDER BY h.objectId DESC' % wl_id)
@@ -138,7 +144,6 @@ def show_watchlist(request, wl_id):
             return '000000000'
 
     conelist.sort(reverse=True, key=first)
-    message += ' %d matches found' % found
 
     count = len(conelist)
     
