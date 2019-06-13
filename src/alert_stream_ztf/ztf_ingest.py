@@ -9,6 +9,7 @@ import os,sys
 sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
 
 import date_nid
+import settings
 
 if len(sys.argv) > 1:
     nid = int(sys.argv[1])
@@ -24,7 +25,7 @@ cmd += '--logging INFO '
 cmd += '--stampdump %d ' % nid
 cmd += '--maxalert 20000 '
 cmd += '--nthread 4 '
-cmd += '--group LASAIR-DEV '
+cmd += '--group ' + settings.GROUPID + ' '
 cmd += '--host public.alerts.ztf.uw.edu '
 cmd += '--topic ' + topic
 
@@ -45,9 +46,6 @@ cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/jpg_stamp
 os.system(cmd)
 
 cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/update_objects.py'
-os.system(cmd)
-
-cmd = '/home/roy/anaconda3/envs/sherlock/bin/sherlock -N dbmatch --update'
 os.system(cmd)
 
 cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/get_number_candidates.py'

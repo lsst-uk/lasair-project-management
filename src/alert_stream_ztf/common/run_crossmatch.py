@@ -78,7 +78,6 @@ def run_watchlist(wl_id, delete_old=True):
             query3 = 'INSERT INTO watchlist_hits (wl_id, cone_id, objectId, ndethist, arcsec) '
             query3 += 'VALUES (%d, %d, "%s", %d, %f)' % (wl_id, cone_id, objectId, ndethist, arcsec)
 #            print(query3)
-            print ('insering ', objectId)
             try:
                 cursor3.execute(query3)
                 msl.commit()
