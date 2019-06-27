@@ -36,25 +36,25 @@ os.system(cmd)
 tail = 'tail -2 /data/ztf/logs/' + topic + '.log'
 os.system(tail)
 
-cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/coverage.py %d' % nid
+cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/coverage.py %d' % nid
 os.system(cmd)
 
-cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/check_status.py %d' % nid
+cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/check_status.py %d' % nid
 os.system(cmd)
 
-cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid)
+cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid)
 os.system(cmd)
 
-cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/update_objects.py'
+cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/update_objects.py'
 os.system(cmd)
 
 cmd = '/home/roy/anaconda3/envs/sherlock/bin/sherlock -N dbmatch --update | grep -v password'
 os.system(cmd)
 
-cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/run_active_queries.py'
+cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/run_active_queries.py'
 os.system(cmd)
 
-cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/get_number_candidates.py'
+cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/get_number_candidates.py'
 os.system(cmd)
 
 os.system('date')

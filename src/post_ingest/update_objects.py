@@ -19,12 +19,12 @@ import mysql.connector
 
 def make_object(objectId, candlist, msl):
     ncand = len(candlist)
-    if ncand < 3:
-        query = 'DELETE FROM %s WHERE objectId="%s"' % (objects, objectId)
-        cursor  = msl.cursor(buffered=True, dictionary=True)
-        cursor.execute(query)
-        msl.commit()
-        return -1
+#    if ncand < 3:
+#        query = 'DELETE FROM %s WHERE objectId="%s"' % (objects, objectId)
+#        cursor  = msl.cursor(buffered=True, dictionary=True)
+#        cursor.execute(query)
+#        msl.commit()
+#        return -1
 
     ra = []
     dec = []

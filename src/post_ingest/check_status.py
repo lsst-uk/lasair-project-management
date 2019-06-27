@@ -37,6 +37,18 @@ for row in cursor:
 if not today_candidates_lasair:
     today_candidates_lasair = 0
 
+query = 'SELECT MAX(jd) AS cand_max_jd FROM candidates'
+cursor.execute(query)
+for row in cursor:
+    cand_max_jd = row['cand_max_jd']
+    break
+
+query = 'SELECT MAX(jdmax) AS obj_max_jd FROM objects'
+cursor.execute(query)
+for row in cursor:
+    obj_max_jd = row['obj_max_jd']
+    break
+
 date = date_nid.nid_to_date(nid)
 url = 'https://monitor.alerts.ztf.uw.edu/api/datasources/proxy/7/api/v1/query?query='
 urltail = 'sum(kafka_log_log_value{ name="LogEndOffset" , night = "%s", program = "MSIP" }) - sum(kafka_log_log_value{ name="LogStartOffset", night = "%s", program="MSIP" })' % (date, date)
@@ -60,6 +72,8 @@ dict = {
     'update_time_unix'       : update_time_unix,
     'nid'                    : nid,
     'date'                   : date,
+    'cand_max_jd'            : cand_max_jd,
+    'obj_max_jd'             : obj_max_jd,
 }
 
 dictstr = json.dumps(dict)

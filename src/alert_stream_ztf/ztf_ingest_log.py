@@ -21,7 +21,7 @@ while 1:
     logger.addHandler(fh)
     logger.setLevel(logging.INFO)
 
-    process = Popen(['/home/roy/anaconda3/bin/python', '/home/roy/lasair/src/alert_stream_ztf/ztf_ingest.py'], stdout=PIPE, stderr=PIPE)
+    process = Popen(['/home/roy/anaconda3/envs/lasair/bin/python', '/home/roy/lasair/src/alert_stream_ztf/ztf_ingest.py'], stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
 
     stdout = stdout.decode('utf-8')
@@ -30,8 +30,8 @@ while 1:
     stderr = stderr.decode('utf-8')
     for line in stderr.split('\n'): logger.info(line)
 
-    logger.info("waiting 10 minutes ...")
+    logger.info("waiting 1 minute ...")
     logger.removeHandler(fh)
     fh.close()
     logging.shutdown()
-    time.sleep(600)
+    time.sleep(60)

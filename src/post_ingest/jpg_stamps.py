@@ -14,14 +14,15 @@ def open_fits(filename):
     numpy.seterr(invalid='ignore')
 #    print(numpy.isnan(y))
     y = numpy.abs(y)
-#    y = numpy.sqrt(y)
     med = numpy.median(y)
     mymin = 0
     mymax = 3*med
-#    print('%.1f %s' % (med, filename))
-    y = (y-mymin)*255/(mymax-mymin)
-    y = numpy.maximum(y, 0)
-    y = numpy.minimum(y, 255)
+    if mymax-mymin > 1.e-10:
+        y = (y-mymin)*255/(mymax-mymin)
+        y = numpy.maximum(y, 0)
+        y = numpy.minimum(y, 255)
+    else:
+        y = y * 0.0
     y=numpy.asarray(y,dtype=numpy.uint8)
     return Image.fromarray(y,mode='L')
 
