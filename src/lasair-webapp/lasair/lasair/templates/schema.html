@@ -26,9 +26,16 @@
 <tr><td>latestrmag</td><td>latest r magnitude of candidates that cite this object</td></tr>
 <tr><td>jdmin</td><td>earliest Julian Day of candidates that cite this object</td></tr>
 <tr><td>jdmax</td><td>latest Julian Day of candidates that cite this object</td></tr>
-<tr><td>sherlock_classification</td><td>object classification from Sherlock (string)</td></tr>
 </table>
 <p>
+<h3>Schema for "sherlock_classifications" table</h3>
+(for more information see <a href=https://qub-sherlock.readthedocs.io/en/stable/>Sherlock documentation</a>)
+<table border=1>
+<tr><td>classification                </td><td>Can be NULL, AGN, BS, CV, NT, ORPHAN, SN, UNCLEAR, VS</td></tr>
+<tr><td>summary                </td><td>Natural language about what Sherlock thinks this object is</td></tr>
+</table>
+<p>
+
 <h3>Schema for "sherlock_crossmatches" table</h3>
 (for more information see <a href=https://qub-sherlock.readthedocs.io/en/stable/>Sherlock documentation</a>)
 <table border=1>

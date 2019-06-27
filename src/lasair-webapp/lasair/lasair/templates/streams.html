@@ -2,10 +2,10 @@
 {% block content %}
 <div class="row">
   <div class="col-sm">
-<h3>Lasair Streams</h3>
-The following is a small selection of streams that Lasair can produce. 
+<h3>Lasair Filters</h3>
+The following is a small selection of event filters that Lasair can produce. 
 <p>
-<b><i>The following queries may take up to a minute to execute. Please be patient.</i></b>
+<b><i>The following may take up to a minute to execute. Please be patient.</i></b>
   </div>	
 </div>
 <div class="row">
@@ -22,7 +22,9 @@ The following is a small selection of streams that Lasair can produce.
 <tr><td>
   <form method="POST" id="runquery{{ mq.mq_id }}" action="/objlist/">
   {% csrf_token %} 
-  <input type="hidden" name="sqlquery" value="{{ mq.query }}"/>
+  <input type="hidden" name="selected" value="{{ mq.selected }}"/>
+  <input type="hidden" name="tables" value="{{ mq.tables }}"/>
+  <input type="hidden" name="conditions" value="{{ mq.conditions }}"/>
   <input type="hidden" name="page"     value="0"/>
   </form>
 <a href="#" onclick="runquery({{ mq.mq_id }});"><b>{{ mq.name }}</b></a>
@@ -36,10 +38,10 @@ The following is a small selection of streams that Lasair can produce.
 </div>
 <div class="row">
   <div class="col-sm">
-<h3>Lasair Queries</h3>
+<h3>Lasair Filters and Queries</h3>
 Lasair also provides a more powerful freeform SQL interface
-where you can see the SQL for these queries, customise for yourself, make and save your own queries.<br/>
-<a href=/objlist><b>Click Here to Build Your Own Query</b></a> 
+where you can see the SQL for these streams, customise for yourself, make and save your own filters.<br/>
+<a href=/objlist><b>Click Here to Build Your Own Filter</b></a> 
 <p>&nbsp;</p>
   </div>
 </div>

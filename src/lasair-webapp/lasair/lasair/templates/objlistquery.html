@@ -2,7 +2,7 @@
 {% block content %}
 <div class="row">
   <div class="col-sm">
-                <h3>Query the ZTF object database</h3>
+                <h3>Filter the ZTF object database</h3>
   </div>		
 </div>
 <div class="row">
@@ -25,7 +25,7 @@ within 1.5 arcsec, and presumed to be an astrophysical object.
 </ul>
 <p>
 <b>For detailed information about the attributes of these three tables, 
-that you can use in the queries :
+that you can use in the filters :
 <a target="new" href=/schema>click here</a>.</b>
 
 <ul>
@@ -41,10 +41,7 @@ Thus a light curve can be obtained from all the candidates that have a given obj
 <a href=http://web.ipac.caltech.edu/staff/fmasci/ztf/ztf_pipelines_deliverables.pdf>here</a>.
 <li> Further cuts can be made to remove spurious candidates, 
 The highest quality candidates satisfy the criterion 
-<tt>rb &gt;= 0.65 and nbad = 0 and fwhm &lt;= 5 and elong &lt;= 1.2 and abs(magdiff) &lt;= 0.1</tt>. See example below.
-<li> In the example queries below, you can see the expression 
-<tt>jdnow()</tt>. 
-This evaluates to the current Julian Day: in short, it means simply <i>now</i>.
+<tt>candidates.rb &gt;= 0.65 and candidates.nbad = 0 and candidates.fwhm &lt;= 5 and candidates.elong &lt;= 1.2 and abs(candidates.magdiff) &lt;= 0.1</tt>. See example below.
 <li>If you would like to learn the SQL language, <a href=http://cas.sdss.org/dr6/en/help/howto/search/>this</a>
 is a good resource.
 </ul>
@@ -52,30 +49,26 @@ is a good resource.
 </div>
 
 <div class="row">
-        <div class="col-sm">
-                <form method="POST" action="/objlist/">
-                    {% csrf_token %} 
-                    <input type="submit" value="Submit Query" class="btn btn-primary"/>
-                    <font size=-2>(check this box for JSON output <input type="checkbox" name="json">)</font>
-                    <div class ="form-group">
-                        <tt><textarea class="form-control" rows="8" cols="40" name="sqlquery" id="sqlquery"></textarea></tt>
-                    </div>
-                    <input class="form-control" type="hidden" name="page" value="{{ page }}"/><br/>
-                </form>
-  </div>
-</div>
+<div class="col-sm">
+<form method="POST" action="/objlist/">
+{% include "query_builder.html" %}
 
+<input type="submit" value="Run Filter" class="btn btn-primary"/>
+<font size=-2>(check this box for JSON output <input type="checkbox" name="json"/>)</font>
+</form>
+</div>
+</div>
 
 <div class="row">
   <div class="col-xs-6">
 
 {% if is_authenticated %}
 <h3>My Stored Queries</h3>
-Stored queries that you control are listed below.
-Click on the name of the query to push it into the query area above,
+Stored filters that you control are listed below.
+Click on the name of the filter to push it into the filter area above,
 or the link below the name to edit it. 
 <form action="/myquery/">
-    <input type="submit" value="Create new stored query" class="btn btn-primary"/>
+    <input type="submit" value="Create new stored filter" class="btn btn-primary"/>
 </form>
 <br/>
 <table class="table table-bordered" style="width:80%">
@@ -87,35 +80,55 @@ or the link below the name to edit it.
     </tr>
   </thead>
 {% for mq in myqueries %}
-<tr><td><b><a href=# onclick='document.getElementById("sqlquery").value = document.getElementById("query{{ mq.mq_id}}").textContent;'>{{ mq.name }}</a></b><br/>&nbsp;<br/><a href="/myquery/{{ mq.mq_id }}/">Edit/delete query</a></td>
+<tr><td><b><a href=# onclick='
+document.getElementById("selected").value = document.getElementById("selected{{ mq.mq_id}}").textContent;
+document.getElementById("tables").value = document.getElementById("tables{{ mq.mq_id}}").textContent; check_boxes();
+document.getElementById("conditions").value = document.getElementById("conditions{{ mq.mq_id}}").textContent;
+'>{{ mq.name }}</a></b><br/>&nbsp;<br/><a href="/myquery/{{ mq.mq_id }}/">Edit/delete filter</a></td>
 <td>{{ mq.description }}</td>
-<td><font size=-1><pre id="query{{ mq.mq_id }}">{{ mq.query }}</pre></font></td>
+<td><font size=-2>
+		<pre id="selected{{ mq.mq_id }}">{{ mq.selected }}</pre>
+		----
+		<pre id="tables{{ mq.mq_id }}">{{ mq.tables }}</pre>
+		----
+		<pre id="conditions{{ mq.mq_id }}">{{ mq.conditions }}</pre>
+	</font></td>
 </tr>
 {% endfor %}
 </table>
 <br/>
 {% else %}
-(If you would like to create your own stored queries, you should be signed in. See links at top left.)
+(If you would like to create your own stored filters, you should be signed in. See links at top left.)
 <hr/>
 {% endif %}
 
-<h3>Contributed Stored Queries</h3>
-Stored queries created and made public are listed below. Click on the name of
-the query to push it into the query area above.
+<h3>Contributed Stored Filters</h3>
+Stored filters created and made public are listed below. Click on the name of
+the filter to push it into the area above.
 <table class="table table-bordered" style="width:80%">
   <thead>
     <tr>
       <th style="width:10%">Name</th>
       <th style="width:10%">Owner</th>
       <th class="width:40%">Description</th>
-      <th class="width:40%">Query</th>
+      <th class="width:20%">Query</th>
     </tr>
   </thead>
 {% for mq in public_queries %}
-<tr><td><b><a href=# onclick='document.getElementById("sqlquery").value = document.getElementById("query{{ mq.mq_id}}").textContent;'>{{ mq.name }}</a></b></td>
+<tr><td><b><a href=# onclick='
+document.getElementById("selected").value = document.getElementById("selected{{ mq.mq_id}}").textContent;
+document.getElementById("tables").value = document.getElementById("tables{{ mq.mq_id}}").textContent; check_boxes();
+document.getElementById("conditions").value = document.getElementById("conditions{{ mq.mq_id}}").textContent;
+'>{{ mq.name }}</a></b></td>
 <td>{{ mq.user.first_name }} {{ mq.user.last_name }}</td>
 <td>{{ mq.description }}</td>
-<td><font size=-1><pre id="query{{ mq.mq_id }}">{{ mq.query }}</pre></font></td>
+<td><font size=-2>
+		<pre id="selected{{ mq.mq_id }}">{{ mq.selected }}</pre>
+		----
+		<pre id="tables{{ mq.mq_id }}">{{ mq.tables }}</pre>
+		----
+		<pre id="conditions{{ mq.mq_id }}">{{ mq.conditions }}</pre>
+	</font></td>
 </tr>
 {% endfor %}
 </table>

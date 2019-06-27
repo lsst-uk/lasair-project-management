@@ -192,17 +192,33 @@ class Watchlists(models.Model):
         managed = False
         db_table = 'watchlists'
 
+#class Myqueries(models.Model):
+    #mq_id = models.AutoField(primary_key=True)
+    #user = models.ForeignKey(User, models.DO_NOTHING, db_column='user', blank=True, null=True)
+    #name = models.CharField(max_length=256, blank=True, null=True)
+    #description = models.CharField(max_length=4096, blank=True, null=True)
+    #query = models.CharField(max_length=4096, blank=True, null=True)
+    #public = models.IntegerField(blank=True, null=True)
+#
+    #class Meta:
+        #managed = False
+        #db_table = 'myqueries'
+
 class Myqueries(models.Model):
     mq_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, models.DO_NOTHING, db_column='user', blank=True, null=True)
     name = models.CharField(max_length=256, blank=True, null=True)
     description = models.CharField(max_length=4096, blank=True, null=True)
-    query = models.CharField(max_length=4096, blank=True, null=True)
+    selected = models.CharField(max_length=4096, blank=True, null=True)
+    conditions = models.CharField(max_length=4096, blank=True, null=True)
+    tables = models.CharField(max_length=4096, blank=True, null=True)
     public = models.IntegerField(blank=True, null=True)
+    active = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'myqueries'
+        db_table = 'myqueries2'
+
 
 class Comments(models.Model):
     comment_id = models.AutoField(primary_key=True)

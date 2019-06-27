@@ -20,18 +20,23 @@ def new_myquery(request):
     if request.method == 'POST' and is_owner:
         name        = request.POST.get('name')
         description = request.POST.get('description')
-        query       = request.POST.get('query')
+        selected       = request.POST.get('selected')
+        conditions     = request.POST.get('conditions')
+        tables         = request.POST.get('tables')
+        active      = request.POST.get('active')
         public      = request.POST.get('public')
 
+        if request.POST.get('active'): active  = 1
+        else:                          active  = 0
         if request.POST.get('public'): public  = 1
         else:                          public  = 0
 
         mq = Myqueries(user=request.user, name=name, description=description, 
-                public=public, query=query)
+                public=public, active=active, selected=selected, conditions=conditions, tables=tables)
         mq.save()
         message = "Query saved successfully"
         return render(request, 'show_myquery.html',{
-            'myquery'  :mq, 
+            'myquery' :mq, 
             'is_owner' :is_owner,
             'message'  :message})
 
@@ -45,7 +50,8 @@ def show_myquery(request, mq_id):
 
     is_owner = (request.user.is_authenticated) and (request.user == myquery.user)
     is_public = (myquery.public == 1)
-    is_visible = is_owner or is_public
+    is_active = (myquery.active == 1)
+    is_visible = is_owner or is_active
     if not is_visible:
         return render(request, 'error.html',{
             'message': "This query is private and not visible to you"})
@@ -57,20 +63,28 @@ def show_myquery(request, mq_id):
         else:
             myquery.name        = request.POST.get('name')
             myquery.description = request.POST.get('description')
-            myquery.query       = request.POST.get('query')
-            checkbox            = request.POST.get('public')
+            myquery.selected     = request.POST.get('selected')
+            myquery.tables       = request.POST.get('tables')
+            myquery.conditions   = request.POST.get('conditions')
+            public            = request.POST.get('public')
+            active            = request.POST.get('active')
 
-            if checkbox: 
+            if public: 
                 if myquery.public == 0: 
                     myquery.public  = 1 # if set to 1 or 2 leave it as it is
             else:
                 myquery.public  = 0
 
+            if active: 
+                if myquery.active == 0: 
+                    myquery.active  = 1 # if set to 1 or 2 leave it as it is
+            else:
+                myquery.active  = 0
+
             myquery.save()
             message += 'query updated'
 
     return render(request, 'show_myquery.html',{
-        'myquery'  :myquery, 
+        'myquery' :myquery, 
         'is_owner' :is_owner,
         'message'  :message})
-

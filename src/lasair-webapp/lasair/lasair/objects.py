@@ -4,7 +4,9 @@ from django.template.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 import lasair.settings
-from lasair.models import Objects, Myqueries, Comments
+from lasair.models import Objects, Comments
+from lasair.models import Myqueries
+from lasair.models import Myqueries
 import mysql.connector
 import ephem, math
 from datetime import datetime, timedelta
@@ -12,6 +14,7 @@ import json
 import date_nid
 sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
 from mag import dc_mag
+import queries
 
 def connect_db():
     msl = mysql.connector.connect(
@@ -189,16 +192,26 @@ def streams(request):
 @csrf_exempt
 def objlist(request):
     perpage = 1000
+    message = ''
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
-        sqlquery_user = request.POST['sqlquery'].strip()
+        selected   = request.POST['selected'].strip()
+        tables     = request.POST['tables'].strip()
+        conditions = request.POST['conditions'].strip()
 
-# lets keep a record of all the queries the people try to execute
-        record_query(request, sqlquery_user)
 
         json_checked = False
         if 'json' in request.POST and request.POST['json'] == 'on':
             json_checked = True
+
+        check_days_ago = False
+        days_ago = 3000
+        if 'check_days_ago' in request.POST and request.POST['check_days_ago'] == 'on':
+            try:
+                days_ago = float(request.POST['days_ago'])
+                check_days_ago = True
+            except:
+                pass
 
         page     = request.POST['page']
         if len(page.strip()) == 0: page = 0
@@ -206,16 +219,12 @@ def objlist(request):
         ps = page    *perpage
         pe = (page+1)*perpage
 
-        tokens = sqlquery_user.split()
-        firstword = tokens[0].lower()
-        if firstword != 'select':
-            message = 'You must start the query with the word "SELECT"'
-            return render(request, 'error.html', {'message': message})
+        sqlquery_real = queries.make_query(selected, tables, conditions, \
+                page, perpage, check_days_ago, days_ago, days_ago)
+        message += sqlquery_real
 
-        sqlquery_real = 'SELECT /*+ MAX_EXECUTION_TIME(300000) */ ' + ' '.join(tokens[1:])
-
-        sqlquery_real += ' LIMIT %d OFFSET %d' % (perpage, page*perpage)
-        message = sqlquery_real
+# lets keep a record of all the queries the people try to execute
+        record_query(request, sqlquery_real)
 
         nalert = 0
         msl = connect_db()
@@ -241,7 +250,9 @@ def objlist(request):
         else:
             return render(request, 'objlist.html',
                 {'table': queryset, 'nalert': nalert, 'nextpage': page+1, 'ps':ps, 'pe':pe, 
-                    'sqlquery_user':sqlquery_user, 'message': message, 'lastpage':lastpage})
+                    'selected'  :selected, 
+                    'tables'    :tables, 
+                    'message': message, 'lastpage':lastpage})
     else:
         if request.user.is_authenticated:
             myqueries    = Myqueries.objects.filter(user=request.user)
@@ -252,4 +263,5 @@ def objlist(request):
         return render(request, 'objlistquery.html', {
             'is_authenticated': request.user.is_authenticated,
             'myqueries':myqueries, 
+            'days_ago': 1, 
             'public_queries':public_queries})

@@ -19,8 +19,10 @@
 		<form method="POST" action="/objlist/">
                 {% csrf_token %}
 		<div class ="form-group">
-			<input type="hidden" name="sqlquery" value="{{ sqlquery_user }}"/>
-			<input type="hidden" name="page"     value="{{ nextpage }}"/>
+			<input type="hidden" name="selected"  value="{{ selected }}"/>
+			<input type="hidden" name="tables"    value="{{ tables }}"/>
+			<input type="hidden" name="conditions" value="{{ conditions }}"/>
+			<input type="hidden" name="page"      value="{{ nextpage }}"/>
 			<input class="btn btn-primary" type="submit" value="next page"/>
 		</div>
 		</form>

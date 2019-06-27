@@ -7,14 +7,13 @@
 {% if is_owner %}
 <!-- editing an existing query -->
 <form method="POST"  action="/myquery/{{ myquery.mq_id }}/">
-<table>
 {% csrf_token %}
-<tr><td>Name</td><td><h2><input name="name" value="{{ myquery.name }}"></h2></td></tr>
-<tr><td>Description</td><td><textarea name="description" rows=4 cols=80>{{ myquery.description }}</textarea></td></tr>
-<tr><td>SQL query</td><td><tt><textarea name="query" rows=8 cols=80>{{ myquery.query }}</textarea></tt></td></tr>
-<tr><td>Public</td><td><h3><input type="checkbox" name="public" {% if myquery.public > 0 %}checked{% endif %}></h3></td></tr>
-</table>
-
+<h2><input name="name" value="{{ myquery.name }}"></h2>
+<textarea name="description" rows=4 cols=80>{{ myquery.description }}</textarea><br/>
+Active: <input type="checkbox" name="active" {% if myquery.active > 0 %}checked{% endif %}><br/>
+Public: <input type="checkbox" name="public" {% if myquery.public > 0 %}checked{% endif %}><br/>
+<hr/>
+{% include "query_builder.html" %}
 <input type="submit" class="button" style="color: blue; background-color: #EEEEFF;" value=" Update query"></td>
 </form>
 <br/><hr/>&nbsp;
@@ -31,7 +30,10 @@
 <table border=1>
 <tr><td>Name</td><td><h2>{{ myquery.name }}</h2></td></tr>
 <tr><td>Description</td><td>{{ myquery.description }}</td></tr>
-<tr><td>SQL Query</td><td><tt>{{ myquery.query }}</tt></td></tr>
+<tr><td>Selected</td><td><tt>{{ myquery.selected }}</tt></td></tr>
+<tr><td>Tables</td><td><tt>{{ myquery.tables }}</tt></td></tr>
+<tr><td>Conditions</td><td><tt>{{ myquery.conditions }}</tt></td></tr>
+<tr><td>Active</td><td>{% if myquery.active == 1 %}yes{% else %}no{% endif %}</td></tr>
 <tr><td>Public</td><td>{% if myquery.public == 1 %}yes{% else %}no{% endif %}</td></tr>
 </table>
 {% endif %}

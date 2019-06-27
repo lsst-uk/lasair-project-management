@@ -1,0 +1,94 @@
+<script type="text/javascript" src="//code.jquery.com/jquery-1.12.1.min.js" charset="utf-8"></script>
+<script type="text/javascript">
+/* respond to clicking a checkbox */
+function puttext() {
+  var boxes = document.getElementsByName('put');
+  var nonobjects = 0;
+  var text = '';
+  for(i=0; i<boxes.length; i++){
+    if(boxes[i].checked && boxes[i].id != 'objects'){
+      nonobjects += 1;
+    }
+  }
+  if(nonobjects > 1){
+    document.getElementById('objects').checked = true;
+  }
+  var nt = 0;
+  for(i=0; i<boxes.length; i++){
+    if(boxes[i].checked){
+      if(nt > 0){
+        text += ', '
+      }
+      text += boxes[i].id;
+      nt += 1;
+    }
+  }
+  document.getElementById("tables").value = text;
+{% if days_ago %}
+  check_days_ago();
+{% endif %}
+}
+
+/* take the table text and fill in the checkboxes */
+function check_boxes() {
+  var tables = document.getElementById("tables").value;
+  var boxes = document.getElementsByName('put');
+  for(i=0; i<boxes.length; i++){
+    if(tables.indexOf(boxes[i].id) != -1){
+      boxes[i].checked = true;
+    }
+  }
+{% if days_ago %}
+  check_days_ago();
+{% endif %}
+}
+
+
+function check_days_ago(){
+  var tables = document.getElementById("tables").value;
+  var obj = document.getElementById('days_ago');
+  if(tables.indexOf('objects') != -1 || tables.indexOf('candidates') != -1){
+    obj.style.display = "block";
+  } else {
+    obj.style.display = "none";
+  }
+}
+
+$(document).ready(function(){
+  check_boxes();
+});
+
+</script>
+
+
+{% csrf_token %} 
+<div class ="form-group">
+	<b><font color="red">SELECT</font></b>
+<tt><textarea class="form-control" rows="4" cols="40" name="selected" id="selected">{{ myquery.selected }}</textarea></tt>
+<b><font color="red">FROM JOIN OF</font></b>
+<div style="display:none">
+<tt><textarea class="form-control" rows="1" cols="40" name="tables" id="tables">{{ myquery.tables }}</textarea></tt>
+</div>
+<table cellpadding=10>
+<tr><td> <font size=+1>
+<input type="checkbox" name="put" id="candidates"               onclick="puttext();"> candidates<br/>
+<input type="checkbox" name="put" id="noncandidates"            onclick="puttext();"> noncandidates
+</font></td><td> <font size=+1>
+<input type="checkbox" name="put" id="objects"                  onclick="puttext();"> objects
+</font></td><td> <font size=+1>
+<input type="checkbox" name="put" id="comments"                 onclick="puttext();"> comments<br/>
+<input type="checkbox" name="put" id="sherlock_classifications" onclick="puttext();"> sherlock_classifications<br/>
+<input type="checkbox" name="put" id="sherlock_crossmatches"    onclick="puttext();"> sherlock_crossmatches
+</font></td></tr>
+</table>
+
+<b><font color="red">WHERE ORDER</font></b>
+<tt><textarea class="form-control" rows="4" cols="40" name="conditions" id="conditions">{{ myquery.conditions }}</textarea></tt>
+</div>
+<div id="days_ago" style="display:none">
+	<input type="checkbox" id="check_days_ago" name="check_days_ago"> 
+	<font color="red">Include only recent events</font> (<input size=6 name="days_ago" value=""/> days)
+</div>
+
+<input class="form-control" type="hidden" name="page" value="{{ page }}"/><br/>
+
