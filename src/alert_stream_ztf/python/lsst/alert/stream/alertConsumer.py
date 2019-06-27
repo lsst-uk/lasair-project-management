@@ -73,7 +73,7 @@ class AlertConsumer(object):
         # FIXME should be properly handling exceptions here, but we aren't
         self.consumer.close()
 
-    def poll(self, decode=False, verbose=True):
+    def poll(self, decode=False, verbose=True, timeout=1):
         """Polls Kafka broker to consume topic.
 
         Parameters
@@ -83,7 +83,7 @@ class AlertConsumer(object):
         verbose : `boolean`
             If True, returns every message. If False, only raises EopError.
         """
-        msg = self.consumer.poll(timeout=1)
+        msg = self.consumer.poll(timeout=timeout)
 
         if msg:
             if msg.error():

@@ -20,12 +20,12 @@ date = date_nid.nid_to_date(nid)
 topic  = 'ztf_' + date + '_programid1'
 print("Topic is %s, nid is %d" % (topic, nid))
 
-cmd =  '/home/roy/anaconda3/bin/python bin/ingestStreamThreaded.py '
+cmd =  '/home/roy/anaconda3/envs/lasair/bin/python bin/ingestStreamThreaded.py '
 cmd += '--logging INFO '
 cmd += '--stampdump %d ' % nid
 cmd += '--maxalert 20000 '
 cmd += '--nthread 4 '
-cmd += '--group ' + settings.GROUPID + ' '
+cmd += '--group %s ' % settings.GROUPID
 cmd += '--host public.alerts.ztf.uw.edu '
 cmd += '--topic ' + topic
 
@@ -46,6 +46,12 @@ cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/jpg_stamp
 os.system(cmd)
 
 cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/update_objects.py'
+os.system(cmd)
+
+cmd = '/home/roy/anaconda3/envs/sherlock/bin/sherlock -N dbmatch --update | grep -v password'
+os.system(cmd)
+
+cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/run_active_queries.py'
 os.system(cmd)
 
 cmd = '/home/roy/anaconda3/bin/python /home/roy/lasair/src/post_ingest/get_number_candidates.py'

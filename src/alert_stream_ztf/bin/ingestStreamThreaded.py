@@ -124,14 +124,6 @@ def insert_candidate(msl, candidate, objectId, stalefile, times):
     d = insert_sql_candidate(candidate, objectId, times)
     query = d['sql']
     times = d['times']
-# for new objects 
-#    query2 = 'INSERT IGNORE INTO %s (objectId, stale) VALUES ("%s", 1)' % (objects, objectId)
-# for existing objects
-#    query3 = 'UPDATE %s set stale=1 where objectId="%s"' % (objects, objectId)
-
-#    logger.debug(query)
-#    logger.debug(query2)
-#    logger.debug(query3)
     t = time.time()
     try:
         cursor = msl.cursor(buffered=True)
@@ -145,24 +137,7 @@ def insert_candidate(msl, candidate, objectId, stalefile, times):
     except:
         times['log'] += ('Stalefile write failed: %s' % objectId)
     
-
-#    try:
-#        cursor = msl.cursor(buffered=True)
-#        cursor.execute(query2)
-#        cursor.close()
-#    except mysql.connector.Error as err:
-#        times['log'] += ('Database insert object failed: %s' % str(err))
-
-#    try:
-#        cursor = msl.cursor(buffered=True)
-#        cursor.execute(query3)
-#        cursor.close()
-#    except mysql.connector.Error as err:
-#        times['log'] += ('Database update object failed: %s' % str(err))
-
     msl.commit()
-#    candid = alert.get('candid')
-#    logger.debug('inserted %d' % candid)
 
     times['insert'] += time.time() - t
     return times
@@ -283,47 +258,38 @@ class Consumer(threading.Thread):
         stalefile = open('/data/ztf/stale/file%02d'%self.threadID, 'w')
         nalert = 0
         while nalert < maxalert:
+            t = time.time()
             try:
-                t = time.time()
-                msg = streamReader.poll(decode=True)
-                self.times['fetch'] += time.time() - t
-    
-                if msg is None:
-                    continue
-                else:
-                    for record in msg:
-                        # Apply filter to each alert
-                        if self.args.stampdump:
-                            d = alert_filter(record, msl, self.times, stalefile, '/data/ztf/stamps/fits/' + self.args.stampdump)
-                        else:
-                            d = alert_filter(record, msl, self.times, stalefile)
-                        candid = d['candid']
-                        self.times = d['times']
-                        nalert += 1
-    
+                msg = streamReader.poll(decode=True, timeout=299.0)
             except alertConsumer.EopError as e:
-                # Write when reaching end of partition
-                self.times['log'] += '%d got %d: %s\n' % (self.threadID, nalert, e.message)
                 break
-            except IndexError:
-                self.times['log'] += 'Data cannot be decoded '
-            except UnicodeDecodeError:
-                self.times['log'] += 'Unexpected data format received '
-            except KeyboardInterrupt:
-                self.times['log'] += 'Aborted by user '
-                sys.exit()
-            except:
-                self.times['log'] += 'Exception '
+
+            self.times['fetch'] += time.time() - t
+
+            if msg is None:
+                break
+            else:
+                for record in msg:
+                    # Apply filter to each alert
+                    if self.args.stampdump:
+                        d = alert_filter(record, msl, self.times, stalefile, '/data/ztf/stamps/fits/' + self.args.stampdump)
+                    else:
+                        d = alert_filter(record, msl, self.times, stalefile)
+                    candid = d['candid']
+                    self.times = d['times']
+                    nalert += 1
     
-            if self.args.avrodump:
-                dir = '/data/ztf/avros/%s' % self.args.topic
-                try:
-                    os.makedirs(dir)
-                except OSError:
-                    pass
-                f = open('%s/%d.avro' % (dir, candid), 'wb')
-                f.write(streamReader.raw_msg)
-                f.close()
+        self.times['log'] += '%d: finished with %d alerts\n' % (self.threadID, nalert)
+        if self.args.avrodump:
+            dir = '/data/ztf/avros/%s' % self.args.topic
+            try:
+                os.makedirs(dir)
+            except OSError:
+                pass
+            f = open('%s/%d.avro' % (dir, candid), 'wb')
+            f.write(streamReader.raw_msg)
+            f.close()
+
         streamReader.__exit__(0,0,0)
         stalefile.close()
         return self.times
