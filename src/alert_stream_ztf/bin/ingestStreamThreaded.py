@@ -7,7 +7,6 @@ import argparse
 import sys
 import os
 import time
-import logging
 sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
 import htmCircle
 import mysql.connector
@@ -297,21 +296,8 @@ class Consumer(threading.Thread):
 def main():
     args = parse_args()
 
-    logger = logging.getLogger('ztf_ingestion')
-    if args.logging:
-        if args.logging == 'DEBUG':   logger.setLevel(logging.DEBUG)
-        if args.logging == 'INFO':    logger.setLevel(logging.INFO)
-        if args.logging == 'WARNING': logger.setLevel(logging.WARNING)
-        if args.logging == 'ERROR':   logger.setLevel(logging.ERROR)
-        if args.logging == 'CRITICAL':logger.setLevel(logging.CRITICAL)
-
-    if args.topic:
-        fh = logging.FileHandler('/data/ztf/logs/' + args.topic + '.log')
-    else:
-        fh = logging.FileHandler('/data/ztf/logs/junk.log')
-
     # Configure consumer connection to Kafka broker
-    print('Connecting to Kafka at %s' % args.host)
+#    print('Connecting to Kafka at %s' % args.host)
 #    conf = {'bootstrap.servers': '{}:9092,{}:9093,{}:9094'.format(args.host,args.host,args.host),
 #            'default.topic.config': {'auto.offset.reset': 'smallest'}}
     conf = {'bootstrap.servers': '{}:9092'.format(args.host,args.host,args.host),
@@ -320,20 +306,13 @@ def main():
     if args.group: conf['group.id'] = args.group
     else:          conf['group.id'] = 'LASAIR'
 
-    logger.info('Configuration = %s' % str(conf))
-
-    formatter = logging.Formatter( '%(asctime)s|%(levelname)s|%(message)s', '%d/%m/%Y %H:%M:%S')
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
-    logger.info('starting ingestion')
-#        logger.info('--- %d ---\n%s' % (threadID, times['log']))
-#        logger.info('-%d-: Fetch_alerts: insert %f, stamp %f, fetch %f' % (threadID, times['insert'], times['stamp'], times['fetch']))
+    print('Configuration = %s' % str(conf))
 
     if args.nthread:
         nthread = args.nthread
     else:
         nthread = 1
-    logger.info('Threads = %d' % nthread)
+    print('Threads = %d' % nthread)
 
     os.system('rm -f /data/ztf/stale/*')
 
@@ -350,18 +329,17 @@ def main():
     t = time.time()
     for th in thread_list:
          th.start()
-    logger.info('Threads started')
     
     # wait for them to finish
     for th in thread_list:
          th.join()
 
     time_total = time.time() - t
-    logger.info('Run time %f' % time_total)
-    logger.info('\n  Insert  Stamp   Fetch   Log')
+    print('\n  Insert  Stamp   Fetch   Log')
     for t in range(nthread):
         ti = timeses[t]
-        logger.info('%7.1f %7.1f %7.1f %s' % (ti['insert'], ti['stamp'], ti['fetch'], ti['log'].strip()))
+        print('%7.1f %7.1f %7.1f %s' % (ti['insert'], ti['stamp'], ti['fetch'], ti['log'].strip()))
+    print('Run time %f' % time_total)
 
 if __name__ == '__main__':
     main()

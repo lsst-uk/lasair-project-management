@@ -10,6 +10,8 @@ import settings
 import date_nid
 import datetime
 
+print('------------- CHECK STATUS -------------')
+t = time.time()
 if len(sys.argv) > 1:
     nid = int(sys.argv[1])
 else:
@@ -79,9 +81,10 @@ dict = {
 dictstr = json.dumps(dict)
 
 
-print('------------- SYSTEM STATUS -------------')
 print(dictstr)
 
 f = open('/data/ztf/system_status.json', 'w')
 f.write(dictstr)
 f.close()
+
+print('Check status finished in %.1f seconds' % (time.time() - t))

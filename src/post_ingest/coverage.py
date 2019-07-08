@@ -3,6 +3,7 @@ sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
 import settings
 import time
 
+print('---------- COVERAGE TABLE ------------')
 import mysql.connector
 msl = mysql.connector.connect(\
             user    =settings.DB_USER_WRITE, \

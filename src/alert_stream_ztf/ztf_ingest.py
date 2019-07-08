@@ -1,10 +1,3 @@
-#!/home/roy/anaconda2/bin/python
-# This runs in a crontab. Works out todays date to make the topic
-# Sucks in the alerts and puts them in the database
-# Converts the FITS to jpegs in the "post ingest" phase
-# crontab entry is
-# 0/15 * * * * /home/roy/lasair/src/alert_stream_ztf/ztf_ingest.py
-
 import os,sys
 sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
 
@@ -18,6 +11,9 @@ else:
 
 date = date_nid.nid_to_date(nid)
 topic  = 'ztf_' + date + '_programid1'
+
+print('--------------- INGEST FROM KAFKA ------------')
+os.system('date')
 print("Topic is %s, nid is %d" % (topic, nid))
 
 cmd =  '/home/roy/anaconda3/envs/lasair/bin/python bin/ingestStreamThreaded.py '
@@ -29,32 +25,37 @@ cmd += '--group %s ' % settings.GROUPID
 cmd += '--host public.alerts.ztf.uw.edu '
 cmd += '--topic ' + topic
 
-os.system('date')
 print(cmd)
 os.system(cmd)
 
 tail = 'tail -2 /data/ztf/logs/' + topic + '.log'
 os.system(tail)
+os.system('date')
 
 cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/coverage.py %d' % nid
 os.system(cmd)
+os.system('date')
 
 cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/check_status.py %d' % nid
 os.system(cmd)
+os.system('date')
 
 cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid)
 os.system(cmd)
+os.system('date')
 
 cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/update_objects.py'
 os.system(cmd)
+os.system('date')
 
-cmd = '/home/roy/anaconda3/envs/sherlock/bin/sherlock -N dbmatch --update | grep -v password'
+cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/run_sherlock.py'
 os.system(cmd)
+os.system('date')
 
 cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/run_active_queries.py'
 os.system(cmd)
+os.system('date')
 
 cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/get_number_candidates.py'
 os.system(cmd)
-
 os.system('date')

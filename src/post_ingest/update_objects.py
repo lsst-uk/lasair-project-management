@@ -144,7 +144,7 @@ class Updater(threading.Thread):
             else:
                 nupdate += 1
     
-        self.times['log'] += ('%d candidates, %d updated objects, %d deleted objects' % (ntotalcand, nupdate, ndelete))
+        self.times['log'] += ('%d candidates, %d updated objects' % (ntotalcand, nupdate))
         self.times['time'] = (time.time() - t)
 
 
@@ -173,6 +173,8 @@ def splitList(objectsForUpdate, bins = None):
 
 
 if __name__ == "__main__":
+    print('------------ UPDATE OBJECTS --------------')
+    t = time.time()
     os.system('cd /data/ztf/stale; cat file* | sort | uniq > all_file')
     lines = open('/data/ztf/stale/all_file').readlines()
     objectIds = []
@@ -205,4 +207,5 @@ if __name__ == "__main__":
     for th in range(nthread):
         ti = timeses[th]
         print('Thread %d %7.1f sec %s' % (th, ti['time'], ti['log']))
+    print('Update objects finished in %.1f sec' % (time.time() - t))
 

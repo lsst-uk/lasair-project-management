@@ -5,7 +5,6 @@ sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
 
 
 from subprocess import Popen, PIPE
-import logging
 import date_nid
 import time
 
@@ -14,24 +13,16 @@ while 1:
     nid  = date_nid.nid_now()
     date = date_nid.nid_to_date(nid)
     topic  = 'ztf_' + date + '_programid1'
-    logger = logging.getLogger('ztf_ingestion')
-    fh = logging.FileHandler('/data/ztf/logs/' + topic + '.log')
-    formatter = logging.Formatter( '%(asctime)s|%(levelname)s|%(message)s', '%d/%m/%Y %H:%M:%S')
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
-    logger.setLevel(logging.INFO)
+    fh = open('/data/ztf/logs/' + topic + '.log', 'a')
 
     process = Popen(['/home/roy/anaconda3/envs/lasair/bin/python', '/home/roy/lasair/src/alert_stream_ztf/ztf_ingest.py'], stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
 
     stdout = stdout.decode('utf-8')
-    for line in stdout.split('\n'): logger.info(line)
-
+    fh.write(stdout)
     stderr = stderr.decode('utf-8')
-    for line in stderr.split('\n'): logger.info(line)
+    fh.write(stderr)
 
-    logger.info("waiting 1 minute ...")
-    logger.removeHandler(fh)
+    fh.write("waiting 1 minute ...")
     fh.close()
-    logging.shutdown()
     time.sleep(60)

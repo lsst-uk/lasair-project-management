@@ -74,6 +74,6 @@ def main():
                 run_total += convert_fits(dirfits, dirjpg, file)
     print('------------  JPG STAMPS ----------')
     print('Tried %d stamps, Made %d jpegs' % (day_total, run_total))
-    print('Time %.1f seconds' % (time.time() - t))
+    print('Jpegs made in %.1f seconds' % (time.time() - t))
 
 main()

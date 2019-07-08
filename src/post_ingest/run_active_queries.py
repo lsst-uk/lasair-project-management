@@ -11,7 +11,7 @@ import mysql.connector
 
 def run_query(query, status, msl, file):
     jdnow = (time.time()/86400 + 2440587.5);
-    print('jdnow %.3f' % jdnow)
+#    print('jdnow %.3f' % jdnow)
     days_ago_candidates = jdnow - status['cand_max_jd']
     days_ago_objects    = jdnow - status['obj_max_jd']
 
@@ -41,13 +41,15 @@ def find_queries(status):
     query = 'SELECT * FROM myqueries2 WHERE active=1'        
     cursor.execute(query)
     for query in cursor:
-        print('running query %04d' % query['mq_id'])
         file = open('/data/ztf/streams/substream%04d' % query['mq_id'], 'a')
         n = run_query(query, status, msl, file)
         file.close()
-        print('    got %d' % n)
+        print('query %04d got %d' % (query['mq_id'], n))
 
 if __name__ == "__main__":
+    print('--------- RUN ACTIVE QUERIES -----------')
+    t = time.time()
     jsonstr = open('/data/ztf/system_status.json').read()
     status = json.loads(jsonstr)
     find_queries(status)
+    print('Active queries done in %.1f seconds' % (time.time() - t))
