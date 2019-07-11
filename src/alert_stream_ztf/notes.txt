@@ -1,0 +1,31 @@
+on lasair-head on screen
+  cd lasair/src/alert_stream_ztf/; /home/roy/anaconda3/envs/lasair/bin/python ztf_ingest_log.py
+  cd lasair/src/alert_stream_ztf/; /home/roy/anaconda3/envs/sherlock/bin/python lvc_gcn_listener.py >> /data/ztf/skymap/log.txt
+  cd lasair/src/alert_stream_ztf/; /home/roy/anaconda3/envs/sherlock/bin/python tns_log.py
+
+crontab
+0  15 * * * /home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/coverage.py
+15 15 * * * /home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/jpg_stamps.py
+
+settings.py
+DB_HOST = 'lasair-dev-db'
+DB_DATABASE = 'ztf'
+
+DB_USER = 
+DB_PASS = 
+DB_PASSWORD = DB_PASS
+
+DB_USER_WRITE = 
+DB_PASS_WRITE = 
+
+KAFKA_TIMEOUT   = 60.0
+KAFKA_THREADS   = 8
+KAFKA_MAXALERTS = 20000
+# ingestion is limited to KAFKA_THREADS * KAFKA_MAXALERTS
+
+GRAFANA_USERNAME = 
+GRAFANA_PASSWORD = 
+
+GROUPID = 'LASAIR-DEV'
+
+

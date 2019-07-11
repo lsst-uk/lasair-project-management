@@ -19,8 +19,8 @@ print("Topic is %s, nid is %d" % (topic, nid))
 cmd =  '/home/roy/anaconda3/envs/lasair/bin/python bin/ingestStreamThreaded.py '
 cmd += '--logging INFO '
 cmd += '--stampdump %d ' % nid
-cmd += '--maxalert 20000 '
-cmd += '--nthread 4 '
+cmd += '--maxalert %d ' % settings.KAFKA_MAXALERTS
+cmd += '--nthread %d '  % settings.KAFKA_THREADS
 cmd += '--group %s ' % settings.GROUPID
 cmd += '--host public.alerts.ztf.uw.edu '
 cmd += '--topic ' + topic
@@ -32,17 +32,17 @@ tail = 'tail -2 /data/ztf/logs/' + topic + '.log'
 os.system(tail)
 os.system('date')
 
-cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/coverage.py %d' % nid
-os.system(cmd)
-os.system('date')
+#cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/coverage.py'
+#os.system(cmd)
+#os.system('date')
 
 cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/check_status.py %d' % nid
 os.system(cmd)
 os.system('date')
 
-cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid)
-os.system(cmd)
-os.system('date')
+#cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid)
+#os.system(cmd)
+#os.system('date')
 
 cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/update_objects.py'
 os.system(cmd)

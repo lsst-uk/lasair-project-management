@@ -4,6 +4,9 @@ from PIL import Image
 import numpy
 import os.path
 import time
+import datetime
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
+import date_nid
 
 def open_fits(filename):
     data = fits.getdata(filename)
@@ -54,11 +57,20 @@ def convert_fits(dirfits, dirjpg, name):
     return 1
 
 def main():
-    if len(sys.argv) < 2:
-        print('Usage: python jpg_stamps.py fitsdir jpgdir')
-        sys.exit()
-    dirfits = sys.argv[1]
-    dirjpg  = sys.argv[2]
+    if len(sys.argv) > 1:
+        nid = int(sys.argv[1])
+    else:
+        nid  = date_nid.nid_now()
+    
+    date = date_nid.nid_to_date(nid)
+    topic  = 'ztf_' + date + '_programid1'
+
+    print('--------------- JPG STAMPS ------------')
+    os.system('date')
+    print("Topic is %s, nid is %d" % (topic, nid))
+
+    dirfits = '/data/ztf/stamps/fits/%d' % nid
+    dirjpg  = '/data/ztf/stamps/jpg/%d'  % nid
     day_total = 0
     run_total = 0
     t = time.time()

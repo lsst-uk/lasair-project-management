@@ -259,7 +259,7 @@ class Consumer(threading.Thread):
         while nalert < maxalert:
             t = time.time()
             try:
-                msg = streamReader.poll(decode=True, timeout=299.0)
+                msg = streamReader.poll(decode=True, timeout=settings.KAFKA_TIMEOUT)
             except alertConsumer.EopError as e:
                 break
 
