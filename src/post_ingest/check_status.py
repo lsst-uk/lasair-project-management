@@ -31,7 +31,7 @@ for row in cursor:
     total_candidates = row['total_candidates']
     break
 
-query = 'SELECT SUM(n) AS count FROM coverage WHERE nid = %d' % nid
+query = 'SELECT count(*) AS count FROM candidates WHERE nid = %d' % nid
 cursor.execute(query)
 for row in cursor:
     today_candidates_lasair = row['count']

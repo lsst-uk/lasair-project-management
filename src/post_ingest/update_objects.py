@@ -43,6 +43,9 @@ def make_object(objectId, candlist, msl):
             magr.append(cand['magpsf'])
             latestrmag = cand['magpsf']
 
+    if len(jd) == 0:
+        return 0
+
     if len(magg) > 0:
         maggmin = np.min(magg)
         maggmax = np.max(magg)
