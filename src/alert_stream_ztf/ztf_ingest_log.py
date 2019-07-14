@@ -23,6 +23,6 @@ while 1:
     stderr = stderr.decode('utf-8')
     fh.write(stderr)
 
-    fh.write("waiting 1 minute ...")
+    fh.write("waiting 5 minutes ...")
     fh.close()
-    time.sleep(60)
+    time.sleep(300)
