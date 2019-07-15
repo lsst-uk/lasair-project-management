@@ -11,6 +11,7 @@ sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
 import htmCircle
 import mysql.connector
 import settings
+from mag import dc_mag
 
 import threading
 
@@ -78,6 +79,14 @@ def insert_sql_candidate(candidate, objectId, times):
             else:
                 values.append(str(value))
 
+        if name == 'fid':       fid = int(value)
+        if name == 'magpsf':    magpsf = float(value)
+        if name == 'sigmapsf':  sigmapsf = float(value)
+        if name == 'magnr':     magnr = float(value)
+        if name == 'sigmagnr':  sigmagnr = float(value)
+        if name == 'magzpsci':  magzpsci = float(value)
+        if name == 'isdiffpos': isdiffpos = value
+
 # Compute the HTM ID for later cone searches
     try:
         htmID = htmCircle.htmID(16, ra, dec)
@@ -86,6 +95,14 @@ def insert_sql_candidate(candidate, objectId, times):
 
     names.append('htmid16')
     values.append(str(htmID))
+
+# Compute apparent magnitude
+    d = dc_mag(fid, magpsf,sigmapsf, magnr,sigmagnr, magzpsci, isdiffpos)
+    names.append('dc_mag')
+    values.append(str(d['dc_mag']))
+    names.append('dc_sigmag')
+    values.append(str(d['dc_sigmag']))
+
 
 # and here is the SQL
     sql = 'INSERT IGNORE INTO %s \n(%s) \nVALUES \n(%s)' % (candidates, ','.join(names), ','.join(values))
