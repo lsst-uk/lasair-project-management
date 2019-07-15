@@ -23,12 +23,18 @@ def dc_mag(fid, magpsf,sigmapsf, magnr,sigmagnr, magzpsci, isdiffpos):
     magzpref = ref_zps[fid]
 
     # reference flux and its error
-    ref_flux = 10**( 0.4* ( magzpref - magnr) )
+    magdiff = magzpref - magnr
+    if magdiff > 12.0:
+        magdiff = 12.0
+    ref_flux = 10**( 0.4* ( magdiff) )
     ref_sigflux = (sigmagnr/1.0857)*ref_flux
 
     # difference flux and its error
     if magzpsci == 0.0: magzpsci = magzpref
-    difference_flux = 10**( 0.4* ( magzpsci - magpsf) )
+    magdiff = magzpsci - magpsf
+    if magdiff > 12.0:
+        magdiff = 12.0
+    difference_flux = 10**( 0.4* ( magdiff) )
     difference_sigflux = (sigmapsf/1.0857)*difference_flux
 
     # add or subract difference flux based on isdiffpos
@@ -41,9 +47,10 @@ def dc_mag(fid, magpsf,sigmapsf, magnr,sigmagnr, magzpsci, isdiffpos):
     # apparent mag and its error from fluxes
     if dc_flux > 0.0:
         dc_mag = magzpsci - 2.5 * math.log10(dc_flux)
+        dc_sigmag = dc_sigflux/dc_flux*1.0857
     else:
         dc_mag = magzpsci
-    dc_sigmag = dc_sigflux/dc_flux*1.0857
+        dc_sigmag = sigmapsf
 
     return {'dc_mag':dc_mag, 'dc_sigmag':dc_sigmag}
 
