@@ -105,7 +105,7 @@ def obj(request, objectId):
     message += ' and %d crossmatches' % len(crossmatches)
 
     candidates = []
-    query = 'SELECT candid, jd-2400000.5 as mjd, ra, decl, fid, nid, magpsf,sigmapsf, magnr,sigmagnr, magzpsci, isdiffpos, ssdistnr, ssnamenr, ndethist '
+    query = 'SELECT candid, jd-2400000.5 as mjd, ra, decl, fid, nid, magpsf,sigmapsf, magnr,sigmagnr, magzpsci, isdiffpos, ssdistnr, ssnamenr, ndethist, dc_mag, dc_sigmag '
     query += 'FROM candidates WHERE objectId = "%s" ' % objectId
     cursor.execute(query)
     count_isdiffpos = count_real_candidates = 0
@@ -121,13 +121,13 @@ def obj(request, objectId):
         if row['candid'] and row['isdiffpos'] == 'f':
             count_isdiffpos += 1
 
-        d = dc_mag(row['fid'], row['magpsf'],row['sigmapsf'], row['magnr'],row['sigmagnr'], row['magzpsci'], row['isdiffpos'])
+#        d = dc_mag(row['fid'], row['magpsf'],row['sigmapsf'], row['magnr'],row['sigmagnr'], row['magzpsci'], row['isdiffpos'])
 #        if row['isdiffpos'] == 'f':
 #            row['mag_apparent'] = -2.5*math.log10(10**(-0.4*row['magnr']) - 10**(-0.4*row['magpsf']))
 #        else:
 #            row['mag_apparent'] = -2.5*math.log10(10**(-0.4*row['magnr']) + 10**(-0.4*row['magpsf']))
-        row['dc_mag'] = d['dc_mag']
-        row['dc_sigmag'] = d['dc_sigmag']
+#        row['dc_mag'] = d['dc_mag']
+#        row['dc_sigmag'] = d['dc_sigmag']
 
     if len(candidates) == 0:
         message = 'objectId %s does not exist'%objectId
