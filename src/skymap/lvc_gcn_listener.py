@@ -160,6 +160,7 @@ class gcnListener():
                 if 'BNS'  in params: classification['BNS']  = params['BNS']
                 if 'NSBH' in params: classification['NSBH'] = params['NSBH']
                 if 'BBH'  in params: classification['BBH']  = params['BBH']
+                if 'MassGap'  in params: classification['MassGap']  = params['MassGap']
                 # now modify the json file
                 filenamejson = downloadPath + "/" + event_name + '.json'
                 dict = json.loads(open(filenamejson).read())
