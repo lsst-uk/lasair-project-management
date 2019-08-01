@@ -9,23 +9,43 @@ sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
 import htmCircle
 import threading
 
-#candidates = 'candidates_test'
-#objects    = 'objects_test'
-candidates = 'candidates'
-objects    = 'objects'
-
 # setup database connection
 import mysql.connector
 
+def make_ema(candlist, cursor):
+    oldgjd = oldrjd = 0
+    g02 = g08 = g28 = 0
+    r02 = r08 = r28 = 0
+    n = 0
+    for row in candlist:
+        jd = row['jd']
+        dc_mag = row['dc_mag']
+        if row['fid'] == 1:
+            f02 = math.exp(-(jd-oldgjd)/2.0)
+            f08 = math.exp(-(jd-oldgjd)/8.0)
+            f28 = math.exp(-(jd-oldgjd)/28.0)
+            g02 = g02*f02 + dc_mag*(1-f02)
+            g08 = g08*f08 + dc_mag*(1-f08)
+            g28 = g28*f28 + dc_mag*(1-f28)
+            oldgjd = jd
+            query = 'UPDATE candidates SET dc_mag_r02=-1, dc_mag_r08=-1, dc_mag_r28=-1,dc_mag_g02=%f, dc_mag_g08=%f, dc_mag_g28=%f' % (g02, g08, g28)
+        else:
+            f02 = math.exp(-(jd-oldrjd)/2.0)
+            f08 = math.exp(-(jd-oldrjd)/8.0)
+            f28 = math.exp(-(jd-oldrjd)/28.0)
+            r02 = r02*f02 + dc_mag*(1-f02)
+            r08 = r08*f08 + dc_mag*(1-f08)
+            r28 = r28*f28 + dc_mag*(1-f28)
+            oldrjd = jd
+            query = 'UPDATE candidates SET dc_mag_g02=-1, dc_mag_g08=-1, dc_mag_g28=-1,dc_mag_r02=%f, dc_mag_r08=%f, dc_mag_r28=%f' % (r02, r08, r28)
+        query += ' WHERE candid=%d' % row['candid']
+        if row['dc_mag_g02'] == 0.0:
+            cursor.execute(query)
+            n += 1
+    return n
+
 def make_object(objectId, candlist, msl):
     ncand = len(candlist)
-#    if ncand < 3:
-#        query = 'DELETE FROM %s WHERE objectId="%s"' % (objects, objectId)
-#        cursor  = msl.cursor(buffered=True, dictionary=True)
-#        cursor.execute(query)
-#        msl.commit()
-#        return -1
-
     ra = []
     dec = []
     magg = []
@@ -99,7 +119,7 @@ def make_object(objectId, candlist, msl):
     sets['htm16']      = htm16
 
     list = []
-    query = 'UPDATE %s SET ' % objects
+    query = 'UPDATE objects SET '
     for key,value in sets.items():
         list.append(key + '=' + str(value))
     query += ', '.join(list)
@@ -107,8 +127,11 @@ def make_object(objectId, candlist, msl):
 
     cursor  = msl.cursor(buffered=True, dictionary=True)
     cursor.execute(query)
+
+    ema_updates = make_ema(candlist, cursor)
+#    print('%s updated %d candidates' % (objectId, ema_updates))
     msl.commit()
-    return 1
+    return ema_updates
 
 class Updater(threading.Thread):
     def __init__(self, threadID, objectIds, times):
@@ -127,27 +150,27 @@ class Updater(threading.Thread):
         msl = mysql.connector.connect(**config)
 
         t = time.time()
-        ntotalcand = nupdate = ndelete = 0
+        ntotalcand = nupdate = nema = 0
         cursor   = msl.cursor(buffered=True, dictionary=True)
         cursor2  = msl.cursor(buffered=True, dictionary=True)
         for objectId in self.objectIds:
-            query = 'SELECT candid, objectId,ra,decl,jd,fid,magpsf from %s WHERE objectId="%s" ORDER BY jd'        
-            query = query % (candidates, objectId)
+            query = 'SELECT candid, objectId,ra,decl,jd,fid,magpsf'
+            query += ',dc_mag,dc_mag_g02,dc_mag_g08,dc_mag_g28,dc_mag_r02,dc_mag_r08,dc_mag_r28'
+            query += ' FROM candidates WHERE objectId="%s" ORDER BY jd'        
+            query = query % objectId
             cursor.execute(query)
             candlist = []
             for cand in cursor:
                 candlist.append(cand)
             ntotalcand += len(candlist)
     
-            query2 = 'INSERT IGNORE INTO %s (objectId) VALUES ("%s")' % (objects, objectId)
+            query2 = 'INSERT IGNORE INTO objects (objectId) VALUES ("%s")' % objectId
             cursor2.execute(query2)
-            result = make_object(objectId, candlist, msl)
-            if result < 0:   # deleted the object
-                ndelete += 1
-            else:
-                nupdate += 1
+            ema_updates = make_object(objectId, candlist, msl)
+            nema += ema_updates
+            nupdate += 1
     
-        self.times['log'] += ('%d candidates, %d updated objects' % (ntotalcand, nupdate))
+        self.times['log'] += ('%d candidates, %d updated objects, %d updates ema' % (ntotalcand, nupdate, nema))
         self.times['time'] = (time.time() - t)
 
 
@@ -178,8 +201,10 @@ def splitList(objectsForUpdate, bins = None):
 if __name__ == "__main__":
     print('------------ UPDATE OBJECTS --------------')
     t = time.time()
+
     os.system('cd /data/ztf/stale; cat file* | sort | uniq > all_file')
     lines = open('/data/ztf/stale/all_file').readlines()
+
     objectIds = []
     for line in lines:
         objectIds.append(line.strip())

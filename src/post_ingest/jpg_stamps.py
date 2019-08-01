@@ -43,7 +43,10 @@ def convert_fits(dirfits, dirjpg, name):
     size = 63
     new = Image.new('L', (4*border+3*size,2*border+size))
     
-    sci = open_fits(file_sci)
+    try:
+        sci = open_fits(file_sci)
+    except:
+        return 0
     new.paste(sci, (border, border))
     
     ref = open_fits(file_ref)
