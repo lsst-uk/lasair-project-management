@@ -48,7 +48,7 @@ urlpatterns = [
     path('status/',                 views.status,               name='status'),
 
     path('skymap/',                 skymap.skymap,              name='skymap'),
-    path('skymap/<skymap_id>/',     skymap.show_skymap,         name='show_skymap'),
+    path('skymap/<skymap_id_version>/',     skymap.show_skymap,         name='show_skymap'),
 
     path('schema',   TemplateView.as_view(template_name='schema.html')),
     path('jupyter',  TemplateView.as_view(template_name='jupyter.html')),
