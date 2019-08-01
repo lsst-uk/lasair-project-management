@@ -51,7 +51,7 @@ def show_skymap(request, skymap_id_version):
         classification = {
             'BNS' :int(100*float(skymap_data['meta']['classification']['BNS'])),
             'NSBH':int(100*float(skymap_data['meta']['classification']['NSBH'])),
-            'BBH' :int(100*float(skymap_data['meta']['classification']['BBH']))}
+            'BBH' :int(100*float(skymap_data['meta']['classification']['BBH'])),
             'MassGap' :int(100*float(skymap_data['meta']['classification']['MassGap']))}
     except:
         classification = {'BNS':0.0, 'NSBH':0.0, 'BBH':0.0, 'MassGap':0.0}
