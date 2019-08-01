@@ -41,8 +41,8 @@ def jd_from_iso(date):
     jd = unix/86400 + 2440587.5
     return jd
 
-def show_skymap(request, skymap_id):
-    json_text = open("/mnt/lasair-head-data/ztf/skymap/%s.json" % skymap_id).read()
+def show_skymap(request, skymap_id_version):
+    json_text = open("/mnt/lasair-head-data/ztf/skymap/%s.json" % skymap_id_version).read()
     skymap_data = json.loads(json_text)
     isodate = skymap_data['meta']['DATE-OBS']
     maxRA = skymap_data['meta']['apointRA']
@@ -52,8 +52,9 @@ def show_skymap(request, skymap_id):
             'BNS' :int(100*float(skymap_data['meta']['classification']['BNS'])),
             'NSBH':int(100*float(skymap_data['meta']['classification']['NSBH'])),
             'BBH' :int(100*float(skymap_data['meta']['classification']['BBH']))}
+            'MassGap' :int(100*float(skymap_data['meta']['classification']['MassGap']))}
     except:
-        classification = {'BNS':0.0, 'NSBH':0.0, 'BBH':0.0}
+        classification = {'BNS':0.0, 'NSBH':0.0, 'BBH':0.0, 'MassGap':0.0}
 
     skymap_distance = 'unknown'
     if 'DISTMEAN' in skymap_data['meta']:
@@ -118,9 +119,9 @@ def show_skymap(request, skymap_id):
                 'ra'   :row['ra'], \
                 'dec'  :row['decl'],
                 'n'    :int(row['sum'])})
-    tok = skymap_id.split('_')
+    tok = skymap_id_version.split('_')
     return render(request, 'show_skymap.html', 
-        {'skymap_id': tok[0], 'isodate':isodate, 
+        {'skymap_id': tok[0], 'skymap_id_version': skymap_id_version, 'isodate':isodate, 
             'niddate1':niddate1, 'niddate2':niddate2, 
             'skymap_distance':skymap_distance,
             'jd':jd, 'jd1delta':jd1delta, 'jd2delta':jd2delta,

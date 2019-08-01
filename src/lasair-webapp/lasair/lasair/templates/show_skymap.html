@@ -9,7 +9,7 @@
 <script src="/lasair/static/js/skymap.js"></script>
 
 <div class="row">
-<h3>Gravitational Wave Skymap: <a href="https://gracedb.ligo.org/superevents/{{ skymap_id }}/view/" target=_blank>{{ skymap_id }}</a></h3>
+<h3>Gravitational Wave Skymap: <a href="https://gracedb.ligo.org/superevents/{{ skymap_id }}/view/" target=_blank>{{ skymap_id_version }}</a></h3>
 </div>
 <div class="row">
 <font size=-1>
@@ -40,13 +40,13 @@ Remember to click "submit" to refresh the page.
 <tr><td>Distance</td><td>{{ skymap_distance|safe }}</td></tr>
 <tr><td>ISO Date:</td><td>{{ isodate }}</td></tr>
 <tr><td>Julian date:</td><td>{{ jd|floatformat:3 }}</td></tr>
-<tr><td>Percent probability:</td><td> BNS={{ classification.BNS }}, NSBH={{ classification.NSBH }}, BBH={{ classification.BBH }} </td></tr>
+<tr><td>Percent probability:</td><td> BNS={{ classification.BNS }}, NSBH={{ classification.NSBH }}, BBH={{ classification.BBH }} MassGap={{ classification.MassGap }}</td></tr>
 <tr><td>max prob RA,Dec</td><td>{{ maxRA|floatformat:1 }}, {{ maxDE|floatformat:1 }}</td></tr>
 </table>
 </div>
 
 <div class="row">
-<form class="form-inline" method="POST" action="/skymap/{{ skymap_id }}/"/>
+<form class="form-inline" method="POST" action="/skymap/{{ skymap_id_version }}/"/>
 {% csrf_token %}
 <table cellpadding=10>
 <tr><td><input type="checkbox" name="coverage_wanted" {% if coverage_wanted %}CHECKED{% endif %}> Coverage of ZTF</td><td>
@@ -86,7 +86,7 @@ To <input class="form-control" size="14" name="niddate2" type="text" value="{{ n
 
 <div id="galaxies_table"></div>
 
-<font size=-2><a href=/lasair/static/ztf/skymap/{{ skymap_id }}.json>json</a>&nbsp;&nbsp;
+<font size=-2><a href=/lasair/static/ztf/skymap/{{ skymap_id_version }}.json>json</a>&nbsp;&nbsp;
 <a href="#" onclick="exposeDiv('ztfquery');">ztfquery</a> </font>
 <div id="ztfquery" style="display:none">
 <pre>
@@ -124,7 +124,7 @@ $(document).ready(function() {
     var zd = "{{ ztf_data }}";
     zd = zd.replace(/&quot;/g,'"')
     var ztf_json_data = JSON.parse(zd);
-    setup("{{ skymap_id }}", ztf_json_data);
+    setup("{{ skymap_id_version }}", ztf_json_data);
 });
 </script>
 
