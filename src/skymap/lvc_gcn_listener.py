@@ -23,6 +23,7 @@ Options:
 import sys
 import os
 import json
+import time
 from fundamentals import tools
 import requests
 import gcn
@@ -33,10 +34,10 @@ import slack_sender
 # VARIABLES
 downloadPath = "/data/ztf/skymap/"
 
-gcn_host='209.208.78.170'
+# gcn_host='209.208.78.170'
 # gcn_host='45.58.43.186'
 # gcn_host='50.116.49.68'
-# gcn_host='68.169.57.253'
+gcn_host='68.169.57.253'
 
 def main(arguments=None):
     """
@@ -146,11 +147,12 @@ class gcnListener():
                 local_filename = event_name + '.fits.gz'
 
                 self.log.info(local_filename)
+                time.sleep(30)
                 r = requests.get(params['skymap_fits'], allow_redirects=True)
                 filename = downloadPath + "/" + local_filename
                 self.log.info(filename)
                 open(filename, 'wb').write(r.content)
-                cmd = "/home/roy/anaconda3/bin/python ./skymapInfo.py " + filename
+                cmd = "/home/roy/anaconda3/envs/lasair/bin/python ./skymapInfo.py " + filename
                 self.log.info(cmd)
                 os.system(cmd)
 
@@ -159,7 +161,7 @@ class gcnListener():
                 if 'NSBH' in params: classification['NSBH'] = params['NSBH']
                 if 'BBH'  in params: classification['BBH']  = params['BBH']
                 # now modify the json file
-                filenamejson = event_name + '.json'
+                filenamejson = downloadPath + "/" + event_name + '.json'
                 dict = json.loads(open(filenamejson).read())
                 dict['meta']['classification'] = classification
                 print(dict['meta'])
