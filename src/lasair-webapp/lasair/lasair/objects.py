@@ -105,7 +105,9 @@ def obj(request, objectId):
     message += ' and %d crossmatches' % len(crossmatches)
 
     candidates = []
-    query = 'SELECT candid, jd-2400000.5 as mjd, ra, decl, fid, nid, magpsf,sigmapsf, magnr,sigmagnr, magzpsci, isdiffpos, ssdistnr, ssnamenr, ndethist, dc_mag, dc_sigmag '
+    query = 'SELECT candid, jd-2400000.5 as mjd, ra, decl, fid, nid, magpsf,sigmapsf, '
+    query += 'magnr,sigmagnr, magzpsci, isdiffpos, ssdistnr, ssnamenr, ndethist, '
+    query += 'dc_mag, dc_sigmag,dc_mag_g02,dc_mag_g08,dc_mag_g28,dc_mag_r02,dc_mag_r08,dc_mag_r28 '
     query += 'FROM candidates WHERE objectId = "%s" ' % objectId
     cursor.execute(query)
     count_isdiffpos = count_real_candidates = 0
