@@ -1,5 +1,4 @@
 import sys
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
 import settings
 import time
 

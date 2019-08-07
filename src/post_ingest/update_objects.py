@@ -3,7 +3,6 @@ import math
 import numpy as np
 import time
 import ephem
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
 import settings
 sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
 import htmCircle

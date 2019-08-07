@@ -1,8 +1,7 @@
 import os,sys
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
+import settings
 
 import date_nid
-import settings
 
 if len(sys.argv) > 1:
     nid = int(sys.argv[1])
@@ -16,7 +15,7 @@ print('--------------- INGEST FROM KAFKA ------------')
 os.system('date')
 print("Topic is %s, nid is %d" % (topic, nid))
 
-cmd =  '/home/roy/anaconda3/envs/lasair/bin/python bin/ingestStreamThreaded.py '
+cmd =  settings.LASAIR_ROOT + 'anaconda3/envs/lasair/bin/python bin/ingestStreamThreaded.py '
 cmd += '--logging INFO '
 cmd += '--stampdump %d ' % nid
 cmd += '--maxalert %d ' % settings.KAFKA_MAXALERTS
@@ -32,30 +31,32 @@ tail = 'tail -2 /data/ztf/logs/' + topic + '.log'
 os.system(tail)
 os.system('date')
 
-#cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/coverage.py'
+py = settings.LASAIR_ROOT + 'anaconda3/envs/lasair/bin/python '
+
+#cmd = py + settings.LASAIR_ROOT + 'lasair/src/post_ingest/coverage.py'
 #os.system(cmd)
 #os.system('date')
 
-cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/check_status.py %d' % nid
+cmd = py + settings.LASAIR_ROOT + 'lasair/src/post_ingest/check_status.py %d' % nid
 os.system(cmd)
 os.system('date')
 
-#cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid)
+#cmd = py + settings.LASAIR_ROOT + 'lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid)
 #os.system(cmd)
 #os.system('date')
 
-cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/update_objects.py'
+cmd = py + settings.LASAIR_ROOT + 'lasair/src/post_ingest/update_objects.py'
 os.system(cmd)
 os.system('date')
 
-cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/run_sherlock.py'
+cmd = py + settings.LASAIR_ROOT + '/lasair/src/post_ingest/run_sherlock.py'
 os.system(cmd)
 os.system('date')
 
-cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/run_active_queries.py'
+cmd = py + settings.LASAIR_ROOT + 'lasair/src/post_ingest/run_active_queries.py'
 os.system(cmd)
 os.system('date')
 
-cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/post_ingest/get_number_candidates.py'
+cmd = py + settings.LASAIR_ROOT + 'lasair/src/post_ingest/get_number_candidates.py'
 os.system(cmd)
 os.system('date')

@@ -5,7 +5,8 @@ import numpy
 import os.path
 import time
 import datetime
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
+import settings
+sys.path.append(settings.LASAIR_ROOT + 'lasair/src/alert_stream_ztf/common')
 import date_nid
 
 def open_fits(filename):

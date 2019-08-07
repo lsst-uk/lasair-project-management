@@ -7,10 +7,10 @@ import argparse
 import sys
 import os
 import time
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
+import settings
+sys.path.append(settings.LASAIR_ROOT + 'lasair/src/alert_stream_ztf/common/htm/python')
 import htmCircle
 import mysql.connector
-import settings
 from mag import dc_mag
 
 import threading

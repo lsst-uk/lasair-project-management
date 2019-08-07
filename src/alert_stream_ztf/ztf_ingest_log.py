@@ -1,5 +1,4 @@
 import sys
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
 import settings
 import date_nid
 
@@ -14,7 +13,9 @@ while 1:
     topic  = 'ztf_' + date + '_programid1'
     fh = open('/data/ztf/logs/' + topic + '.log', 'a')
 
-    process = Popen(['/home/roy/anaconda3/envs/lasair/bin/python', '/home/roy/lasair/src/alert_stream_ztf/ztf_ingest.py'], stdout=PIPE, stderr=PIPE)
+    py = settings.LASAIR_ROOT + 'anaconda3/envs/lasair/bin/python '
+
+    process = Popen([py, settings.LASAIR_ROOT + 'lasair/src/alert_stream_ztf/ztf_ingest.py'], stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
 
     stdout = stdout.decode('utf-8')

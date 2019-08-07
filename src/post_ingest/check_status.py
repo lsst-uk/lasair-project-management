@@ -5,7 +5,6 @@ import urllib.parse
 import json
 import time
 import mysql.connector
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
 import settings
 import date_nid
 import datetime
