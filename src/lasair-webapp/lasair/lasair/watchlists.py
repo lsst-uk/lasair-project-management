@@ -98,11 +98,10 @@ def show_watchlist(request, wl_id):
             import os
 #            from run_crossmatch import run_watchlist
 #            hitlist = run_watchlist(wl_id)
-            process = Popen(['/home/roy/anaconda3/envs/lasair/bin/python', '/home/roy/lasair/src/alert_stream_ztf/common/run_crossmatch.py', '%d'%wl_id], stdout=PIPE, stderr=PIPE)
+            py = lasair.settings.LASAIR_ROOT + 'anaconda3/envs/lasair/bin/python'
+            process = Popen([py, lasair.settings.LASAIR_ROOT + 'lasair/src/alert_stream_ztf/common/run_crossmatch.py', '%d'%wl_id], stdout=PIPE, stderr=PIPE)
             stdout, stderr = process.communicate()
 
-#            cmd = '/home/roy/anaconda3/envs/lasair/bin/python /home/roy/lasair/src/alert_stream_ztf/common/run_crossmatch.py %d' % wl_id
-#            os.system(cmd)
             stdout = stdout.decode('utf-8')
             stderr = stderr.decode('utf-8')
             message += 'watchlist crossmatched [%s, %s]' % (stdout, stderr)

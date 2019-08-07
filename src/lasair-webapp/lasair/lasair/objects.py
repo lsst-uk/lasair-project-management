@@ -12,7 +12,6 @@ import ephem, math
 from datetime import datetime, timedelta
 import json
 import date_nid
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
 from mag import dc_mag
 import queries
 
