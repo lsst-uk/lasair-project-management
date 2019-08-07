@@ -13,7 +13,7 @@ while 1:
     topic  = 'ztf_' + date + '_programid1'
     fh = open('/data/ztf/logs/' + topic + '.log', 'a')
 
-    py = settings.LASAIR_ROOT + 'anaconda3/envs/lasair/bin/python '
+    py = settings.LASAIR_ROOT + 'anaconda3/envs/lasair/bin/python'
 
     process = Popen([py, settings.LASAIR_ROOT + 'lasair/src/alert_stream_ztf/ztf_ingest.py'], stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
