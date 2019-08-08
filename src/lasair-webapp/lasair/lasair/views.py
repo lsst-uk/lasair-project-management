@@ -196,7 +196,7 @@ def coverage(request):
     else:
 #        date1 = '20180528'
         date2 = date_nid.nid_to_date(date_nid.nid_now())
-        date1 = date2
+        date1 = '20180528'
 
     nid1 = date_nid.date_to_nid(date1)
     nid2 = date_nid.date_to_nid(date2)
