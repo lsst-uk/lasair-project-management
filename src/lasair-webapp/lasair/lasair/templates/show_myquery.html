@@ -11,7 +11,7 @@
 <h2><input name="name" value="{{ myquery.name }}"></h2>
 <textarea name="description" rows=4 cols=80>{{ myquery.description }}</textarea><br/>
 Active: <input type="checkbox" name="active" {% if myquery.active > 0 %}checked{% endif %}> 
-{% if myquery.active > 0 %}(Topic name is: <b>{{ topic }}</b>){% endif %}<br/>
+{% if myquery.active > 0 %}(Topic name is <a href=/lasair/static/ztf/streams/{{ topic }}>{{ topic }}</a></b>){% endif %}<br/>
 Public: <input type="checkbox" name="public" {% if myquery.public > 0 %}checked{% endif %}><br/>
 <hr/>
 {% include "query_builder.html" %}
