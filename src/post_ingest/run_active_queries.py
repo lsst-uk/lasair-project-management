@@ -9,7 +9,7 @@ objects    = 'objects'
 # setup database connection
 import mysql.connector
 
-def run_query(query, status, msl, file):
+def run_query(query, status, msl, topic):
     jdnow = (time.time()/86400 + 2440587.5);
 #    print('jdnow %.3f' % jdnow)
     days_ago_candidates = jdnow - status['cand_max_jd']
@@ -19,12 +19,18 @@ def run_query(query, status, msl, file):
         0, 1000, True, days_ago_candidates, days_ago_objects)
 
     cursor = msl.cursor(buffered=True, dictionary=True)
-    cursor.execute(sqlquery_real)
     n = 0
-    for record in cursor:
-        output = json.dumps(record)
-        file.write(output + ',\n')
-        n += 1
+    try:
+        cursor.execute(sqlquery_real)
+        file = open('/data/ztf/streams/%s' % topic, 'a')
+        for record in cursor:
+            output = json.dumps(record)
+            file.write(output + ',\n')
+            n += 1
+        file.close()
+    except:
+        print("Query failed for %s" % topic)
+        print(sqlquery_real)
 
     return n
 
@@ -42,10 +48,8 @@ def find_queries(status):
     cursor.execute(query)
     for query in cursor:
         topic = queries.topic_name(query['name'])
-        file = open('/data/ztf/streams/%s' % topic, 'a')
-        n = run_query(query, status, msl, file)
-        file.close()
-        print('query %04d got %d' % (query['mq_id'], n))
+        n = run_query(query, status, msl, topic)
+        print('query %s got %d' % (topic, n))
 
 if __name__ == "__main__":
     print('--------- RUN ACTIVE QUERIES -----------')
