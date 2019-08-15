@@ -41,7 +41,8 @@ def find_queries(status):
     query = 'SELECT * FROM myqueries2 WHERE active=1'        
     cursor.execute(query)
     for query in cursor:
-        file = open('/data/ztf/streams/substream%04d' % query['mq_id'], 'a')
+        topic = queries.topic_name(query['name'])
+        file = open('/data/ztf/streams/%s' % topic, 'a')
         n = run_query(query, status, msl, file)
         file.close()
         print('query %04d got %d' % (query['mq_id'], n))
