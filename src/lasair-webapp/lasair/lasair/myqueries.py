@@ -4,6 +4,7 @@ from django.db import connection
 from django.contrib.auth.models import User
 import lasair.settings
 from lasair.models import Myqueries
+import queries
 
 def connect_db():
     msl = mysql.connector.connect(
@@ -86,5 +87,6 @@ def show_myquery(request, mq_id):
 
     return render(request, 'show_myquery.html',{
         'myquery' :myquery, 
+        'topic'   : queries.topic_name(myquery.name),
         'is_owner' :is_owner,
         'message'  :message})

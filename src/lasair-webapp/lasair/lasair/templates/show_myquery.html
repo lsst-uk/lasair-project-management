@@ -10,7 +10,8 @@
 {% csrf_token %}
 <h2><input name="name" value="{{ myquery.name }}"></h2>
 <textarea name="description" rows=4 cols=80>{{ myquery.description }}</textarea><br/>
-Active: <input type="checkbox" name="active" {% if myquery.active > 0 %}checked{% endif %}><br/>
+Active: <input type="checkbox" name="active" {% if myquery.active > 0 %}checked{% endif %}> 
+{% if myquery.active > 0 %}(Topic name is: <b>{{ topic }}</b>){% endif %}<br/>
 Public: <input type="checkbox" name="public" {% if myquery.public > 0 %}checked{% endif %}><br/>
 <hr/>
 {% include "query_builder.html" %}
@@ -33,7 +34,8 @@ Public: <input type="checkbox" name="public" {% if myquery.public > 0 %}checked{
 <tr><td>Selected</td><td><tt>{{ myquery.selected }}</tt></td></tr>
 <tr><td>Tables</td><td><tt>{{ myquery.tables }}</tt></td></tr>
 <tr><td>Conditions</td><td><tt>{{ myquery.conditions }}</tt></td></tr>
-<tr><td>Active</td><td>{% if myquery.active == 1 %}yes{% else %}no{% endif %}</td></tr>
+<tr><td>Active</td><td>{% if myquery.active == 1 %}yes{% else %}no{% endif %} 
+		{% if myquery.active == 1 %}(Topic name is: <b><a href=/lasair/static/ztf/streams/{{ topic }}>{{ topic }}</a></b>){% endif %}</td></tr>
 <tr><td>Public</td><td>{% if myquery.public == 1 %}yes{% else %}no{% endif %}</td></tr>
 </table>
 {% endif %}

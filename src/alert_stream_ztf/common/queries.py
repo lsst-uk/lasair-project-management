@@ -45,3 +45,6 @@ def make_query(selected, tables, conditions, page, perpage, check_days_ago, days
     sqlquery_real += ' LIMIT %d OFFSET %d' % (perpage, page*perpage)
     return sqlquery_real
 
+def topic_name(name):
+    return ''.join(e for e in name if (e.isalnum() and e.isascii()) or e=='_' or e=='-' or e=='.')
+

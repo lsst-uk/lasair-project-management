@@ -104,6 +104,8 @@ class Candidates(models.Model):
     maggaia = models.FloatField(blank=True, null=True)
     maggaiabright = models.FloatField(blank=True, null=True)
     exptime = models.FloatField(blank=True, null=True)
+    drb = models.FloatField(blank=True, null=True)
+    drbversion = models.CharField(max_length=16, blank=True, null=True)
 
     class Meta:
         managed = False
