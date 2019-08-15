@@ -34,7 +34,7 @@ wanted_attributes = [
 'jdendref', 'nframesref', 
 'rbversion', 'dsnrms', 'ssnrms', 'dsdiff', 'magzpsci', 'magzpsciunc', 'magzpscirms',
 'nmatches', 'clrcoeff', 'clrcounc', 'zpclrcov', 'zpmed', 'clrmed', 'clrrms', 'neargaia',
-'neargaiabright', 'maggaia', 'maggaiabright', 'exptime',
+'neargaiabright', 'maggaia', 'maggaiabright', 'exptime', 'drb', 'drbversion',
 'htmid16']
 
 
