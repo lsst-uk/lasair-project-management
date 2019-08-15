@@ -2,7 +2,7 @@ import sys
 import math
 import settings
 
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python')
+sys.path.append(settings.LASAIR_ROOT + 'lasair/src/alert_stream_ztf/common/htm/python')
 import htmCircle
 
 def distance(ra1, de1, ra2, de2):
