@@ -28,7 +28,8 @@ class Consumer(threading.Thread):
         print("Starting " + self.name)
 
 # this topic has preceisely 1000 candidates from May 2018
-        topic = 'ztf_test'
+#        topic = 'ztf_test'
+        topic = 'ztf_20190814_programid1'
 
         schema_files = [
             "ztf-avro-alert/schema/candidate.avsc",
@@ -37,8 +38,8 @@ class Consumer(threading.Thread):
             "ztf-avro-alert/schema/alert.avsc"]
 
         conf = {
-            'bootstrap.servers': 'public.alerts.ztf.uw.edu:9092',
-            'default.topic.config': {'auto.offset.reset': 'smallest'},
+#            'bootstrap.servers': 'public.alerts.ztf.uw.edu:9092',
+            'bootstrap.servers': 'Stedigo:9092',
             'group.id': self.group_id
         }
 
@@ -46,30 +47,25 @@ class Consumer(threading.Thread):
         streamReader = alertConsumer.AlertConsumer(topic, frombeginning, schema_files, **conf)
         streamReader.__enter__()
 
-        totalert = 0
+
+        ialert = 0
         while 1:
-            ialert = 0
-            # get all the events we can with a timeout of 60 sec
-            while 1:
-                try:
-                    msg = streamReader.poll(decode=True, timeout=60)
-                    if msg is None:
-                        continue
-                    for alert in msg:
-                        data = msg_text(alert)
-                        ialert += 1
-                except alertConsumer.EopError as e:
-                    print(self.name, e.message)
-                    break
-            print(self.name, 'got %d, sleeping 10 ...' % ialert)
-            totalert += ialert
-            # if you got some alerts, lets sleep a bit and try again
-            if ialert == 0: break
-            time.sleep(10)
+            t = time.time()
+            try:
+                msg = streamReader.poll(decode=True, timeout=60)
+            except alertConsumer.EopError as e:
+                break
+
+            if msg is None:
+                break
+            for alert in msg:
+                data = msg_text(alert)
+                ialert += 1
+                print(self.name, ialert)
 
         # looks like thats all the alerts we will get
         streamReader.__exit__(0,0,0)
-        print("Exiting %s with %d events" % (self.name, totalert))
+        print("Exiting %s with %d events" % (self.name, ialert))
 
 ################
 import sys
