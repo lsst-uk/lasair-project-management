@@ -47,14 +47,23 @@ def show_skymap(request, skymap_id_version):
     isodate = skymap_data['meta']['DATE-OBS']
     maxRA = skymap_data['meta']['apointRA']
     maxDE = skymap_data['meta']['apointDec']
-    try:
-        classification = {
-            'BNS' :int(100*float(skymap_data['meta']['classification']['BNS'])),
-            'NSBH':int(100*float(skymap_data['meta']['classification']['NSBH'])),
-            'BBH' :int(100*float(skymap_data['meta']['classification']['BBH'])),
-            'MassGap' :int(100*float(skymap_data['meta']['classification']['MassGap']))}
-    except:
-        classification = {'BNS':0.0, 'NSBH':0.0, 'BBH':0.0, 'MassGap':0.0}
+    classification = {'BNS':0, 'NSBH':0, 'BBH':0, 'MassGap':0}
+
+    try: classification['BNS'] = int(100*float(skymap_data['meta']['classification']['BNS']))
+    except: pass
+
+    try: classification['BBH'] = int(100*float(skymap_data['meta']['classification']['BBH']))
+    except: pass
+
+    try: classification['NSBH'] = int(100*float(skymap_data['meta']['classification']['NSBH']))
+    except: pass
+
+    try: classification['MassGap'] = int(100*float(skymap_data['meta']['classification']['MassGap']))
+    except: pass
+
+    try: classification['Terrestrial'] = int(100*float(skymap_data['meta']['classification']['Terrestrial']))
+    except: pass
+
 
     skymap_distance = 'unknown'
     if 'DISTMEAN' in skymap_data['meta']:
