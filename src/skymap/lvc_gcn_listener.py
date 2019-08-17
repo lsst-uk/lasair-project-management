@@ -157,11 +157,11 @@ class gcnListener():
                 os.system(cmd)
 
                 classification = {}
-                if 'BNS'  in params: classification['BNS']  = int(100*float(params['BNS']))
-                if 'NSBH' in params: classification['NSBH'] = int(100*float(params['NSBH']))
-                if 'BBH'  in params: classification['BBH']  = int(100*float(params['BBH']))
-                if 'MassGap'  in params: classification['MassGap']          = int(100*float(params['MassGap']))
-                if 'Terrestrial'  in params: classification['Terrestrial']  = int(100*float(params['Terrestrial']))
+                if 'BNS'  in params: classification['BNS']  = float(params['BNS'])
+                if 'NSBH' in params: classification['NSBH'] = float(params['NSBH'])
+                if 'BBH'  in params: classification['BBH']  = float(params['BBH'])
+                if 'MassGap'  in params: classification['MassGap']          = float(params['MassGap'])
+                if 'Terrestrial'  in params: classification['Terrestrial']  = float(params['Terrestrial'])
                 # now modify the json file
                 filenamejson = downloadPath + "/" + event_name + '.json'
                 dict = json.loads(open(filenamejson).read())
