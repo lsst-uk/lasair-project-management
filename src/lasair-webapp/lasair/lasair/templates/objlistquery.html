@@ -39,9 +39,8 @@ and any 5-sigma difference generates a candidate alert.
 Thus a light curve can be obtained from all the candidates that have a given objectId.
 <li> More details of the processing pipeline are available
 <a href=http://web.ipac.caltech.edu/staff/fmasci/ztf/ztf_pipelines_deliverables.pdf>here</a>.
-<li> Further cuts can be made to remove spurious candidates, 
-The highest quality candidates satisfy the criterion 
-<tt>candidates.rb &gt;= 0.65 and candidates.nbad = 0 and candidates.fwhm &lt;= 5 and candidates.elong &lt;= 1.2 and abs(candidates.magdiff) &lt;= 0.1</tt>. See example below.
+<li> Further cuts can be made to remove spurious candidates, using the "drb" attribute of each candidate:
+the range is 0 to 1 where closer to 1 is more reliable.
 <li>If you would like to learn the SQL language, <a href=http://cas.sdss.org/dr6/en/help/howto/search/>this</a>
 is a good resource.
 </ul>
@@ -84,7 +83,10 @@ or the link below the name to edit it.
 document.getElementById("selected").value = document.getElementById("selected{{ mq.mq_id}}").textContent;
 document.getElementById("tables").value = document.getElementById("tables{{ mq.mq_id}}").textContent; check_boxes();
 document.getElementById("conditions").value = document.getElementById("conditions{{ mq.mq_id}}").textContent;
-'>{{ mq.name }}</a></b><br/>&nbsp;<br/><a href="/myquery/{{ mq.mq_id }}/">Edit/delete filter</a></td>
+'>{{ mq.name }}</a></b><br/>&nbsp;<br/><a href="/myquery/{{ mq.mq_id }}/">Edit/delete filter</a>
+<p>
+Stream: <i>{{ mq.streamlink|safe }}<i>
+</td>
 <td>{{ mq.description }}</td>
 <td><font size=-2>
 		<pre id="selected{{ mq.mq_id }}">{{ mq.selected }}</pre>
@@ -119,7 +121,10 @@ the filter to push it into the area above.
 document.getElementById("selected").value = document.getElementById("selected{{ mq.mq_id}}").textContent;
 document.getElementById("tables").value = document.getElementById("tables{{ mq.mq_id}}").textContent; check_boxes();
 document.getElementById("conditions").value = document.getElementById("conditions{{ mq.mq_id}}").textContent;
-'>{{ mq.name }}</a></b></td>
+'>{{ mq.name }}</a></b>
+<p>
+Stream: <i>{{ mq.streamlink|safe }}<i>
+</td>
 <td>{{ mq.user.first_name }} {{ mq.user.last_name }}</td>
 <td>{{ mq.description }}</td>
 <td><font size=-2>

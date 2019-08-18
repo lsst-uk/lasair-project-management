@@ -28,7 +28,7 @@ A <i><b>Watchlist</b></i> is a collection of sky positions that you find interes
 Lasair can do cone searches on all of these together.
 Power users can use a <a href= http://jupyter.org/>Jupyter</a> notebook interface, 
 click <i><b>Jupyter</b></i> for more information and to see the capabilities.
-</p>
+</p><p>
 <table>
 <tr><td>
 <a name="photometry"></a>
@@ -52,10 +52,18 @@ The code that converts the attributes supplied by ZTF to the DC magnitude and it
 found <a href=https://github.com/lsst-uk/lasair/blob/master/src/alert_stream_ztf/common/mag.py>here</a>. To reconstruct the apparent magnitude, the zero point of the science image is 
 required, which ZTF did not make available before Nov 2018. 
 Therefore the apparant magnitudes are not reliable before this time.
-<p>&nbsp;</p>
-
+</p><p>
+<a name="ema"></a>
+Lasair also computes three <b>exponential moving averages</b> of the apparent magnitudes, 
+with a 2-day timescale, 8-day timescale, and 28-day timescale, for each of the filters: g and r.
+These are called dc_mag_g02, dc_mag_g08, dc_mag_g28,  dc_mag_r02, dc_mag_r08, dc_mag_r28. 
+Each is defined by a recursion relation: 
+<ul> <li> ema(t) = f*ema(tp) + (1-f)*mag(t) </ul>
+where
+<ul> <li> f = exp(-(t-tp)/tau) </ul>
+</p><p>
+Other notes:
 <ul>
-
 <li>Each ZTF alert is an information package that includes a rich set of parameters for 
 candidate transient or variable objects. These are assimilated into <i>objects</i> and users can 
 query on any column from the candidate or object table -- see 

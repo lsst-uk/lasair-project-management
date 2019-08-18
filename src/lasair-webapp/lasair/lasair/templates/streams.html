@@ -29,6 +29,8 @@ The following is a small selection of event filters that Lasair can produce.
   </form>
 <a href="#" onclick="runquery({{ mq.mq_id }});"><b>{{ mq.name }}</b></a>
 <div id="spinner{{ mq.mq_id }}"></div>
+<p>
+Stream: <i>{{ mq.streamlink|safe }}<i>
 </td>
 <td>{{ mq.description|safe }}</td>
 </tr>

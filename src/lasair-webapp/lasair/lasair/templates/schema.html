@@ -129,6 +129,8 @@
 <tr><td>elong       </td><td>Ratio: aimage / bimage</td></tr>
 <tr><td>nbad        </td><td>number of prior-tagged bad pixels in a 5 x 5 pixel stamp (integer)</td></tr>
 <tr><td>rb          </td><td>RealBogus quality score; range is 0 to 1 where closer to 1 is more reliable</td></tr>
+<tr><td>drb          </td><td>RealBogus quality score from Deep-Learning-based classifier; range is 0 to 1 where closer to 1 is more reliable</td></tr>
+<tr><td>drbversion  </td><td>version of Deep-Learning-based classifier model used to assign RealBogus (drb) quality score</td></tr>
 <tr><td>scorr       </td><td>Peak-pixel signal-to-noise ratio in point source matched-filtered detection image
 <tr><td colspan=2 style="background-color:#ddddff">Solar System</td></tr>
 <tr><td>ssdistnr    </td><td>distance to nearest known solar system object; set to -999.0 if none [arcsec]</td></tr>
@@ -149,8 +151,14 @@
 <tr><td>maggaiabright	</td><td>Gaia (G-band) magnitude of closest source from Gaia DR1 catalog brighter than magnitude 14; if exists within 90 arcsec [mag]</td></tr>
 </td></tr>
 <tr><td colspan=2 style="background-color:#ddddff">Attributes added by Lasair</td></tr>
-<tr><td>dc_mag	</td><td>Computed apparent magnitude (see <i>Note about Photometry</i> <a href=/about>in this page</a></td></tr>
-<tr><td>dc_sigmag	</td><td>Error in computed apparent magnitude (see <i>Note about Photometry</i> <a href=/about>in this page</a></td></tr>
+<tr><td>dc_mag	</td><td>Computed apparent magnitude (see <i>Note about Photometry</i> <a href=/about#photometry>in this page</a></td></tr>
+<tr><td>dc_sigmag	</td><td>Error in computed apparent magnitude (see <i>Note about Photometry</i> <a href=/about#photometry>in this page</a></td></tr>
+<tr><td>dc_mag_g02</td><td>Exponential Moving Average of apparent magnitude in g band, with 2-day timescale (see <a href=/about#ema>note</a>)</td></tr>
+<tr><td>dc_mag_g08</td><td>Exponential Moving Average of apparent magnitude in g band, with 8-day timescale (see <a href=/about#ema>note</a>)</td></tr>
+<tr><td>dc_mag_g28</td><td>Exponential Moving Average of apparent magnitude in g band, with 28-day timescale (see <a href=/about#ema>note</a>)</td></tr>
+<tr><td>dc_mag_r02</td><td>Exponential Moving Average of apparent magnitude in r band, with 2-day timescale (see <a href=/about#ema>note</a>)</td></tr>
+<tr><td>dc_mag_r08</td><td>Exponential Moving Average of apparent magnitude in r band, with 8-day timescale (see <a href=/about#ema>note</a>)</td></tr>
+<tr><td>dc_mag_r28</td><td>Exponential Moving Average of apparent magnitude in r band, with 28-day timescale (see <a href=/about#ema>note</a>)</td></tr>
 </table>
 
 

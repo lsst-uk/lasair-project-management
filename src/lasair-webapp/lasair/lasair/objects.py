@@ -187,9 +187,28 @@ def record_query(request, query):
     f.write(s)
     f.close()
 
+import queries
+def query_list(qs):
+    list = []
+    for q in qs:
+        d = {
+            'mq_id'      :q.mq_id,
+            'selected'   :q.selected,
+            'tables'     :q.tables,
+            'conditions' :q.conditions,
+            'name'       :q.name,
+            'description':q.description
+        }
+        d['streamlink'] = 'inactive'
+        if q.active:
+            topic = queries.topic_name(q.name)
+            d['streamlink'] = '<a href="/lasair/static/ztf/streams/%s">%s</a>' % (topic, topic)
+        list.append(d)
+    return list
+
 def streams(request):
     public_queries = Myqueries.objects.filter(public=2)
-    return render(request, 'streams.html', {'public_queries':public_queries})
+    return render(request, 'streams.html', {'public_queries':query_list(public_queries)})
 
 @csrf_exempt
 def objlist(request):
@@ -200,7 +219,6 @@ def objlist(request):
         selected   = request.POST['selected'].strip()
         tables     = request.POST['tables'].strip()
         conditions = request.POST['conditions'].strip()
-
 
         json_checked = False
         if 'json' in request.POST and request.POST['json'] == 'on':
@@ -262,8 +280,9 @@ def objlist(request):
             myqueries    = None
 
         public_queries = Myqueries.objects.filter(public__gte=1)
+
         return render(request, 'objlistquery.html', {
             'is_authenticated': request.user.is_authenticated,
-            'myqueries':myqueries, 
+            'myqueries':query_list(myqueries), 
             'days_ago': 1, 
-            'public_queries':public_queries})
+            'public_queries':query_list(public_queries)})
