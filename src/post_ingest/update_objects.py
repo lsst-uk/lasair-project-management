@@ -15,6 +15,7 @@ def make_ema(candlist, cursor):
     oldgjd = oldrjd = 0
     g02 = g08 = g28 = 0
     r02 = r08 = r28 = 0
+    dc_mag_g = dc_mag_r = 0
     n = 0
     for row in candlist:
         jd = row['jd']
@@ -23,6 +24,7 @@ def make_ema(candlist, cursor):
             f02 = math.exp(-(jd-oldgjd)/2.0)
             f08 = math.exp(-(jd-oldgjd)/8.0)
             f28 = math.exp(-(jd-oldgjd)/28.0)
+            dc_mag_g = dc_mag
             g02 = g02*f02 + dc_mag*(1-f02)
             g08 = g08*f08 + dc_mag*(1-f08)
             g28 = g28*f28 + dc_mag*(1-f28)
@@ -32,6 +34,7 @@ def make_ema(candlist, cursor):
             f02 = math.exp(-(jd-oldrjd)/2.0)
             f08 = math.exp(-(jd-oldrjd)/8.0)
             f28 = math.exp(-(jd-oldrjd)/28.0)
+            dc_mag_r = dc_mag
             r02 = r02*f02 + dc_mag*(1-f02)
             r08 = r08*f08 + dc_mag*(1-f08)
             r28 = r28*f28 + dc_mag*(1-f28)
@@ -41,9 +44,14 @@ def make_ema(candlist, cursor):
         if row['dc_mag_g02'] == 0.0:
             cursor.execute(query)
             n += 1
-    return n
+    d = {'n':n, 'dc_mag_g':dc_mag_g, 'g02':g02, 'g08':g08, 'g28':g28, 'dc_mag_r':dc_mag_r, 'r02':r02, 'r08':r08, 'r28':g28}
+    return d
 
 def make_object(objectId, candlist, msl):
+    cursor  = msl.cursor(buffered=True, dictionary=True)
+    d = make_ema(candlist, cursor)
+    ema_updates = d['n']
+
     ncand = len(candlist)
     ra = []
     dec = []
@@ -61,6 +69,11 @@ def make_object(objectId, candlist, msl):
         else:
             magr.append(cand['magpsf'])
             latestrmag = cand['magpsf']
+
+        sgmag1    = cand['sgmag1']
+        srmag1    = cand['srmag1']
+        sgscore1  = cand['sgscore1']
+        distpsnr1 = cand['distpsnr1']
 
     if len(jd) == 0:
         return 0
@@ -80,6 +93,7 @@ def make_object(objectId, candlist, msl):
         magrmedian = np.median(magr)
     else:
         magrmin = magrmax = magrmean = magrmedian = 'NULL'
+
 
     ramean  = np.mean(ra)
     decmean = np.mean(dec)
@@ -115,7 +129,21 @@ def make_object(objectId, candlist, msl):
     sets['jdmax']      = np.max(jd)
     sets['glatmean']   = glatmean
     sets['glonmean']   = glonmean
+    sets['sgmag1']     = sgmag1
+    sets['srmag1']     = srmag1
+    sets['sgscore1']   = sgscore1
+    sets['distpsnr1']  = distpsnr1
     sets['htm16']      = htm16
+
+    sets['latest_dc_mag_g']   = d['dc_mag_g']
+    sets['latest_dc_mag_g02'] = d['g02']
+    sets['latest_dc_mag_g08'] = d['g08']
+    sets['latest_dc_mag_g28'] = d['g28']
+
+    sets['latest_dc_mag_r']   = d['dc_mag_r']
+    sets['latest_dc_mag_r02'] = d['r02']
+    sets['latest_dc_mag_r08'] = d['r08']
+    sets['latest_dc_mag_r28'] = d['r28']
 
     list = []
     query = 'UPDATE objects SET '
@@ -123,11 +151,8 @@ def make_object(objectId, candlist, msl):
         list.append(key + '=' + str(value))
     query += ', '.join(list)
     query += ' WHERE objectId="' + objectId + '"'
-
-    cursor  = msl.cursor(buffered=True, dictionary=True)
     cursor.execute(query)
 
-    ema_updates = make_ema(candlist, cursor)
 #    print('%s updated %d candidates' % (objectId, ema_updates))
     msl.commit()
     return ema_updates
@@ -155,6 +180,7 @@ class Updater(threading.Thread):
         for objectId in self.objectIds:
             query = 'SELECT candid, objectId,ra,decl,jd,fid,magpsf'
             query += ',dc_mag,dc_mag_g02,dc_mag_g08,dc_mag_g28,dc_mag_r02,dc_mag_r08,dc_mag_r28'
+            query += ',sgmag1, srmag1, sgscore1, distpsnr1'
             query += ' FROM candidates WHERE objectId="%s" ORDER BY jd'        
             query = query % objectId
             cursor.execute(query)
