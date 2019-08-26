@@ -74,6 +74,10 @@ def make_object(objectId, candlist, msl):
         srmag1    = cand['srmag1']
         sgscore1  = cand['sgscore1']
         distpsnr1 = cand['distpsnr1']
+        if not sgmag1: sgmag1 = 'NULL'
+        if not srmag1: srmag1 = 'NULL'
+        if not sgscore1: sgscore1 = 'NULL'
+        if not distpsnr1: distpsnr1 = 'NULL'
 
     if len(jd) == 0:
         return 0
@@ -151,7 +155,11 @@ def make_object(objectId, candlist, msl):
         list.append(key + '=' + str(value))
     query += ', '.join(list)
     query += ' WHERE objectId="' + objectId + '"'
-    cursor.execute(query)
+    try:
+        cursor.execute(query)
+    except:
+        print('Update object failed. Query was:\n', query)
+    return ema_updates
 
 #    print('%s updated %d candidates' % (objectId, ema_updates))
     msl.commit()
