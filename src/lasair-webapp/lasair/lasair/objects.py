@@ -190,9 +190,12 @@ def record_query(request, query):
 import queries
 def query_list(qs):
     list = []
+    if not qs:
+        return list
     for q in qs:
         d = {
             'mq_id'      :q.mq_id,
+            'usersname'  :q.user.first_name +' '+ q.user.last_name,
             'selected'   :q.selected,
             'tables'     :q.tables,
             'conditions' :q.conditions,

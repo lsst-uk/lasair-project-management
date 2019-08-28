@@ -295,16 +295,17 @@ class Consumer(threading.Thread):
                     self.times = d['times']
                     nalert += 1
     
+                    if self.args.avrodump:
+                        dir = '/data/ztf/avros/%s' % self.args.topic
+                        try:
+                            os.makedirs(dir)
+                        except OSError:
+                            pass
+                        f = open('%s/%d.avro' % (dir, candid), 'wb')
+                        f.write(streamReader.raw_msg)
+                        f.close()
+
         self.times['log'] += '%d: finished with %d alerts\n' % (self.threadID, nalert)
-        if self.args.avrodump:
-            dir = '/data/ztf/avros/%s' % self.args.topic
-            try:
-                os.makedirs(dir)
-            except OSError:
-                pass
-            f = open('%s/%d.avro' % (dir, candid), 'wb')
-            f.write(streamReader.raw_msg)
-            f.close()
 
         streamReader.__exit__(0,0,0)
         stalefile.close()
