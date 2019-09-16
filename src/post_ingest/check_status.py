@@ -25,10 +25,14 @@ msl = mysql.connector.connect(\
 
 cursor = msl.cursor(buffered=True, dictionary=True)
 query = 'SELECT SUM(n) AS total_candidates FROM coverage'
-cursor.execute(query)
-for row in cursor:
-    total_candidates = row['total_candidates']
-    break
+
+try:
+    cursor.execute(query)
+    for row in cursor:
+        total_candidates = row['total_candidates']
+        break
+except:
+    sys.exit()
 
 query = 'SELECT count(*) AS count FROM candidates WHERE nid = %d' % nid
 cursor.execute(query)

@@ -21,8 +21,8 @@ cmd += '--stampdump %d ' % nid
 cmd += '--avrodump '
 cmd += '--maxalert %d ' % settings.KAFKA_MAXALERTS
 cmd += '--nthread %d '  % settings.KAFKA_THREADS
-cmd += '--group %s ' % settings.GROUPID
-cmd += '--host public.alerts.ztf.uw.edu '
+cmd += '--group %s '    % settings.GROUPID
+cmd += '--host %s '     % settings.KAFKA_PRODUCER
 cmd += '--topic ' + topic
 
 print(cmd)
