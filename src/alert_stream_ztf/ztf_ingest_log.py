@@ -1,6 +1,6 @@
 import sys
-import settings
-import date_nid
+from common import settings
+from common import date_nid
 
 
 from subprocess import Popen, PIPE

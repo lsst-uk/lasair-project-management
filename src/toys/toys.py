@@ -1,4 +1,4 @@
-import settings
+from common import settings
 import random
 
 # setup database connection
@@ -41,9 +41,9 @@ create table object_toys(
 def start_again():
 # This function drops the two tables and recreates them
     cursor = msl.cursor(buffered=True, dictionary=True)
-    query = 'DROP TABLE candidate_toys'
+    query = 'DROP TABLE IF EXISTS candidate_toys'
     cursor.execute(query)
-    query = 'DROP TABLE object_toys'
+    query = 'DROP TABLE IF EXISTS object_toys'
     cursor.execute(query)
     cursor.execute(table1)
     cursor.execute(table2)

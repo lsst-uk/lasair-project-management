@@ -1,5 +1,5 @@
 import sys
-import settings
+from common import settings
 
 import mysql.connector
 msl = mysql.connector.connect(\

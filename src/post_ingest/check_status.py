@@ -5,7 +5,7 @@ import urllib.parse
 import json
 import time
 import mysql.connector
-import settings
+from common import settings
 import date_nid
 import datetime
 

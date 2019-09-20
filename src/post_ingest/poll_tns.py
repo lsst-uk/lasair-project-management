@@ -26,8 +26,8 @@ sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python2')
 import requests
 import csv
 import htmCircle
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
-import settings
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf')
+from common import settings
 
 def getTNSRow(conn, tnsName):
    """

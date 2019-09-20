@@ -10,7 +10,7 @@ import mysql.connector
 import json
 import math
 import time
-import date_nid
+import common.date_nid as date_nid
 
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate

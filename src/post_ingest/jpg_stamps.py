@@ -5,9 +5,9 @@ import numpy
 import os.path
 import time
 import datetime
-import settings
-sys.path.append(settings.LASAIR_ROOT + 'lasair/src/alert_stream_ztf/common')
-import date_nid
+from common import settings
+sys.path.append(settings.LASAIR_ROOT + 'lasair/src/alert_stream_ztf')
+from common import date_nid
 
 def open_fits(filename):
     data = fits.getdata(filename)
