@@ -187,7 +187,6 @@ def record_query(request, query):
     f.write(s)
     f.close()
 
-import queries
 def query_list(qs):
     list = []
     if not qs:

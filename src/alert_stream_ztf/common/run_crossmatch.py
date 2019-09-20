@@ -1,7 +1,6 @@
 import sys
 import math
-from common import settings
-
+import settings
 sys.path.append(settings.LASAIR_ROOT + 'lasair/src/alert_stream_ztf/common/htm/python')
 import htmCircle
 
