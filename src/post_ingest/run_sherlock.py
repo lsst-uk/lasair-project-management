@@ -1,6 +1,6 @@
 from subprocess import run, PIPE
 import time
-import settings
+import common.settings as settings
 
 print('------------- SHERLOCK -------------')
 t = time.time()

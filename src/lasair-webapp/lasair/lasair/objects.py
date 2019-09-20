@@ -11,9 +11,9 @@ import mysql.connector
 import ephem, math
 from datetime import datetime, timedelta
 import json
-import date_nid
-from mag import dc_mag
-import queries
+import common.date_nid as date_nid
+from common.mag import dc_mag
+from common import queries
 
 def connect_db():
     msl = mysql.connector.connect(
@@ -187,7 +187,6 @@ def record_query(request, query):
     f.write(s)
     f.close()
 
-import queries
 def query_list(qs):
     list = []
     if not qs:

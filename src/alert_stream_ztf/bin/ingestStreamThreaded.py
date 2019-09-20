@@ -7,7 +7,7 @@ import argparse
 import sys
 import os
 import time
-import settings
+from common import settings
 sys.path.append(settings.LASAIR_ROOT + 'lasair/src/alert_stream_ztf/common/htm/python')
 import htmCircle
 import mysql.connector

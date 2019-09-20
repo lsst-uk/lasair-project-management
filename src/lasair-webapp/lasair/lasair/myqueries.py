@@ -4,7 +4,7 @@ from django.db import connection
 from django.contrib.auth.models import User
 import lasair.settings
 from lasair.models import Myqueries
-import queries
+from common import queries
 
 def connect_db():
     msl = mysql.connector.connect(

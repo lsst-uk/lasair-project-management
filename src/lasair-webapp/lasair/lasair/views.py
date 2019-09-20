@@ -10,7 +10,7 @@ import mysql.connector
 import json
 import math
 import time
-import date_nid
+import common.date_nid as date_nid
 
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
@@ -185,7 +185,6 @@ def conesearch_impl(cone):
         data = {'cone':cone, 'message': d['message']}
         return data
 
-import date_nid
 def coverage(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':

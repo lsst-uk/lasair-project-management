@@ -1,7 +1,7 @@
 import sys, os
-import date_nid
 import time
-import settings
+from common import date_nid
+from common import settings
 
 while 1:
     nid  = date_nid.nid_now()

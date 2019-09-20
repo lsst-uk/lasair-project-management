@@ -27,8 +27,8 @@ import time
 from fundamentals import tools
 import requests
 import gcn
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/')
-import settings
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf')
+from common import settings
 import slack_sender
 
 # VARIABLES

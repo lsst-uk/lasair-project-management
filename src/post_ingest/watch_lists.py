@@ -1,7 +1,7 @@
 import sys
 import math
 sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
-import settings
+from common import settings
 
 sys.path.append('/home/roy/lasair/src/alert_stream_ztf/utils/htm/python')
 import htmCircle

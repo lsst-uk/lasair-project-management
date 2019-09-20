@@ -1,6 +1,6 @@
 import time
 import json
-import settings
+from common import settings
 import queries
 
 candidates = 'candidates'

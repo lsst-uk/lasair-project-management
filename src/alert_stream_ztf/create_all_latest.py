@@ -3,7 +3,7 @@ import math
 import numpy as np
 import time
 import ephem
-import settings
+from common import settings
 from mag import dc_mag
 
 import mysql.connector

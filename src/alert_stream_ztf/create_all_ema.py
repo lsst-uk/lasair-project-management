@@ -3,8 +3,8 @@ import math
 import numpy as np
 import time
 import ephem
-sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common')
-import settings
+sys.path.append('/home/roy/lasair/src/alert_stream_ztf')
+from common import settings
 from mag import dc_mag
 
 import mysql.connector

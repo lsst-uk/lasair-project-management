@@ -1,7 +1,6 @@
 import os,sys
-import settings
-
-import date_nid
+from common import settings
+from common import date_nid
 
 if len(sys.argv) > 1:
     nid = int(sys.argv[1])
