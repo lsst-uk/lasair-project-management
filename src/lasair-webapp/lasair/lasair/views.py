@@ -185,7 +185,6 @@ def conesearch_impl(cone):
         data = {'cone':cone, 'message': d['message']}
         return data
 
-import date_nid
 def coverage(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
