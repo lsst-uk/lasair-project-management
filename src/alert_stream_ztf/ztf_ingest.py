@@ -17,7 +17,7 @@ print("Topic is %s, nid is %d" % (topic, nid))
 cmd =  settings.LASAIR_ROOT + 'anaconda3/envs/lasair/bin/python bin/ingestStreamThreaded.py '
 cmd += '--logging INFO '
 cmd += '--stampdump %d ' % nid
-cmd += '--avrodump '
+#cmd += '--avrodump '
 cmd += '--maxalert %d ' % settings.KAFKA_MAXALERTS
 cmd += '--nthread %d '  % settings.KAFKA_THREADS
 cmd += '--group %s '    % settings.GROUPID
