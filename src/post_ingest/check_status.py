@@ -6,7 +6,7 @@ import json
 import time
 import mysql.connector
 from common import settings
-import date_nid
+from common import date_nid
 import datetime
 
 print('------------- CHECK STATUS -------------')
