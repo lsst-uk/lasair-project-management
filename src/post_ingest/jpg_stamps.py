@@ -5,7 +5,7 @@ import numpy
 import os.path
 import time
 import datetime
-from common import settings
+import common.settings as settings
 sys.path.append(settings.LASAIR_ROOT + 'lasair/src/alert_stream_ztf')
 from common import date_nid
 
