@@ -151,7 +151,11 @@ def make_object(objectId, candlist, msl):
         list.append(key + '=' + str(value))
     query += ', '.join(list)
     query += ' WHERE objectId="' + objectId + '"'
-    cursor.execute(query)
+    try:
+        cursor.execute(query)
+    except:
+        print('problem with update object')
+        print(query)
 
 #    print('%s updated %d candidates' % (objectId, ema_updates))
     msl.commit()
