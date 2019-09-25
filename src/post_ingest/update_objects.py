@@ -151,6 +151,7 @@ def make_object(objectId, candlist, msl):
         list.append(key + '=' + str(value))
     query += ', '.join(list)
     query += ' WHERE objectId="' + objectId + '"'
+    query = query.replace('None', 'NULL')
     try:
         cursor.execute(query)
     except:

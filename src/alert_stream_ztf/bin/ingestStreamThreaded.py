@@ -11,7 +11,7 @@ from common import settings
 sys.path.append(settings.LASAIR_ROOT + 'lasair/src/alert_stream_ztf/common/htm/python')
 import htmCircle
 import mysql.connector
-from mag import dc_mag
+from common.mag import dc_mag
 
 import threading
 
@@ -276,7 +276,7 @@ class Consumer(threading.Thread):
                 break
 
             if msg is None:
-                print(self.threadID, 'null message')
+#                print(self.threadID, 'null message')
                 break
             else:
                 for record in msg:
