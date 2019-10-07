@@ -1,5 +1,7 @@
 import sys
 import math
+sys.exit()
+
 from common import settings
 
 sys.path.append('/home/roy/lasair/src/alert_stream_ztf/common/htm/python2')

@@ -11,7 +11,7 @@ from common import settings
 sys.path.append(settings.LASAIR_ROOT + 'lasair/src/alert_stream_ztf/common/htm/python')
 import htmCircle
 import mysql.connector
-from mag import dc_mag
+from common.mag import dc_mag
 
 import threading
 
@@ -106,7 +106,7 @@ def insert_sql_candidate(candidate, objectId):
 
 # and here is the SQL
     sql = 'INSERT IGNORE INTO %s \n(%s) \nVALUES \n(%s)' % (candidates, ','.join(names), ','.join(values))
-    return {'sql': sql}
+    return sql
 
 def msg_text(message):
     """Remove postage stamp cutouts from an alert message.
@@ -137,8 +137,7 @@ def insert_candidate(msl, candidate, objectId, stalefile):
         and makes the ojects stale
     """
 # insert the candidate record
-    d = insert_sql_candidate(candidate, objectId)
-    query = d['sql']
+    query = insert_sql_candidate(candidate, objectId)
     t = time.time()
     try:
         cursor = msl.cursor(buffered=True)
@@ -234,6 +233,15 @@ def parse_args():
     return args
 
 
+def make_database_connection():
+    msl = mysql.connector.connect(
+        user     = settings.DB_USER_WRITE, 
+        password = settings.DB_PASS_WRITE, 
+        host     = settings.DB_HOST, 
+        database = settings.DB_DATABASE,
+        )
+    return msl
+
 class Consumer(threading.Thread):
     def __init__(self, threadID, args, conf):
         threading.Thread.__init__(self)
@@ -243,12 +251,7 @@ class Consumer(threading.Thread):
 
     def run(self):
         # Configure database connection
-        msl = mysql.connector.connect(
-            user     = settings.DB_USER_WRITE, 
-            password = settings.DB_PASS_WRITE, 
-            host     = settings.DB_HOST, 
-            database = settings.DB_DATABASE,
-            )
+        msl = make_database_connection()
     
         # Start consumer and print alert stream
         
@@ -276,7 +279,7 @@ class Consumer(threading.Thread):
                 break
 
             if msg is None:
-                print(self.threadID, 'null message')
+#                print(self.threadID, 'null message')
                 break
             else:
                 for record in msg:
@@ -286,8 +289,10 @@ class Consumer(threading.Thread):
                     else:
                         candid = alert_filter(record, msl, stalefile)
                     nalert += 1
-                    if nalert%100 == 0:
+                    if nalert%500 == 0:
                         print('thread %d nalert %d time %.1f' % ((self.threadID, nalert, time.time()-startt)))
+                        msl.close()
+                        msl = make_database_connection()
     
                     if self.args.avrodump:
                         dir = '/data/ztf/avros/%s' % self.args.topic

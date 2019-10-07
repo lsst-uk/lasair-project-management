@@ -1,7 +1,7 @@
 import time
 import json
 from common import settings
-import queries
+from common import queries
 
 candidates = 'candidates'
 objects    = 'objects'
