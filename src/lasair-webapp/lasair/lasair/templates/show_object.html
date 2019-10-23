@@ -65,7 +65,7 @@ Moving object, MPC name is <a href="#" onclick="document.forms[1].submit();">{{ 
 &nbsp;&nbsp;|&nbsp;&nbsp;
 <a href="http://simbad.u-strasbg.fr/simbad/sim-coo?Coord={{ data.objectData.ramean }}%20{{ data.objectData.decmean }}&Radius=0.08" target="new">Simbad</a>
 &nbsp;&nbsp;|&nbsp;&nbsp;
-<a href="http://ned.ipac.caltech.edu/cgi-bin/nph-objsearch?lon={{ data.objectData.ramean|floatformat:6 }}d&lat={{ data.objectData.decmean|floatformat:6 }}d&radius=0.08&search_type=Near+Position+Search" target="new">NED</a>
+<a href="http://ned.ipac.caltech.edu/cgi-bin/nph-objsearch?lon={{ data.objectData.ramean|floatformat:6 }}d&lat={{ data.objectData.decmean|floatformat:6 }}d&radius=2&search_type=Near+Position+Search" target="new">NED</a>
 &nbsp;&nbsp;|&nbsp;&nbsp;
 <a href="https://wis-tns.weizmann.ac.il/search?ra={{ data.objectData.ramean }}&decl={{ data.objectData.decmean }}&radius=5&coords_unit=arcsec" target="new">Transient Name Server</a>
 &nbsp;&nbsp;|&nbsp;&nbsp;
