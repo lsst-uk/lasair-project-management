@@ -1,6 +1,5 @@
 import sys
 import math
-sys.exit()
 
 from common import settings
 
