@@ -59,6 +59,7 @@ def make_object(objectId, candlist, msl):
     magr = []
     jd   = []
     latestgmag = latestrmag = 'NULL'
+    ncandgp = 0
     for cand in candlist:
         ra.append(cand['ra'])
         dec.append(cand['decl'])
@@ -102,6 +103,9 @@ def make_object(objectId, candlist, msl):
     glonmean = math.degrees(float(repr(cg.lon)))
     glatmean = math.degrees(float(repr(cg.lat)))
 
+    if cand['drb'] and cand['drb'] > 0.75 and cand['isdiffpos'] == 't':
+        ncandgp += 1
+
 # Compute the HTM ID for later cone searches
     try:
         htm16 = htmCircle.htmID(16, ramean, decmean)
@@ -133,6 +137,7 @@ def make_object(objectId, candlist, msl):
     sets['srmag1']     = srmag1
     sets['sgscore1']   = sgscore1
     sets['distpsnr1']  = distpsnr1
+    sets['ncandgp']    = ncandgp
     sets['htm16']      = htm16
 
     sets['latest_dc_mag_g']   = d['dc_mag_g']
@@ -185,7 +190,7 @@ class Updater(threading.Thread):
         for objectId in self.objectIds:
             query = 'SELECT candid, objectId,ra,decl,jd,fid,magpsf'
             query += ',dc_mag,dc_mag_g02,dc_mag_g08,dc_mag_g28,dc_mag_r02,dc_mag_r08,dc_mag_r28'
-            query += ',sgmag1, srmag1, sgscore1, distpsnr1'
+            query += ',sgmag1, srmag1, sgscore1, distpsnr1, drb, isdiffpos'
             query += ' FROM candidates WHERE objectId="%s" ORDER BY jd'        
             query = query % objectId
             cursor.execute(query)
