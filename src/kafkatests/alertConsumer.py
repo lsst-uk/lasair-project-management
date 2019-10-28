@@ -73,6 +73,11 @@ class AlertConsumer(object):
         # FIXME should be properly handling exceptions here, but we aren't
         self.consumer.close()
 
+    def topics(self):
+        t = list(self.consumer.list_topics().topics.keys())
+        t.sort()
+        return t
+
     def poll(self, decode=False, verbose=True, timeout=1):
         """Polls Kafka broker to consume topic.
 

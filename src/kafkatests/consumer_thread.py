@@ -51,11 +51,14 @@ class Consumer(threading.Thread):
         streamReader = alertConsumer.AlertConsumer(self.topic, frombeginning, schema_files, **conf)
         streamReader.__enter__()
 
+        if self.threadID == 0:
+            print(streamReader.topics())
+
         ialert = 0
+        t = time.time()
         while 1:
-            t = time.time()
             try:
-                msg = streamReader.poll(decode=True, timeout=60)
+                msg = streamReader.poll(decode=True, timeout=40)
             except alertConsumer.EopError as e:
                 print('got EopError')
                 print(e)
@@ -67,8 +70,8 @@ class Consumer(threading.Thread):
             for alert in msg:
                 data = msg_text(alert)
                 ialert += 1
-                if ialert%1000 == 0:
-                    print(self.name, ialert)
+                if ialert%100 == 0:
+                    print(self.name, ialert, (time.time()-t))
 
         # looks like thats all the alerts we will get
         streamReader.__exit__(0,0,0)

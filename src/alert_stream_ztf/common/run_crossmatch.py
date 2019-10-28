@@ -31,7 +31,7 @@ def run_watchlist(wl_id, delete_old=True):
     for watchlist in cursor:
         wl_name   = watchlist['name']
         wl_radius = watchlist['radius']
-    print ("default radius = %.1f" % wl_radius)
+#    print ("default radius = %.1f" % wl_radius)
     
     # clean out previous hits
     if delete_old:
@@ -75,7 +75,8 @@ def run_watchlist(wl_id, delete_old=True):
             if arcsec > radius:
                 continue
 
-            ncandidate = row['ncand']
+            ndethist = row['ncand']
+            ncandidate += ndethist
     
             query3 = 'INSERT INTO watchlist_hits (wl_id, cone_id, objectId, ndethist, arcsec, name) '
             query3 += 'VALUES (%d, %d, "%s", %d, %f, "%s")' % (wl_id, cone_id, objectId, ndethist, arcsec, name)
@@ -92,7 +93,7 @@ def run_watchlist(wl_id, delete_old=True):
                     'arcsec':arcsec
                 })
             except mysql.connector.errors.IntegrityError as e:
-                print(e)
+#                print(e)
                 pass  # this objectId is already recorded as a hit for this watchlist
     return {'newhitlist':newhitlist, 'ncandidate':ncandidate}
 
