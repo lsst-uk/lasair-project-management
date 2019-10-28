@@ -1,13 +1,25 @@
-<script type="text/javascript" src="//code.jquery.com/jquery-1.12.1.min.js" charset="utf-8"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
 <script type="text/javascript">
 /* respond to clicking a checkbox */
 function puttext() {
   var boxes = document.getElementsByName('put');
   var nonobjects = 0;
   var text = '';
+  var checked_wl = '';
   for(i=0; i<boxes.length; i++){
     if(boxes[i].checked && boxes[i].id != 'objects'){
       nonobjects += 1;
+    }
+    if(boxes[i].checked && boxes[i].id == 'watchlist'){
+      var radios = document.getElementsByName("wl");
+      for (var j = 0; j < radios.length; j++) {
+        if (radios[j].checked) {
+          checked_wl = radios[j].value;
+        }
+      }
     }
   }
   if(nonobjects > 1){
@@ -16,26 +28,45 @@ function puttext() {
   var nt = 0;
   for(i=0; i<boxes.length; i++){
     if(boxes[i].checked){
+      if(boxes[i].id == 'watchlist' && checked_wl.length == 0){
+        continue;
+      }
       if(nt > 0){
         text += ', '
       }
       text += boxes[i].id;
       nt += 1;
     }
+  } 
+  if(checked_wl.length > 0){
+    if(text.len > 0){
+      text += ','
+    }
+    text += ':' + checked_wl
   }
   document.getElementById("tables").value = text;
 {% if days_ago %}
   check_days_ago();
 {% endif %}
+console.log(text);
 }
 
 /* take the table text and fill in the checkboxes */
 function check_boxes() {
   var tables = document.getElementById("tables").value;
+	console.log(tables);
   var boxes = document.getElementsByName('put');
   for(i=0; i<boxes.length; i++){
     if(tables.indexOf(boxes[i].id) != -1){
       boxes[i].checked = true;
+    }
+  }
+  var radios = document.getElementsByName("wl");
+  document.getElementById('watchlistradios' ).style.display = 'none';
+  for (var j = 0; j < radios.length; j++) {
+    if (tables.indexOf('watchlist:' + radios[j].value) != -1) {
+      radios[j].checked = true;
+      document.getElementById('watchlistradios' ).style.display = 'block';
     }
   }
 {% if days_ago %}
@@ -54,18 +85,201 @@ function check_days_ago(){
   }
 }
 
+function showradiolist(){
+    if(document.getElementById('watchlist' ).checked){
+        document.getElementById('watchlistradios' ).style.display = 'block';
+    } else {
+        document.getElementById('watchlistradios' ).style.display = 'none';
+    }
+}
+</script>
+
+<script type="text/javascript">
+$(function() {
+var availableTags = [
+"objects.ncand",
+"objects.ncandgp",
+"objects.ramean",
+"objects.decmean",
+"objects.rastd",
+"objects.decstd",
+"objects.glonmean",
+"objects.glatmean",
+"objects.maggmin",
+"objects.maggmax",
+"objects.maggmedian",
+"objects.maggmean",
+"objects.magrmin",
+"objects.magrmax",
+"objects.magrmedian",
+"objects.magrmean",
+"objects.latestgmag",
+"objects.latestrmag",
+"objects.jdmin",
+"objects.jdmax",
+"objects.sgmag1",
+"objects.srmag1",
+"objects.sgscore1",
+"objects.distpsnr1",
+"objects.latest_dc_mag_g",
+"objects.latest_dc_mag_r",
+"objects.latest_dc_mag_g02",
+"objects.latest_dc_mag_g08",
+"objects.latest_dc_mag_g28",
+"objects.latest_dc_mag_r02",
+"objects.latest_dc_mag_r08",
+"objects.latest_dc_mag_r28",
+"sherlock_classifications.classification",
+"sherlock_classifications.summary",
+"sherlock_crossmatches.rank",
+"sherlock_crossmatches.catalogue_object_type",
+"sherlock_crossmatches.association_type",
+"sherlock_crossmatches.separationArcsec",
+"sherlock_crossmatches.northSeparationArcsec",
+"sherlock_crossmatches.eastSeparationArcsec",
+"sherlock_crossmatches.catalogue_table_name",
+"sherlock_crossmatches.catalogue_object_id",
+"sherlock_crossmatches.z",
+"sherlock_crossmatches.distance",
+"candidates.objectId",
+"candidates.candid",
+"candidates.jd",
+"candidates.ra",
+"candidates.decl",
+"candidates.magpsf",
+"candidates.sigmapsf",
+"candidates.chipsf",
+"candidates.magap",
+"candidates.sigmagap",
+"candidates.isdiffpos",
+"candidates.nid",
+"candidates.field",
+"candidates.classtar",
+"candidates.drb",
+"candidates.ssdistnr",
+"candidates.ssmagnr",
+"candidates.ssnamenr",
+"candidates.objectidps1",
+"candidates.sgmag1",
+"candidates.srmag1",
+"candidates.simag1",
+"candidates.szmag1",
+"candidates.sgscore1",
+"candidates.distpsnr1",
+"candidates.neargaia",
+"candidates.neargaiabright",
+"candidates.maggaia",
+"candidates.maggaiabright",
+"candidates.dc_mag",
+"candidates.dc_sigmag",
+"candidates.dc_mag_g02",
+"candidates.dc_mag_g08",
+"candidates.dc_mag_g28",
+"candidates.dc_mag_r02",
+"candidates.dc_mag_r08",
+"candidates.dc_mag_r28",
+"watchlist_hits.objectId",
+"watchlist_hits.name",
+"watchlist_hits.arcsec"
+];
+function splitComma( val ) {
+  return val.split( /,\s*/ );
+}
+function splitSpace( val ) {
+  return val.split( / \s*/ );
+}
+function extractLastComma( term ) {
+  return splitComma( term ).pop();
+}
+function extractLastSpace( term ) {
+  return splitSpace( term ).pop();
+}
+
+$( "#selected" )
+  // don't navigate away from the field on tab when selecting an item
+  .bind( "keydown", function( event ) {
+    if ( event.keyCode === $.ui.keyCode.TAB &&
+        $( this ).autocomplete( "instance" ).menu.active ) {
+      event.preventDefault();
+    }
+  })
+  .autocomplete({
+    minLength: 0,
+    source: function( request, response ) {
+      // delegate back to autocomplete, but extract the last term
+      response( $.ui.autocomplete.filter(
+        availableTags, extractLastComma( request.term ) ) );
+    },
+    focus: function() {
+      // prevent value inserted on focus
+      return false;
+    },
+    select: function( event, ui ) {
+      var terms = splitComma( this.value );
+      // remove the current input
+      terms.pop();
+      // add the selected item
+      terms.push( ui.item.value );
+      // add placeholder to get the comma-and-space at the end
+//      terms.push( "" );
+      this.value = terms.join( ", " );
+      return false;
+    }
+    });
+$( "#conditions" )
+  // don't navigate away from the field on tab when selecting an item
+  .bind( "keydown", function( event ) {
+    if ( event.keyCode === $.ui.keyCode.TAB &&
+        $( this ).autocomplete( "instance" ).menu.active ) {
+      event.preventDefault();
+    }
+  })
+  .autocomplete({
+    minLength: 0,
+    source: function( request, response ) {
+      // delegate back to autocomplete, but extract the last term
+      response( $.ui.autocomplete.filter(
+        availableTags, extractLastSpace( request.term ) ) );
+    },
+    focus: function() {
+      // prevent value inserted on focus
+      return false;
+    },
+    select: function( event, ui ) {
+      var terms = splitSpace( this.value );
+      // remove the current input
+      terms.pop();
+      // add the selected item
+      terms.push( ui.item.value );
+      // add placeholder to get the comma-and-space at the end
+//      terms.push( "" );
+      this.value = terms.join( " " );
+      return false;
+    }
+    });
+
+
+
+
+
+   });
+</script>
+
+<script type="text/javascript">
 $(document).ready(function(){
   check_boxes();
 });
-
 </script>
 
 
-{% csrf_token %} 
+
 <div class ="form-group">
-	<b><font color="red">SELECT</font></b>
+{% csrf_token %} 
+
+<b><font color="red">SELECT ATTRIBUTES</font></b>
 <tt><textarea class="form-control" rows="4" cols="40" name="selected" id="selected">{{ myquery.selected }}</textarea></tt>
-<b><font color="red">FROM JOIN OF</font></b>
+
+<b><font color="red">TABLES TO USE</font></b>
 <div style="display:none">
 <tt><textarea class="form-control" rows="1" cols="40" name="tables" id="tables">{{ myquery.tables }}</textarea></tt>
 </div>
@@ -73,16 +287,30 @@ $(document).ready(function(){
 <tr><td> <font size=+1>
 <input type="checkbox" name="put" id="candidates"               onclick="puttext();"> candidates<br/>
 <input type="checkbox" name="put" id="noncandidates"            onclick="puttext();"> noncandidates
-</font></td><td> <font size=+1>
+</font></td><td> <font size=+3>
 <input type="checkbox" name="put" id="objects"                  onclick="puttext();"> objects
 </font></td><td> <font size=+1>
 <input type="checkbox" name="put" id="comments"                 onclick="puttext();"> comments<br/>
 <input type="checkbox" name="put" id="sherlock_classifications" onclick="puttext();"> sherlock_classifications<br/>
 <input type="checkbox" name="put" id="sherlock_crossmatches"    onclick="puttext();"> sherlock_crossmatches
-</font></td></tr>
+</td>
+
+<td><font size=+1><input type="checkbox" name="put" id="watchlist"    onclick="showradiolist();puttext();"> Watchlist
+	</font>
+<div id="watchlistradios">
+{% for wl in mywatchlists %}
+&nbsp;&nbsp;&nbsp;<input type="radio" name="wl" value="{{ wl.wl_id }}" onclick="puttext();"> {{ wl.name }} 
+{% if not wl.active %}<i>inactive</i>{% endif %}
+<br/>
+{% endfor %}
+</div>
+</td>
+</tr>
+
+
 </table>
 
-<b><font color="red">WHERE ORDER</font></b>
+<b><font color="red">WHERE</font></b>
 <tt><textarea class="form-control" rows="4" cols="40" name="conditions" id="conditions">{{ myquery.conditions }}</textarea></tt>
 </div>
 <div id="days_ago" style="display:none">
