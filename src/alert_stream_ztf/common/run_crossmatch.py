@@ -31,7 +31,7 @@ def run_watchlist(wl_id, delete_old=True):
     for watchlist in cursor:
         wl_name   = watchlist['name']
         wl_radius = watchlist['radius']
-    print ("radius = %.1f" % wl_radius)
+    print ("default radius = %.1f" % wl_radius)
     
     # clean out previous hits
     if delete_old:
@@ -43,7 +43,7 @@ def run_watchlist(wl_id, delete_old=True):
     newhitlist = []
     
     # get all the cones and run them
-    query = 'SELECT cone_id,name,ra,decl FROM watchlist_cones WHERE wl_id=%d' % wl_id
+    query = 'SELECT cone_id,name,ra,decl,radius FROM watchlist_cones WHERE wl_id=%d' % wl_id
     cursor.execute(query)
     ncandidate = 0
     for watch_pos in cursor:
@@ -51,15 +51,18 @@ def run_watchlist(wl_id, delete_old=True):
         name     = watch_pos['name']
         myRA     = watch_pos['ra']
         myDecl   = watch_pos['decl']
+        radius   = watch_pos['radius']
     
-        subClause = htmCircle.htmCircleRegion(16, myRA, myDecl, wl_radius)
+        if not radius:
+            radius = wl_radius
+        subClause = htmCircle.htmCircleRegion(16, myRA, myDecl, radius)
 
-#        subClause = subClause.replace('htm16ID', 'htm16')
-#        query2 = 'SELECT * FROM objects WHERE htm16 ' + subClause[14: -2]
+        subClause = subClause.replace('htm16ID', 'htm16')
+        query2 = 'SELECT * FROM objects WHERE htm16 ' + subClause[14: -2]
 
-        subClause = subClause.replace('htm16ID', 'htmid16')
-        query2 = 'SELECT objectId,ra,decl,count(*) AS ncand FROM candidates '
-        query2 += 'WHERE htmid16 ' + subClause[15: -2]
+#        subClause = subClause.replace('htm16ID', 'htmid16')
+#        query2 = 'SELECT objectId,ra,decl,count(*) AS ncand FROM candidates '
+#        query2 += 'WHERE htmid16 ' + subClause[15: -2]
 
 #        print(query2)
         cursor2.execute(query2)
@@ -68,14 +71,14 @@ def run_watchlist(wl_id, delete_old=True):
             if not objectId: continue
             ndethist = row['ncand']
 #            arcsec = 3600*distance(myRA, myDecl, row['ramean'], row['decmean'])
-            arcsec = 3600*distance(myRA, myDecl, row['ra'], row['decl'])
-            if arcsec > wl_radius:
+            arcsec = 3600*distance(myRA, myDecl, row['ramean'], row['decmean'])
+            if arcsec > radius:
                 continue
 
-            ncandidate += ndethist
+            ncandidate = row['ncand']
     
-            query3 = 'INSERT INTO watchlist_hits (wl_id, cone_id, objectId, ndethist, arcsec) '
-            query3 += 'VALUES (%d, %d, "%s", %d, %f)' % (wl_id, cone_id, objectId, ndethist, arcsec)
+            query3 = 'INSERT INTO watchlist_hits (wl_id, cone_id, objectId, ndethist, arcsec, name) '
+            query3 += 'VALUES (%d, %d, "%s", %d, %f, "%s")' % (wl_id, cone_id, objectId, ndethist, arcsec, name)
 #            print(query3)
             try:
                 cursor3.execute(query3)
