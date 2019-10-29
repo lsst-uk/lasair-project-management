@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.template.context_processors import csrf
 from django.db import connection
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 import lasair.settings
 from lasair.models import Watchlists, WatchlistCones, WatchlistHits
 import mysql.connector
@@ -39,14 +40,19 @@ def watchlists_home(request):
                         objectId = tok[0].strip()
                         ra       = float(tok[1])
                         dec      = float(tok[2])
-                        cone_list.append([objectId, ra, dec])
+                        if len(tok) >= 4:
+                            radius      = float(tok[3])
+                        cone_list.append([objectId, ra, dec, radius])
                 except:
                     message += "Bad line %d: %s\n" % (len(cone_list), line)
             if len(message) == 0:
                 wl = Watchlists(user=request.user, name=name, description=description, active=0, prequel_where='', radius=default_radius)
                 wl.save()
                 for cone in cone_list:
-                    wlc = WatchlistCones(wl=wl, name=cone[0], ra=cone[1], decl=cone[2])
+                    if len(cone) == 3:
+                        wlc = WatchlistCones(wl=wl, name=cone[0], ra=cone[1], decl=cone[2])
+                    else:
+                        wlc = WatchlistCones(wl=wl, name=cone[0], ra=cone[1], decl=cone[2], radius=cone[3])
                     wlc.save()
                 message = 'Watchlist created successfully'
         else:
@@ -68,6 +74,27 @@ def watchlists_home(request):
         'other_watchlists': other_watchlists, 
         'authenticated': request.user.is_authenticated,
         'message': message})
+
+def show_watchlist_txt(request, wl_id):
+    message = ''
+    watchlist = get_object_or_404(Watchlists, wl_id=wl_id)
+
+    is_owner = (request.user.is_authenticated) and (request.user == watchlist.user)
+    is_public = (watchlist.public == 1)
+    is_visible = is_owner or is_public
+    if not is_visible:
+        return render(request, 'error.html',{
+            'message': "This watchlist is private and not visible to you"})
+    cursor = connection.cursor()
+    s = []
+    cursor.execute('SELECT name, ra, decl, radius FROM watchlist_cones WHERE wl_id=%d ' % wl_id)
+    cones = cursor.fetchall()
+    for c in cones:
+        if c[3]:
+            s += '%s, %f, %f, %f\n' % (c[0], c[1], c[2], c[3])
+        else:
+            s += '%s, %f, %f\n' % (c[0], c[1], c[2])
+    return HttpResponse(s, content_type="text/plain")
 
 def show_watchlist(request, wl_id):
     message = ''
@@ -113,19 +140,19 @@ def show_watchlist(request, wl_id):
     conelist = []
     found = 0
     for c in cones:
-        d = {'name':c[2], 'ra'  :c[3], 'decl' :c[4]}
-        if c[7]:
+        d = {'name':c[2], 'ra'  :c[3], 'decl' :c[4], 'radius':c[5]}
+        if c[8]:
             found += 1
-            d['objectId'] = c[7]
-            d['arcsec']   = c[8]
-            d['sherlock_classification'] = c[30]
-            if c[13]:
-                d['ncand'] = c[13]
-                if c[19]: 
-                    grange = c[19] - c[18] 
+            d['objectId'] = c[8]
+            d['arcsec']   = c[9]
+            d['sherlock_classification'] = c[32]
+            if c[15]:
+                d['ncand'] = c[15]
+                if c[20]: 
+                    grange = c[21] - c[20] 
                 else: grange = 0.0
-                if c[23]: 
-                    rrange = c[23] - c[22] 
+                if c[25]: 
+                    rrange = c[25] - c[24] 
                 else: rrange = 0.0
                 if grange > rrange:
                     d['range'] = grange

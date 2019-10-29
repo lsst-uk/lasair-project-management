@@ -2,11 +2,12 @@ import os, sys
 from django.shortcuts import render, get_object_or_404, HttpResponse
 from django.template.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 from django.db import connection
 import lasair.settings
 from lasair.models import Objects, Comments
 from lasair.models import Myqueries
-from lasair.models import Myqueries
+from lasair.models import Watchlists
 import mysql.connector
 import ephem, math
 from datetime import datetime, timedelta
@@ -280,11 +281,16 @@ def objlist(request):
             myqueries    = Myqueries.objects.filter(user=request.user)
         else:
             myqueries    = None
-
         public_queries = Myqueries.objects.filter(public__gte=1)
+
+        if request.user.is_authenticated:
+            watchlists = Watchlists.objects.filter(Q(user=request.user) | Q(public__gte=1))
+        else:
+            watchlists = Watchlists.objects.filter(public__gte=1)
 
         return render(request, 'objlistquery.html', {
             'is_authenticated': request.user.is_authenticated,
             'myqueries':query_list(myqueries), 
+            'watchlists':watchlists,
             'days_ago': 1, 
             'public_queries':query_list(public_queries)})

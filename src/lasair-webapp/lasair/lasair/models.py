@@ -163,6 +163,7 @@ class WatchlistCones(models.Model):
     name    = models.CharField(max_length=32, blank=True, null=True)
     ra      = models.FloatField(blank=True, null=True)
     decl    = models.FloatField(blank=True, null=True)
+    radius  = models.FloatField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -174,6 +175,7 @@ class WatchlistHits(models.Model):
     cone     = models.ForeignKey(WatchlistCones, models.DO_NOTHING, blank=True, null=True)
     objectid = models.CharField(db_column='objectId', max_length=16, blank=True, null=True)  # Field name made lowercase.
     arcsec   = models.FloatField(blank=True, null=True)
+    name     = models.CharField(max_length=32, blank=True, null=True)
 
     class Meta:
         managed         = False

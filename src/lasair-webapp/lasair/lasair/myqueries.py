@@ -1,9 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.context_processors import csrf
 from django.db import connection
+from django.db.models import Q
 from django.contrib.auth.models import User
 import lasair.settings
 from lasair.models import Myqueries
+from lasair.models import Watchlists
 from common import queries
 
 def connect_db():
@@ -18,6 +20,11 @@ def connect_db():
 def new_myquery(request):
     is_owner = (request.user.is_authenticated)
     message = ''
+    if request.user.is_authenticated:
+        watchlists = Watchlists.objects.filter(Q(user=request.user) | Q(public__gte=1))
+    else:
+        watchlists = Watchlists.objects.filter(public__gte=1)
+
     if request.method == 'POST' and is_owner:
         name        = request.POST.get('name')
         description = request.POST.get('description')
@@ -38,10 +45,12 @@ def new_myquery(request):
         message = "Query saved successfully"
         return render(request, 'show_myquery.html',{
             'myquery' :mq, 
+            'watchlists': watchlists,
             'is_owner' :is_owner,
             'message'  :message})
 
     return render(request, 'new_myquery.html',{
+        'watchlists': watchlists,
         'is_owner' :is_owner
     })
 
@@ -85,8 +94,14 @@ def show_myquery(request, mq_id):
             myquery.save()
             message += 'query updated'
 
+    if request.user.is_authenticated:
+        watchlists = Watchlists.objects.filter(Q(user=request.user) | Q(public__gte=1))
+    else:
+        watchlists = Watchlists.objects.filter(public__gte=1)
+
     return render(request, 'show_myquery.html',{
         'myquery' :myquery, 
+        'watchlists':watchlists,
         'topic'   : queries.topic_name(myquery.name),
         'is_owner' :is_owner,
         'message'  :message})

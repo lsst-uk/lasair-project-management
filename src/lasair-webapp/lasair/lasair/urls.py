@@ -37,6 +37,7 @@ urlpatterns = [
 
     path('watchlist/',              watchlists.watchlists_home, name='watchlists_home'),
     path('watchlist/<int:wl_id>/',  watchlists.show_watchlist,  name='show_watchlist'),
+    path('watchlist/<int:wl_id>/txt/',  watchlists.show_watchlist_txt,  name='show_watchlist_txt'),
 
     path('myquery/',                myqueries.new_myquery,      name='new_myquery'),
     path('myquery/<int:mq_id>/',    myqueries.show_myquery,     name='show_myquery'),
