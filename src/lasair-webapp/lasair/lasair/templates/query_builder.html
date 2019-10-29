@@ -97,90 +97,98 @@ function showradiolist(){
 <script type="text/javascript">
 $(function() {
 var availableTags = [
-"objects.ncand",
-"objects.ncandgp",
-"objects.ramean",
 "objects.decmean",
-"objects.rastd",
 "objects.decstd",
-"objects.glonmean",
-"objects.glatmean",
-"objects.maggmin",
-"objects.maggmax",
-"objects.maggmedian",
-"objects.maggmean",
-"objects.magrmin",
-"objects.magrmax",
-"objects.magrmedian",
-"objects.magrmean",
-"objects.latestgmag",
-"objects.latestrmag",
-"objects.jdmin",
-"objects.jdmax",
-"objects.sgmag1",
-"objects.srmag1",
-"objects.sgscore1",
 "objects.distpsnr1",
+"objects.glatmean",
+"objects.glonmean",
+"objects.jdmax",
+"objects.jdmin",
 "objects.latest_dc_mag_g",
-"objects.latest_dc_mag_r",
 "objects.latest_dc_mag_g02",
 "objects.latest_dc_mag_g08",
 "objects.latest_dc_mag_g28",
+"objects.latest_dc_mag_r",
 "objects.latest_dc_mag_r02",
 "objects.latest_dc_mag_r08",
 "objects.latest_dc_mag_r28",
+"objects.latestgmag",
+"objects.latestrmag",
+"objects.maggmax",
+"objects.maggmean",
+"objects.maggmedian",
+"objects.maggmin",
+"objects.magrmax",
+"objects.magrmean",
+"objects.magrmedian",
+"objects.magrmin",
+"objects.ncand",
+"objects.ncandgp",
+"objects.ramean",
+"objects.rastd",
+"objects.sgmag1",
+"objects.sgscore1",
+"objects.srmag1",
 "sherlock_classifications.classification",
 "sherlock_classifications.summary",
-"sherlock_crossmatches.rank",
-"sherlock_crossmatches.catalogue_object_type",
 "sherlock_crossmatches.association_type",
-"sherlock_crossmatches.separationArcsec",
-"sherlock_crossmatches.northSeparationArcsec",
-"sherlock_crossmatches.eastSeparationArcsec",
-"sherlock_crossmatches.catalogue_table_name",
 "sherlock_crossmatches.catalogue_object_id",
-"sherlock_crossmatches.z",
+"sherlock_crossmatches.catalogue_object_type",
+"sherlock_crossmatches.catalogue_table_name",
 "sherlock_crossmatches.distance",
-"candidates.objectId",
+"sherlock_crossmatches.eastSeparationArcsec",
+"sherlock_crossmatches.northSeparationArcsec",
+"sherlock_crossmatches.rank",
+"sherlock_crossmatches.separationArcsec",
+"sherlock_crossmatches.z",
+"watchlist_hits.arcsec",
+"watchlist_hits.name",
+"watchlist_hits.objectId",
 "candidates.candid",
-"candidates.jd",
-"candidates.ra",
-"candidates.decl",
-"candidates.magpsf",
-"candidates.sigmapsf",
 "candidates.chipsf",
-"candidates.magap",
-"candidates.sigmagap",
-"candidates.isdiffpos",
-"candidates.nid",
-"candidates.field",
 "candidates.classtar",
-"candidates.drb",
-"candidates.ssdistnr",
-"candidates.ssmagnr",
-"candidates.ssnamenr",
-"candidates.objectidps1",
-"candidates.sgmag1",
-"candidates.srmag1",
-"candidates.simag1",
-"candidates.szmag1",
-"candidates.sgscore1",
-"candidates.distpsnr1",
-"candidates.neargaia",
-"candidates.neargaiabright",
-"candidates.maggaia",
-"candidates.maggaiabright",
 "candidates.dc_mag",
-"candidates.dc_sigmag",
 "candidates.dc_mag_g02",
 "candidates.dc_mag_g08",
 "candidates.dc_mag_g28",
 "candidates.dc_mag_r02",
 "candidates.dc_mag_r08",
 "candidates.dc_mag_r28",
-"watchlist_hits.objectId",
-"watchlist_hits.name",
-"watchlist_hits.arcsec"
+"candidates.dc_sigmag",
+"candidates.decl",
+"candidates.distpsnr1",
+"candidates.drb",
+"candidates.field",
+"candidates.isdiffpos",
+"candidates.jd",
+"candidates.magap",
+"candidates.maggaia",
+"candidates.maggaiabright",
+"candidates.magpsf",
+"candidates.neargaia",
+"candidates.neargaiabright",
+"candidates.nid",
+"candidates.objectId",
+"candidates.objectidps1",
+"candidates.ra",
+"candidates.sgmag1",
+"candidates.sgscore1",
+"candidates.sigmagap",
+"candidates.sigmapsf",
+"candidates.simag1",
+"candidates.srmag1",
+"candidates.ssdistnr",
+"candidates.ssmagnr",
+"candidates.ssnamenr",
+"candidates.szmag1",
+"noncandidates.diffmaglim",
+"noncandidates.fid",
+"noncandidates.jd",
+"noncandidates.objectId",
+"comments.content",
+"comments.objectId",
+"comments.time",
+"comments.user",
 ];
 function splitComma( val ) {
   return val.split( /,\s*/ );
@@ -208,21 +216,21 @@ $( "#selected" )
     source: function( request, response ) {
       // delegate back to autocomplete, but extract the last term
       response( $.ui.autocomplete.filter(
-        availableTags, extractLastComma( request.term ) ) );
+        availableTags, extractLastSpace( request.term ) ) );
     },
     focus: function() {
       // prevent value inserted on focus
       return false;
     },
     select: function( event, ui ) {
-      var terms = splitComma( this.value );
+      var terms = splitSpace( this.value );
       // remove the current input
       terms.pop();
       // add the selected item
       terms.push( ui.item.value );
       // add placeholder to get the comma-and-space at the end
 //      terms.push( "" );
-      this.value = terms.join( ", " );
+      this.value = terms.join( " " );
       return false;
     }
     });
@@ -257,11 +265,6 @@ $( "#conditions" )
       return false;
     }
     });
-
-
-
-
-
    });
 </script>
 
@@ -298,7 +301,7 @@ $(document).ready(function(){
 <td><font size=+1><input type="checkbox" name="put" id="watchlist"    onclick="showradiolist();puttext();"> Watchlist
 	</font>
 <div id="watchlistradios">
-{% for wl in mywatchlists %}
+{% for wl in watchlists %}
 &nbsp;&nbsp;&nbsp;<input type="radio" name="wl" value="{{ wl.wl_id }}" onclick="puttext();"> {{ wl.name }} 
 {% if not wl.active %}<i>inactive</i>{% endif %}
 <br/>
