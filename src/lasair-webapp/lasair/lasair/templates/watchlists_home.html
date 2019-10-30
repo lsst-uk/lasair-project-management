@@ -7,17 +7,13 @@ A watchlist is a set of points in the sky, together with a radius in arcseconds.
 </p><p>
 You can create a watchlist of sources by preparing a text file, where each comma-separated 
 line has an identifier for the source, then the RA and Dec
-in decimal degrees. One way to do this is with 
+in decimal degrees, with optional radius in arcseconds. One way to do this is with 
 <a href=http://vizier.u-strasbg.fr/viz-bin/VizieR>Vizier</a> and a spreadsheet program such as Excel or Numbers. 
 Here is <a href=/lasair/static/BLLac.csv>an example of the CSV data</a>. The 42 entries are <i>BL Lac candidates for TeV observations (Massaro+, 2013)</i>
 </p><p>
-An "Active" watchlist is one that is compared immediately when new ZTF candidates 
-are ingested, with an alert sent immediately to the owner of the watchlist. 
-(This feature is not yet implemented).
+An "Active" watchlist is one that is run every day, so that it is up to date with the
+latest objects.
 </p>
-
-
-
 
 {% if authenticated %}
 <script>
@@ -48,8 +44,8 @@ function exposeDiv(id) {
 <tr><td>default radius (arcsec):</td><td> <input name="radius"></td></tr>
 <tr colspan="2"><td>
 
-Paste here the list of sources to be watched, as comma-separated values 
-<b>ID, RA, Dec</b> with RA and Dec in decimal degrees:</td><td>
+<font size=-1>Paste here the list of sources to be watched, as comma-separated values 
+	<b>ID, RA, Dec &lt;,radius&gt;</b> with RA and Dec in decimal degrees, and radius in arcseconds:</font></td><td>
 <textarea name="objects" rows="9" cols="50"></textarea></td></tr>
 <tr><td>
 
