@@ -75,6 +75,8 @@ def make_object(objectId, candlist, msl):
         srmag1    = cand['srmag1']
         sgscore1  = cand['sgscore1']
         distpsnr1 = cand['distpsnr1']
+        if cand['drb'] and cand['drb'] > 0.75 and cand['isdiffpos'] == 't':
+            ncandgp += 1
 
     if len(jd) == 0:
         return 0
@@ -103,8 +105,6 @@ def make_object(objectId, candlist, msl):
     glonmean = math.degrees(float(repr(cg.lon)))
     glatmean = math.degrees(float(repr(cg.lat)))
 
-    if cand['drb'] and cand['drb'] > 0.75 and cand['isdiffpos'] == 't':
-        ncandgp += 1
 
 # Compute the HTM ID for later cone searches
     try:
