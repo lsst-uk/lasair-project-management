@@ -204,7 +204,7 @@ def query_list(qs):
         }
         d['streamlink'] = 'inactive'
         if q.active:
-            topic = queries.topic_name(q.name)
+            topic = queries.topic_name(q.user.id, q.name)
             d['streamlink'] = '<a href="/lasair/static/ztf/streams/%s">%s</a>' % (topic, topic)
         list.append(d)
     return list

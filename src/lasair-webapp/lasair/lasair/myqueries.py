@@ -102,6 +102,6 @@ def show_myquery(request, mq_id):
     return render(request, 'show_myquery.html',{
         'myquery' :myquery, 
         'watchlists':watchlists,
-        'topic'   : queries.topic_name(myquery.name),
+        'topic'   : queries.topic_name(myquery.user.id, myquery.name),
         'is_owner' :is_owner,
         'message'  :message})

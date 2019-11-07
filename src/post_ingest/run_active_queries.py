@@ -2,6 +2,7 @@ import time
 import json
 from common import settings
 from common import queries
+from confluent_kafka import Producer, KafkaError
 
 candidates = 'candidates'
 objects    = 'objects'
