@@ -21,17 +21,25 @@ def run_query(query, status, msl, topic):
 
     cursor = msl.cursor(buffered=True, dictionary=True)
     n = 0
+    output = []
     try:
         cursor.execute(sqlquery_real)
-        file = open('/data/ztf/streams/%s' % topic, 'a')
+#        file = open('/data/ztf/streams/%s' % topic, 'a')
         for record in cursor:
-            output = json.dumps(record)
-            file.write(output + ',\n')
+            output.append(json.dumps(record))
+#            file.write(output + ',\n')
             n += 1
-        file.close()
+#        file.close()
     except:
         print("Query failed for %s" % topic)
         print(sqlquery_real)
+
+    if len(output) > 0:
+        conf = { 'bootstrap.servers': settings.LASAIR_KAFKA_PRODUCER }
+        p = Producer(conf)
+        for out in output:
+            p.produce(topic, out)
+        p.flush()
 
     return n
 
@@ -45,10 +53,10 @@ def find_queries(status):
     msl = mysql.connector.connect(**config)
 
     cursor   = msl.cursor(buffered=True, dictionary=True)
-    query = 'SELECT * FROM myqueries2 WHERE active=1'        
+    query = 'SELECT user, name, selected, tables, conditions FROM myqueries2 WHERE active=1'        
     cursor.execute(query)
     for query in cursor:
-        topic = queries.topic_name(query['name'])
+        topic = queries.topic_name(query['user'], query['name'])
         n = run_query(query, status, msl, topic)
         print('query %s got %d' % (topic, n))
 
