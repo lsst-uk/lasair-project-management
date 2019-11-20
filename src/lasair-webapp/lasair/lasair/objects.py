@@ -275,6 +275,7 @@ def objlist(request):
                 {'table': queryset, 'nalert': nalert, 'nextpage': page+1, 'ps':ps, 'pe':pe, 
                     'selected'  :selected, 
                     'tables'    :tables, 
+                    'conditions'  :conditions, 
                     'message': message, 'lastpage':lastpage})
     else:
         if request.user.is_authenticated:
