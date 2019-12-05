@@ -5,7 +5,10 @@ import common.settings as settings
 print('------------- SHERLOCK -------------')
 t = time.time()
 timeout = 1800
-cmd = settings.LASAIR_ROOT + 'anaconda3/envs/sherlock/bin/sherlock -N dbmatch --update | grep -v password'
+
+#cmd = settings.LASAIR_ROOT + 'anaconda3/envs/sherlock/bin/sherlock -N dbmatch --update | grep -v password'
+
+cmd = 'ssh ' + settings.SHERLOCK_ACCOUNT + ' /data/anaconda/envs/sherlock/bin/sherlock -N dbmatch --update | grep -v password'
 process = run(cmd, stdout=PIPE, stderr=PIPE, shell=True, timeout=timeout)
 print(process.stdout)
 print(process.stderr)
