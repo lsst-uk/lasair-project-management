@@ -120,7 +120,7 @@ def insertTNS(conn, tnsEntry):
                   nullValue(tnsEntry['Sender']),
                   nullValue(tnsEntry['Associated Group/s']),
                   nullValue(tnsEntry['Classifying Group/s']),
-                  nullValue(tnsEntry['Discovering Group/s']),
+                  nullValue(tnsEntry['Reporting Group/s']),
                   nullValue(tnsEntry['Class. Instrument/s']),
                   intValue(tnsEntry['ID']),
                   nullValue(tnsEntry['Disc. Internal Name']),
