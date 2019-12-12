@@ -52,10 +52,11 @@ def run_tns_crossmatch(radius):
     n_hits = 0
     n_newhits = 0
     # get all the cones and run them
-    query = 'SELECT tns_prefix, tns_name, ra,decl, disc_date, host_name, discovering_groups FROM crossmatch_tns'
+    query = 'SELECT tns_prefix, tns_name, type, ra,decl, disc_date, host_name, discovering_groups FROM crossmatch_tns'
     cursor.execute(query)
     for row in cursor:
         tns_name  = row['tns_name']
+        type      = row['type']
         tns_prefix  = row['tns_prefix']
         disc_date = row['disc_date']
         host_name = row['host_name']
@@ -84,6 +85,11 @@ def run_tns_crossmatch(radius):
                 continue
             n_hits += 1
             content = 'In TNS as <a href=https://wis-tns.weizmann.ac.il/object/%s>%s%s</a> at %.1f arcsec, discovered %s (MJD %.2f) by %s' % (tns_name, tns_prefix, tns_name, arcsec, disc_date, mjd, discover)
+
+            if type:
+                print('%s -- type %s' % (objectId, type))
+                content += ' type ' + type
+
             if objectId in already_commented:
                 if already_commented[objectId] == content:
                     continue
