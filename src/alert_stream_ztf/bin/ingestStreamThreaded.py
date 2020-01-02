@@ -304,7 +304,7 @@ class Consumer(threading.Thread):
                         f.write(streamReader.raw_msg)
                         f.close()
 
-        print('%d: finished with %d alerts\n' % (self.threadID, nalert))
+        print('%d: finished with %d alerts' % (self.threadID, nalert))
 
         streamReader.__exit__(0,0,0)
         stalefile.close()

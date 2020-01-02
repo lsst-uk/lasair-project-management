@@ -65,7 +65,7 @@ result = json.loads(resultjson.text)
 alertsstr = result['data']['result'][0]['value'][1]
 today_candidates_ztf = int(alertsstr)
 
-update_time = datetime.datetime.now().isoformat()
+update_time = datetime.datetime.utcnow().isoformat()
 update_time = update_time.split('.')[0]
 update_time_unix = time.time()
 
