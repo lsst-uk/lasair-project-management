@@ -10,9 +10,13 @@
 {% csrf_token %}
 <h2><input name="name" value="{{ myquery.name }}"></h2>
 <textarea name="description" rows=4 cols=80>{{ myquery.description }}</textarea><br/>
-Active: <input type="checkbox" name="active" {% if myquery.active > 0 %}checked{% endif %}> 
-{% if myquery.active > 0 %}(Topic name is <a href=/lasair/static/ztf/streams/{{ topic }}>{{ topic }}</a></b>){% endif %}<br/>
+
 Public: <input type="checkbox" name="public" {% if myquery.public > 0 %}checked{% endif %}><br/>
+Active:<br/>
+&nbsp;&nbsp;&nbsp;<input type="radio" name="active" value="0" {% if myquery.active == 0 %}checked{% endif %}> Inactive <br/>
+&nbsp;&nbsp;&nbsp;<input type="radio" name="active" value="1" {% if myquery.active == 1 %}checked{% endif %}> Email to {{ email }} (max once a day) and digest <br/>
+&nbsp;&nbsp;&nbsp;<input type="radio" name="active" value="2" {% if myquery.active == 2 %}checked{% endif %}> Kafka and digest <br/>
+
 <hr/>
 {% include "query_builder.html" %}
 <input type="submit" class="button" style="color: blue; background-color: #EEEEFF;" value=" Update query"></td>
@@ -35,7 +39,7 @@ Public: <input type="checkbox" name="public" {% if myquery.public > 0 %}checked{
 <tr><td>Tables</td><td><tt>{{ myquery.tables }}</tt></td></tr>
 <tr><td>Conditions</td><td><tt>{{ myquery.conditions }}</tt></td></tr>
 <tr><td>Active</td><td>{% if myquery.active == 1 %}yes{% else %}no{% endif %} 
-		{% if myquery.active == 1 %}(Topic name is: <b><a href=/lasair/static/ztf/streams/{{ topic }}>{{ topic }}</a></b>){% endif %}</td></tr>
+		{% if myquery.active == 1 %}(Topic name is: <b><a href=/streamdigest/{{ topic }}/>{{ topic }}</a></b>){% endif %}</td></tr>
 <tr><td>Public</td><td>{% if myquery.public == 1 %}yes{% else %}no{% endif %}</td></tr>
 </table>
 {% endif %}

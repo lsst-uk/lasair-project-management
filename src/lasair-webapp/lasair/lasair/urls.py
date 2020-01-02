@@ -19,6 +19,7 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 from lasair import views, services, candidates, objects, watchlists, myqueries, comments, skymap
+from lasair import cs_comments
 
 from django.contrib import admin
 #admin.autodiscover()
@@ -30,6 +31,7 @@ urlpatterns = [
 
     path('objlist/',                objects.objlist,            name='objlist'),
     path('streams/',                objects.streams,            name='streams'),
+    path('streamdigest/<slug:topic>/',   objects.streamdigest,           name='streamdigest'),
     path('object/<slug:objectId>/',      objects.objhtml,                name='objhtml'),
     path('object/<slug:objectId>/json/', objects.objjson,                name='objjson'),
 
@@ -44,6 +46,7 @@ urlpatterns = [
 
     path('comment/',                comments.new_comment,       name='new_comment'),
     path('delete_comment/<int:comment_id>/',    comments.delete_comment,    name='delete_comment'),
+    path('cs_comment/',             cs_comments.new_comment,    name='new_comment'),
 
     path('coverage/',               views.coverage,             name='coverage'),
     path('status/',                 views.status,               name='status'),

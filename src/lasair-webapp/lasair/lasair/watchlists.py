@@ -118,7 +118,8 @@ def show_watchlist(request, wl_id):
             if request.POST.get('public'): watchlist.public  = 1
             else:                          watchlist.public  = 0
 
-            watchlist.radius      = request.POST.get('radius')
+            watchlist.radius      = float(request.POST.get('radius'))
+            if watchlist.radius > 360: watchlist.radius = 360
             watchlist.save()
             message += 'watchlist updated'
         else:

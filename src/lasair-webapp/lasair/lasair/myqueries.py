@@ -20,7 +20,9 @@ def connect_db():
 def new_myquery(request):
     is_owner = (request.user.is_authenticated)
     message = ''
+    email = ''
     if request.user.is_authenticated:
+        email = request.user.email
         watchlists = Watchlists.objects.filter(Q(user=request.user) | Q(public__gte=1))
     else:
         watchlists = Watchlists.objects.filter(public__gte=1)
@@ -31,13 +33,8 @@ def new_myquery(request):
         selected       = request.POST.get('selected')
         conditions     = request.POST.get('conditions')
         tables         = request.POST.get('tables')
-        active      = request.POST.get('active')
+        active      = int(request.POST.get('active'))
         public      = request.POST.get('public')
-
-        if request.POST.get('active'): active  = 1
-        else:                          active  = 0
-        if request.POST.get('public'): public  = 1
-        else:                          public  = 0
 
         mq = Myqueries(user=request.user, name=name, description=description, 
                 public=public, active=active, selected=selected, conditions=conditions, tables=tables)
@@ -51,16 +48,18 @@ def new_myquery(request):
 
     return render(request, 'new_myquery.html',{
         'watchlists': watchlists,
+        'email': email,
         'is_owner' :is_owner
     })
 
 def show_myquery(request, mq_id):
     message = ''
+    email = ''
     myquery = get_object_or_404(Myqueries, mq_id=mq_id)
 
     is_owner = (request.user.is_authenticated) and (request.user == myquery.user)
     is_public = (myquery.public == 1)
-    is_active = (myquery.active == 1)
+    is_active = (myquery.active > 0)
     is_visible = is_owner or is_active
     if not is_visible:
         return render(request, 'error.html',{
@@ -77,7 +76,7 @@ def show_myquery(request, mq_id):
             myquery.tables       = request.POST.get('tables')
             myquery.conditions   = request.POST.get('conditions')
             public            = request.POST.get('public')
-            active            = request.POST.get('active')
+            myquery.active       = int(request.POST.get('active'))
 
             if public: 
                 if myquery.public == 0: 
@@ -85,22 +84,18 @@ def show_myquery(request, mq_id):
             else:
                 myquery.public  = 0
 
-            if active: 
-                if myquery.active == 0: 
-                    myquery.active  = 1 # if set to 1 or 2 leave it as it is
-            else:
-                myquery.active  = 0
-
             myquery.save()
-            message += 'query updated'
+            message += str(myquery.active) + 'query updated'
 
     if request.user.is_authenticated:
+        email = request.user.email
         watchlists = Watchlists.objects.filter(Q(user=request.user) | Q(public__gte=1))
     else:
         watchlists = Watchlists.objects.filter(public__gte=1)
 
     return render(request, 'show_myquery.html',{
         'myquery' :myquery, 
+        'email' : email,
         'watchlists':watchlists,
         'topic'   : queries.topic_name(myquery.user.id, myquery.name),
         'is_owner' :is_owner,

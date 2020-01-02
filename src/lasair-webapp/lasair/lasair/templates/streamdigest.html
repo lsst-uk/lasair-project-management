@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row">
+	<div class="col-sm">
+		<div class="alert alert-primary" role="alert">
+			<p> Showing latest {{ n }} for topic: {{ topic }} </p>
+			{{ message }}
+		</div>		
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-sm">	
+		<table class="table">
+		<tr>
+		<th><i>UTC sent</i></th>
+		{% for key, value in table.0.items %} 
+			{% if key != 'UTC' %}
+				<th>{{ key }}</th>
+			{% endif %}
+		{% endfor %}
+		</tr>
+		{% for row in table %}
+			<tr>
+				<td><i>{{ row.UTC }}</i></td>
+			{% for key, value in row.items %} 
+				{% if key == "objectId" %}
+					<td><a href=/object/{{ row.objectId }} target="_blank">{{ value }}</a></td>
+				{% elif key != 'UTC' %}
+					<td>{{ value }}</td>
+				{% endif %}
+			{% endfor %}
+			</tr>
+		{% endfor %}
+		</table>
+	</div>
+</div>
+
+
+{% endblock %}

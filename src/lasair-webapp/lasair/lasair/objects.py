@@ -24,6 +24,11 @@ def connect_db():
         database='ztf')
     return msl
 
+def ecliptic(ra, dec):
+    np = ephem.Equatorial(math.radians(ra), math.radians(dec), epoch='2000')
+    e = ephem.Ecliptic(np)
+    return (math.degrees(e.lon), math.degrees(e.lat))
+
 def rasex(ra):
     h = math.floor(ra/15)
     ra -= h*15
@@ -93,6 +98,10 @@ def obj(request, objectId):
 
         objectData['rasex'] = rasex(objectData['ramean'])
         objectData['decsex'] = decsex(objectData['decmean'])
+
+        (ec_lon, ec_lat) = ecliptic(objectData['ramean'], objectData['decmean'])
+        objectData['ec_lon'] = ec_lon
+        objectData['ec_lat'] = ec_lat
 
         query = 'SELECT catalogue_object_id, catalogue_table_name, catalogue_object_type, separationArcsec, '
         query += '_r AS r, _g AS g, photoZ, rank '
@@ -205,13 +214,22 @@ def query_list(qs):
         d['streamlink'] = 'inactive'
         if q.active:
             topic = queries.topic_name(q.user.id, q.name)
-            d['streamlink'] = '<a href="/lasair/static/ztf/streams/%s">%s</a>' % (topic, topic)
+            d['streamlink'] = '<a href="/streamdigest/%s">%s</a>' % (topic, topic)
         list.append(d)
     return list
 
 def streams(request):
     public_queries = Myqueries.objects.filter(public=2)
     return render(request, 'streams.html', {'public_queries':query_list(public_queries)})
+
+def streamdigest(request, topic):
+    try:
+        data = open('/mnt/lasair-head-data/ztf/streams/%s' % topic, 'r').read()
+    except:
+        return render(request, 'error.html', {'message': 'Cannot find digest file for ' + topic})
+    table = json.loads(data)['digest']
+    n = len(table)
+    return render(request, 'streamdigest.html', {'topic':topic, 'n':n, 'table':table})
 
 @csrf_exempt
 def objlist(request):
