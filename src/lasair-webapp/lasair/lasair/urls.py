@@ -67,5 +67,5 @@ urlpatterns = [
 ]
 
 if lasair.settings.WEB_DOMAIN == 'lasair-dev':
-    url_patterns.append(
+    urlpatterns.append(
         path('cs_comment/',             cs_comments.new_comment,    name='new_comment'))
