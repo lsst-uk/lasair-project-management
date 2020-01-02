@@ -19,7 +19,9 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 from lasair import views, services, candidates, objects, watchlists, myqueries, comments, skymap
-from lasair import cs_comments
+import lasair.settings
+if lasair.settings.WEB_DOMAIN == 'lasair-dev':
+    from lasair import cs_comments
 
 from django.contrib import admin
 #admin.autodiscover()
