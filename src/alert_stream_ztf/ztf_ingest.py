@@ -37,10 +37,6 @@ py = settings.LASAIR_ROOT + 'anaconda3/envs/lasair/bin/python '
 #os.system(cmd)
 #os.system('date')
 
-cmd = py + settings.LASAIR_ROOT + 'lasair/src/post_ingest/check_status.py %d' % nid
-os.system(cmd)
-os.system('date')
-
 #cmd = py + settings.LASAIR_ROOT + 'lasair/src/post_ingest/jpg_stamps.py /data/ztf/stamps/fits/%d /data/ztf/stamps/jpg/%d' % (nid, nid)
 #os.system(cmd)
 #os.system('date')
@@ -58,5 +54,9 @@ os.system(cmd)
 os.system('date')
 
 cmd = py + settings.LASAIR_ROOT + 'lasair/src/post_ingest/get_number_candidates.py'
+os.system(cmd)
+os.system('date')
+
+cmd = py + settings.LASAIR_ROOT + 'lasair/src/post_ingest/check_status.py %d' % nid
 os.system(cmd)
 os.system('date')
