@@ -48,7 +48,6 @@ urlpatterns = [
 
     path('comment/',                comments.new_comment,       name='new_comment'),
     path('delete_comment/<int:comment_id>/',    comments.delete_comment,    name='delete_comment'),
-    path('cs_comment/',             cs_comments.new_comment,    name='new_comment'),
 
     path('coverage/',               views.coverage,             name='coverage'),
     path('status/',                 views.status,               name='status'),
@@ -66,3 +65,7 @@ urlpatterns = [
     path('signup/',                  views.signup,              name='signup'),
     path('admin/',                   admin.site.urls),
 ]
+
+if lasair.settings.WEB_DOMAIN == 'lasair-dev':
+    url_patterns.append(
+        path('cs_comment/',             cs_comments.new_comment,    name='new_comment'))
