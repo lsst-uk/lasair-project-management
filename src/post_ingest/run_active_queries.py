@@ -24,6 +24,11 @@ def send_email(email, topic, message):
     s.send_message(msg)
     s.quit()
 
+def datetime_converter(o):
+# used by json encoder when it gets a type it doesn't understand
+    if isinstance(o, datetime.datetime):
+        return o.__str__()
+
 def run_query(query, status, msl, active, email, topic):
     jdnow = (time.time()/86400 + 2440587.5);
     days_ago_candidates = jdnow - status['cand_max_jd']
@@ -83,7 +88,7 @@ def run_query(query, status, msl, active, email, topic):
                     out_number = datetime.datetime.strptime(out['UTC'], "%Y-%m-%d %H:%M:%S")
                     # gather all records that have accumulated since last email
                     if out_number > last_entry_number:
-                        jsonout = json.dumps(out)
+                        jsonout = json.dumps(out, default=datetime_converter)
                         message += jsonout + '\n'
                 send_email(email, topic, message)
                 last_entry_text = now_number.strftime("%Y-%m-%d %H:%M:%S")
@@ -93,7 +98,7 @@ def run_query(query, status, msl, active, email, topic):
             try:
                 p = Producer(conf)
                 for out in recent: 
-                    jsonout = json.dumps(out)
+                    jsonout = json.dumps(out, default=datetime_converter)
                     p.produce(topic, jsonout)
                 p.flush()
                 # last_entry not really used with kafka, just a record of last blast
@@ -104,12 +109,7 @@ def run_query(query, status, msl, active, email, topic):
                 print(e)
 
         digestdict = {'last_entry': last_entry_text, 'digest':allrecords}
-        try:
-            digestdict_text = json.dumps(digestdict)
-        except:
-            print("JSON encoding failed in run_active_queries")
-            print(last_entry_text)
-            print(allrecords)
+        digestdict_text = json.dumps(digestdict, default=datetime_converter)
 
         file = open(filename, 'w')
         file.write(digestdict_text)
