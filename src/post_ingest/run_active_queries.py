@@ -104,9 +104,15 @@ def run_query(query, status, msl, active, email, topic):
                 print(e)
 
         digestdict = {'last_entry': last_entry_text, 'digest':allrecords}
+        try:
+            digestdict_text = json.dumps(digestdict)
+        except:
+            print("JSON encoding failed in run_active_queries")
+            print(last_entry_text)
+            print(allrecords)
 
         file = open(filename, 'w')
-        file.write(json.dumps(digestdict))
+        file.write(digestdict_text)
         file.close()
     return n
 
