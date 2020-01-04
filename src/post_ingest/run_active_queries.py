@@ -142,8 +142,10 @@ def find_queries(status):
         print('query %s' % topic)
         active = query['active']
         email = query['email']
+        t = time.time()
         n = run_query(query, status, msl, active, email, topic)
-        print('   --- got %d' % n)
+        t = time.time() - t
+        print('   --- got %d in %.1f seconds' % (n, t))
 
 if __name__ == "__main__":
     print('--------- RUN ACTIVE QUERIES -----------')
