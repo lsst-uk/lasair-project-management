@@ -100,7 +100,7 @@ def run_query(query, status, msl, active, email, topic):
                 for out in recent: 
                     jsonout = json.dumps(out, default=datetime_converter)
                     p.produce(topic, jsonout)
-                p.flush()
+                p.flush(10.0)   # 10 second timeout
                 # last_entry not really used with kafka, just a record of last blast
                 last_entry_text = now_number.strftime("%Y-%m-%d %H:%M:%S")
                 print('    -- sent to kafka')
