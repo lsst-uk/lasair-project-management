@@ -40,7 +40,7 @@ def make_query(selected, tables, conditions, page, perpage, check_days_ago, days
         for table in toktables:
             if table.startswith('sherlock'):
                 join_list.append('objects.primaryId = %s.transient_object_id' % table)
-            else:
+            elif table != 'objects':
                 join_list.append('objects.objectId = %s.objectId' % table)
 
     if len(new_conditions.strip()) > 0:
