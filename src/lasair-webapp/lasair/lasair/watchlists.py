@@ -33,19 +33,25 @@ def watchlists_home(request):
                 message += 'Cannot parse default radius %s\n' % d_radius
 
             cone_list = []
-            for line in request.POST.get('objects').split('\n'):
+            s = request.POST.get('objects')
+            for line in s.split('\n'):
+                if len(line) == 0: continue
+                if line[0] == '#': continue
+                line = line.replace('|', ',')
                 tok = line.split(',')
+                if len(tok) < 2: continue
                 try:
                     if len(tok) >= 3:
-                        objectId = tok[0].strip()
-                        ra       = float(tok[1])
-                        dec      = float(tok[2])
-                        if len(tok) >= 4:
-                            radius      = float(tok[3])
+                        ra       = float(tok[0])
+                        dec      = float(tok[1])
+                        objectId = tok[2].strip()
+                        if len(tok) >= 4: radius = float(tok[3])
+                        else:             radius = d_radius
                         cone_list.append([objectId, ra, dec, radius])
-                except:
+                except Exception as e:
                     message += "Bad line %d: %s\n" % (len(cone_list), line)
-            if len(message) == 0:
+                    message += str(e)
+            if len(cone_list) > 0:
                 wl = Watchlists(user=request.user, name=name, description=description, active=0, prequel_where='', radius=default_radius)
                 wl.save()
                 for cone in cone_list:
@@ -54,7 +60,7 @@ def watchlists_home(request):
                     else:
                         wlc = WatchlistCones(wl=wl, name=cone[0], ra=cone[1], decl=cone[2], radius=cone[3])
                     wlc.save()
-                message = 'Watchlist created successfully'
+                message += '\nWatchlist created successfully with %d sources' % len(cone_list)
         else:
             wl_id = int(delete)
             watchlist = get_object_or_404(Watchlists, wl_id=wl_id)
@@ -87,13 +93,13 @@ def show_watchlist_txt(request, wl_id):
             'message': "This watchlist is private and not visible to you"})
     cursor = connection.cursor()
     s = []
-    cursor.execute('SELECT name, ra, decl, radius FROM watchlist_cones WHERE wl_id=%d ' % wl_id)
+    cursor.execute('SELECT ra, decl, name, radius FROM watchlist_cones WHERE wl_id=%d ' % wl_id)
     cones = cursor.fetchall()
     for c in cones:
         if c[3]:
-            s += '%s, %f, %f, %f\n' % (c[0], c[1], c[2], c[3])
+            s += '%f, %f, %s, %f\n' % (c[0], c[1], c[2], c[3])
         else:
-            s += '%s, %f, %f\n' % (c[0], c[1], c[2])
+            s += '%f, %f, %s\n' % (c[0], c[1], c[2])
     return HttpResponse(s, content_type="text/plain")
 
 def show_watchlist(request, wl_id):
