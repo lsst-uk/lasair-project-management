@@ -121,7 +121,10 @@ the filter to push it into the area above.
 document.getElementById("selected").value = document.getElementById("selected{{ mq.mq_id}}").textContent;
 document.getElementById("tables").value = document.getElementById("tables{{ mq.mq_id}}").textContent; check_boxes();
 document.getElementById("conditions").value = document.getElementById("conditions{{ mq.mq_id}}").textContent;
-'>{{ mq.name }}</a></b>
+'>{{ mq.name }}</a></b><br/>
+{% if mp.public != 0 %}
+<a href="/myquery/{{ mq.mq_id }}/">Detail </a>  
+{% endif %}
 <p>
 Stream: <i>{{ mq.streamlink|safe }}<i>
 </td>
