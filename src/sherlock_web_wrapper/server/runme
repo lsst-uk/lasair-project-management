@@ -1,0 +1,3 @@
+anaconda-init
+source activate sherlock
+python sherlock_driver.py -s sherlock_script_settings.yaml  < example.json
