@@ -18,7 +18,7 @@ from django.contrib.auth import views as authviews
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from lasair import views, services, candidates, objects, watchlists, myqueries, comments, skymap
+from lasair import views, services, candidates, objects, watchlists, myqueries, comments, cs_comments, skymap
 import lasair.settings
 if lasair.settings.WEB_DOMAIN == 'lasair-dev':
     from lasair import cs_comments
