@@ -20,8 +20,6 @@ from django.views.generic import TemplateView
 
 from lasair import views, services, candidates, objects, watchlists, myqueries, comments, cs_comments, skymap
 import lasair.settings
-if lasair.settings.WEB_DOMAIN == 'lasair-dev':
-    from lasair import cs_comments
 
 from django.contrib import admin
 #admin.autodiscover()
