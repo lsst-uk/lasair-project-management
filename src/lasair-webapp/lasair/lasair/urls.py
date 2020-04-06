@@ -30,6 +30,7 @@ urlpatterns = [
     path('',                        views.index,                name='index'),
     path('about',                   views.about,                name='about'),
     path('sherlock',  TemplateView.as_view(template_name='sherlock.html')),
+    path('lasairlsst',  TemplateView.as_view(template_name='lasairlsst.html')),
     path('cand/<int:candid>/',      candidates.cand,            name='cand'),
 
     path('objlist/',                objects.objlist,            name='objlist'),
