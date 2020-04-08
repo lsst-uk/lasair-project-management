@@ -6,7 +6,13 @@
 <div class="col-sm">
 
 
-<h4 id="sherlock-description">Sherlock 2.0</h4>
+<h4 id="sherlock-description">Classification and Annotation</h4>
+
+<p>
+Detections in the input data stream that have been aggregated into <em>objects</em> (i.e. groups of detections) and identified as static transients (i.e. not moving objects) are spatially context classified against a large number of archival sources (e.g. nearby galaxies, known CVs, AGNs, etc). The information derived from this context check is injected as an object annotation (e.g. see Lasair object page example below). The software used is called <em>Sherlock</em> and is discussed below.
+</p>
+
+
 <p><em>Sherlock</em> is a software package and integrated massive database system that provides a rapid and reliable spatial cross-match service for any astrophysical variable or transient. The concept originated in the PhD thesis of D. Young at QUB, and has been developed by Young et al. in many iterations and cycles since. It associates the position of a transient with all major astronomical catalogues and assigns a basic classification to the transient. At its most basic, it separates stars, AGN and supernova-like transients. It has been tested within QUB on a daily basis with ATLAS and Pan-STARRS transients, and within PESSTO as part of the PESSTO marshall system that allows prioritising of targets. It is thus a boosted decision tree algorithm. A full paper describing the code, catalogues and algorithms is in preparation (Young et al. in prep). A summary is included in Section 4.2 of "Design and Operation of the ATLAS Transient Science Server" (Smith, Smartt, Young et al. 2020, submitted to PASP: <a href="https://arxiv.org/abs/2003.09052">https://arxiv.org/abs/2003.09052</a>). We label the current version as the official release of Sherlock 2.0. The major upgrade from previous versions are that it includes Pan-STARRS DR1 (including the Tachibana &amp; Miller 2018 star-galaxy separation index) and Gaia DR2 catalogues, along with some adjustments to the ranking algorithm.</p>
 
 <p><strong>That section is copied here and users should currently cite that paper (<a href="https://arxiv.org/abs/2003.09052">Smith et al. 2020</a>) for <em>Sherlock</em> use:</strong></p>
@@ -28,7 +34,7 @@
 <p>We have constructed a multi-billion row database which contains all these catalogues. It currently consumes about 4.5TB and sits on a separate, similarly specified machine to that of the Lasair database. It will grow significantly as new catalogues are added (e.g. Pan-STARRS 3<span class="math inline"><em>π</em></span> DR2, VST and VISTA surveys, future Gaia releases etc).</p>
 
 <figure>
-<img width=400 src="/lasair/static/img/Lasair_object.png" alt="Lasair object page. Non-detections are shown as faint diamonds, which display the 5\sigma limiting magnitude. The object was context classified as a SN by Sherlock, and (probable) host annotations are highlighted in the red box. " id="fig:webcandidatepage2019tua" style="width:16cm" /><figcaption>Lasair object page. Non-detections are shown as faint diamonds, which display the 5<span class="math inline"><em>σ</em></span> limiting magnitude. The object was context classified as a SN by <em>Sherlock</em>, and (probable) host annotations are highlighted in the red box. <span label="fig:webcandidatepage2019tua"></span></figcaption>
+<img width=400 src="/lasair/static/img/Lasair_object.png" alt="Lasair object page. Non-detections are shown as faint diamonds, which display the 5\sigma limiting magnitude. The object was context classified as a SN by Sherlock, and (probable) host annotations are highlighted in the red box. " id="fig:webcandidatepage2019tua" style="width:16cm" /><figcaption><strong>Lasair object page.</strong> Non-detections are shown as faint diamonds, which display the 5<span class="math inline"><em>σ</em></span> limiting magnitude. The object was context classified as a SN by <em>Sherlock</em>, and (probable) host annotations are highlighted in the red box. <span label="fig:webcandidatepage2019tua"></span></figcaption>
 </figure>
 
 <p>The <em>Sherlock</em> code is open source and can be found at: <a href="https://github.com/thespacedoctor/sherlock">https://github.com/thespacedoctor/sherlock</a>. Documentation is also available online here: <a href="https://qub-sherlock.readthedocs.io/en/stable/">https://qub-sherlock.readthedocs.io/en/stable/</a>.</p>
