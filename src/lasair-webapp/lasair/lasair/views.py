@@ -136,7 +136,6 @@ def readcone(cone):
         message += 'RA,Dec,radius=%.5f,%.5f,%.1f' % (ra, de, radius)
         return {'ra':ra, 'dec':de, 'radius':radius, 'message':message}
 
-@csrf_exempt
 def conesearch(request):
     if request.method == 'POST':
         cone = request.POST['cone']
