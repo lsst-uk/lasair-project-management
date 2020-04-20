@@ -278,8 +278,11 @@ class Consumer(threading.Thread):
                 print(self.threadID, e)
                 break
 
+            nalert += 1
+            if nalert%500 == 0:
+                print('thread %d nalert %d time %.1f' % ((self.threadID, nalert, time.time()-startt)))
+
             if msg is None:
-#                print(self.threadID, 'null message')
                 break
             else:
                 for record in msg:
@@ -288,9 +291,6 @@ class Consumer(threading.Thread):
                         candid = alert_filter(record, msl, stalefile, '/data/ztf/stamps/fits/' + self.args.stampdump)
                     else:
                         candid = alert_filter(record, msl, stalefile)
-                    nalert += 1
-                    if nalert%500 == 0:
-                        print('thread %d nalert %d time %.1f' % ((self.threadID, nalert, time.time()-startt)))
                         msl.close()
                         msl = make_database_connection()
     
