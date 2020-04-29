@@ -4,7 +4,10 @@
 
 <div class="row">
 	<div class="col-sm">
-<p>
+<h2>Lasair 2.0</h2>
+<p>In addition to the information on this page, please also see the <a href=https://lsst-uk.atlassian.net/l/c/1S1VEAAo><b>Lasair Cookbook</b></a>.
+</p><p>
+<h4>The papers about ZTF</h4>
 The Zwicky Transient Factory (ZTF) is the source of the events to which Lasair provides access. 
 It is well summarised with the following set of papers:
 <ul>
@@ -29,10 +32,11 @@ Lasair can do cone searches on all of these together.
 Power users can use a <a href= http://jupyter.org/>Jupyter</a> notebook interface, 
 click <i><b>Jupyter</b></i> for more information and to see the capabilities.
 </p><p>
+<h4>A Note about Photometry</h4>
 <table>
 <tr><td>
 <a name="photometry"></a>
-<b>Note about Photometry:</b> ZTF photometry is measured after subtraction of a template image. 
+ZTF photometry is measured after subtraction of a template image. 
 Thus the reported magnitudes correspond to the difference in flux with respect 
 to the template. Positive differences are shown as solid symbols, negative 
 differences are shown as empty symbols. For variable (rather than transient) sources, 
@@ -53,6 +57,7 @@ found <a href=https://github.com/lsst-uk/lasair/blob/master/src/alert_stream_ztf
 required, which ZTF did not make available before Nov 2018. 
 Therefore the apparant magnitudes are not reliable before this time.
 </p><p>
+<h4>Exponential Moving Averages</h4>
 <a name="ema"></a>
 Lasair also computes three <b>exponential moving averages</b> of the apparent magnitudes, 
 with a 2-day timescale, 8-day timescale, and 28-day timescale, for each of the filters: g and r.
@@ -63,7 +68,7 @@ where
 <ul> <li> f = exp(-(t-tp)/tau) </ul>
 More details are available from <a href="/lasair/static/EMA.pdf">this paper.</a>
 </p><p>
-Other notes:
+<h4>Notes</h4>
 <ul>
 <li>Each ZTF alert is an information package that includes a rich set of parameters for 
 candidate transient or variable objects. These are assimilated into <i>objects</i> and users can 
@@ -96,7 +101,7 @@ filters (g and r), with both detections and non-detections, in this case for
 supernova <a href=https://wis-tns.weizmann.ac.il/object/2018jny>2018jny</a> / 
 <a href=https://lasair.roe.ac.uk/object/ZTF18acsovsw/>ZTF18acsovsw</a>. 
 Comments can be added by logged-in users, such as this one with the link to the IAU name
-of the supernova. The Sherlock classificaiton system has provided information about the
+of the supernova. The <a href=/sherlock>Sherlock classificaiton system</a> has provided information about the
 host galaxy. 
 <a href=https://aladin.u-strasbg.fr/AladinLite/>Aladin Lite</a>
 provides both images and catalogue sources: here we see 
@@ -114,7 +119,7 @@ We see the brightening of
 <tr><td><a href="/lasair/static/img/sharedqueries.png"><img width=200 style="border: 2px blue solid;" src="/lasair/static/img/sharedqueries.png"></a></td>
 <td><b>Rich Query Capability</b>: Lasair provides free-form SQL query access to the database. 
 Available tables include the ZTF objects and candidates (detections), as well as the
-classification of the object from Sherlock and the comment list. Logged-in users can
+classification of the object from <a href=/sherlock>Sherlock</a> and the comment list. Logged-in users can
 contribute useful queries which can then be re-used by others.</td></tr>
 
 <tr><td><a href="/lasair/static/img/watchlist.png"><img width=200 style="border: 2px blue solid;" src="/lasair/static/img/watchlist.png"></a></td>
@@ -130,7 +135,7 @@ Lasair sources (right side). The inset shows the light curve foe one of the CVs.
 filter (401.5–551.9 nm) and red squares for r filter (552.0–691.0 nm). </td></tr>
 
 <tr><td><a href="/lasair/static/img/sherlock.png"><img width=200 style="border: 2px blue solid;" src="/lasair/static/img/sherlock.png"></a></td>
-<td><b>Sherlock Classification</b>: The <a href=https://qub-sherlock.readthedocs.io/en/stable/>Sherlock</a> system crossmatches every Lasair transient against many catalogues, classifying it,
+<td><b>Sherlock Classification</b>: The <a href=/sherlock>Sherlock</a> system crossmatches every Lasair transient against many catalogues, classifying it,
 and producing a natural-language assessment of the object, that is available on the object page. </td></tr>
 
 <tr><td><a href="/lasair/static/img/skymap_screenshot.png"><img width=200 style="border: 2px blue solid;" src="/lasair/static/img/skymap_screenshot.png"></a></td>

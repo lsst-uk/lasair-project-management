@@ -197,6 +197,9 @@ class Updater(threading.Thread):
             candlist = []
             for cand in cursor:
                 candlist.append(cand)
+
+            if len(candlist)<2: continue # only keep objects with ncand >= 2
+
             ntotalcand += len(candlist)
     
             query2 = 'INSERT IGNORE INTO objects (objectId) VALUES ("%s")' % objectId

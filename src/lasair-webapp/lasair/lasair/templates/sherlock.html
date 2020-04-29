@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% block content %}
+
+<div class="row">
+<div class="col-sm">
+
+
+<h4 id="sherlock-description">Classification and Annotation</h4>
+
+<p>
+Detections in the input data stream that have been aggregated into <em>objects</em> (i.e. groups of detections) and identified as static transients (i.e. not moving objects) are spatially context classified against a large number of archival sources (e.g. nearby galaxies, known CVs, AGNs, etc). The information derived from this context check is injected as an object annotation (e.g. see Lasair object page example below). The software used is called <em>Sherlock</em> and is discussed below.
+</p>
+
+
+<p><em>Sherlock</em> is a software package and integrated massive database system that provides a rapid and reliable spatial cross-match service for any astrophysical variable or transient. The concept originated in the PhD thesis of D. Young at QUB, and has been developed by Young et al. in many iterations and cycles since. It associates the position of a transient with all major astronomical catalogues and assigns a basic classification to the transient. At its most basic, it separates stars, AGN and supernova-like transients. It has been tested within QUB on a daily basis with ATLAS and Pan-STARRS transients, and within PESSTO as part of the PESSTO marshall system that allows prioritising of targets. It is thus a boosted decision tree algorithm. A full paper describing the code, catalogues and algorithms is in preparation (Young et al. in prep). A summary is included in Section 4.2 of "Design and Operation of the ATLAS Transient Science Server" (Smith, Smartt, Young et al. 2020, submitted to PASP: <a href="https://arxiv.org/abs/2003.09052">https://arxiv.org/abs/2003.09052</a>). We label the current version as the official release of Sherlock 2.0. The major upgrade from previous versions are that it includes Pan-STARRS DR1 (including the Tachibana &amp; Miller 2018 star-galaxy separation index) and Gaia DR2 catalogues, along with some adjustments to the ranking algorithm.</p>
+
+<p><strong>That section is copied here and users should currently cite that paper (<a href="https://arxiv.org/abs/2003.09052">Smith et al. 2020</a>) for <em>Sherlock</em> use:</strong></p>
+
+<p>A boosted decision tree algorithm (internally known as <em>Sherlock</em>) mines a library of historical and on-going astronomical survey data and attempts to predict the nature of the object based on the resulting crossmatched associations found. One of the main purposes of this is to identify variable stars, since they make up about 50% of the objects, and to associate candidate extragalactic sources with potential host galaxies. The full details of this general purpose algorithm and its implementation will be presented in an upcoming paper (Young et al. in prep), and we give an outline of the algorithm here.</p>
+<p>The library of catalogues contains datasets from many all-sky surveys such as the major Gaia DR1 and DR2 <span class="citation" data-cites="2016A&A...595A...2G 2018A&A...616A...1G">(Gaia Collaboration et al. 2016, 2018)</span>, the Pan-STARRS1 Science Consortium surveys <span class="citation" data-cites="2016arXiv161205560C magnier2017a magnier2017b magnier2017c flewelling2017">(Chambers et al. 2016; Magnier, Chambers, et al. 2016; Magnier, Sweeney, et al. 2016; Magnier, Schlafly, et al. 2016; Flewelling et al. 2016)</span> and the catalogue of probabilistic classifications of unresolved point sources by <span class="citation" data-cites="2018PASP..130l8001T">(Tachibana and Miller 2018)</span> which is based on the Pan-STARRS1 survey data. The SDSS DR12 PhotoObjAll Table, SDSS DR12 SpecObjAll Table <span class="citation" data-cites="2015ApJS..219...12A">(Alam et al. 2015)</span> usefully contains both reliable star-galaxy separation and photometric redshifts which are useful in transient source classification. Extensive catalogues with lesser spatial resolution or colour information that we use are the GSC v2.3 <span class="citation" data-cites="2008AJ....136..735L">(Lasker et al. 2008)</span> and 2MASS catalogues <span class="citation" data-cites="2006AJ....131.1163S">(Skrutskie et al. 2006)</span>. <em>Sherlock</em> employs many smaller source-specific catalogues such as Million Quasars Catalog v5.2 <span class="citation" data-cites="2019arXiv191205614F">(Flesch 2019)</span>, Veron-Cett AGN Catalogue v13 <span class="citation" data-cites="2010A&A...518A..10V">(Véron-Cetty and Véron 2010)</span>, Downes Catalog of CVs <span class="citation" data-cites="2001PASP..113..764D">(Downes et al. 2001)</span>, Ritter Cataclysmic Binaries Catalog v7.21 <span class="citation" data-cites="2003A&A...404..301R">(Ritter and Kolb 2003)</span>. For spectroscopic redshifts we use the GLADE Galaxy Catalogue v2.3 <span class="citation" data-cites="2018MNRAS.479.2374D">(Dálya et al. 2018)</span> and the NED-D Galaxy Catalogue v13.1<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. <em>Sherlock</em> also has the ability to remotely query the NASA/IPAC Extragalactic Database, caching results locally to speed up future searches targeting the same region of sky, and in this way we have built up an almost complete local copy of the NED catalogue. More catalogues are continually being added to the library as they are published and become publicly available.</p>
+<p>At a base-level of matching <em>Sherlock</em> distinguishes between transient objects <em>synonymous</em> with (the same as, or very closely linked, to) and those it deems as merely <em>associated</em> with the catalogued source. The resulting classifications are tagged as <em>synonyms</em> and <em>associations</em>, with synonyms providing intrinsically more secure transient nature predictions than associations. For example, an object arising from a variable star flux variation would be labeled as <em>synonymous</em> with its host star since it would be astrometrically coincident (assuming no proper motion) with the catalogued source. Whereas an extragalactic supernova would typically be <em>associated</em> with its host galaxy - offset from the core, but close enough to be physically associated. Depending on the underpinning characteristics of the source, there are 7 types of predicted-nature classifications that Sherlock will assign to a transient:</p>
+<ol>
+<li><p><strong>Variable Star</strong> (VS) if the transient lies within the synonym radius of a catalogued point-source,</p></li>
+<li><p><strong>Cataclysmic Variable</strong> (CV) if the transient lies within the synonym radius of a catalogued CV,</p></li>
+<li><p><strong>Bright Star</strong> (BS) if the transient is not matched against the synonym radius of a star but is associated within the magnitude-dependent association radius,</p></li>
+<li><p><strong>Active Galactic Nucleus</strong> (AGN) if the transient falls within the synonym radius of catalogued AGN or QSO.</p></li>
+<li><p><strong>Nuclear Transient</strong> (NT) if the transient falls within the synonym radius of the core of a resolved galaxy,</p></li>
+<li><p><strong>Supernova</strong> (SN) if the transient is not classified as an NT but is found within the magnitude-, morphology- or distance-dependant association radius of a galaxy, or</p></li>
+<li><p><strong>Orphan</strong> if the transient fails to be matched against any catalogued source.</p></li>
+</ol>
+<p>For Lasair the synonym radius is set at <span class="math inline">1.5″</span>. This is the crossmatch-radius used to assign predictions of VS, CV, AGN and NT. The process of attempting to associate a transient with a catalogued galaxy is relatively nuanced compared with other crossmatches as there are often a variety of data assigned to the galaxy that help to greater inform the decision to associate the transient with the galaxy or not. The location of the core of each galaxy is recorded so we will always be able to calculate the angular separation between the transient and the galaxy. However we may also have measurements of the galaxy morphology including the angular size of its semi-major axis. For Lasair we reject associations if a transient is separated more than 2.4 times the semi-major axis from the galaxy, if the semi-major axis measurement is available for a galaxy. We may also have a distance measurement or redshift for the galaxy enabling us to convert angular separations between transients and galaxies to (projected) physical-distance separations. If a transient is found more than 50 Kpc from a galaxy core the association is rejected.</p>
+<p>Once each transient has a set of independently crossmatched synonyms and associations, we need to self-crossmatch these and select the most likely classification. The details of this will be presented in a future paper (Young et al. in prep). Finally the last step is to calculate some value added parameters for the transients, such as absolute peak magnitude if a distance can be assigned from a matched catalogued source, and the predicted nature of each transient is presented to the user along with the lightcurve and other information (see Figure <a href="#fig:webcandidatepage2019tua" data-reference-type="ref" data-reference="fig:webcandidatepage2019tua">1</a>).</p>
+<p>We have constructed a multi-billion row database which contains all these catalogues. It currently consumes about 4.5TB and sits on a separate, similarly specified machine to that of the Lasair database. It will grow significantly as new catalogues are added (e.g. Pan-STARRS 3<span class="math inline"><em>π</em></span> DR2, VST and VISTA surveys, future Gaia releases etc).</p>
+
+<figure>
+<img width=400 src="/lasair/static/img/Lasair_object.png" alt="Lasair object page. Non-detections are shown as faint diamonds, which display the 5\sigma limiting magnitude. The object was context classified as a SN by Sherlock, and (probable) host annotations are highlighted in the red box. " id="fig:webcandidatepage2019tua" style="width:16cm" /><figcaption><strong>Lasair object page.</strong> Non-detections are shown as faint diamonds, which display the 5<span class="math inline"><em>σ</em></span> limiting magnitude. The object was context classified as a SN by <em>Sherlock</em>, and (probable) host annotations are highlighted in the red box. <span label="fig:webcandidatepage2019tua"></span></figcaption>
+</figure>
+
+<p>The <em>Sherlock</em> code is open source and can be found at: <a href="https://github.com/thespacedoctor/sherlock">https://github.com/thespacedoctor/sherlock</a>. Documentation is also available online here: <a href="https://qub-sherlock.readthedocs.io/en/stable/">https://qub-sherlock.readthedocs.io/en/stable/</a>.</p>
+
+<p>
+Although the code for <em>Sherlock</em> is public, it requires access to a number of large databases which are custom built from their original, public, releases. The latter is proprietary and therefore would require some effort from users to reproduce. As part of the Lasair project we are exploring public access to the integrated <em>Sherlock</em> code and database information through an API.
+</p>
+
+<p>
+Sherlock 2.0 was reviewed as a LSST:UK Deliverable in March 2020. The review noted that an algorithm enhancement would be desirable to take into account stellar proper motions, since some proper motion stars will be variable and if cross-matched with a static catalogue will fall outside the nominal match radius. This is an enhancement we will taken forward for future versions.
+</p>
+
+<h5 id="references">References</h5>
+<div id="refs" class="references">
+<div id="ref-2015ApJS..219...12A">
+<p>Alam, Shadab, Franco D Albareti, Carlos Allende Prieto, F Anders, Scott F Anderson, Timothy Anderton, Brett H Andrews, et al. 2015. “The Eleventh and Twelfth Data Releases of the Sloan Digital Sky Survey: Final Data from SDSS-III.” <em>The Astrophysical Journal Supplement Series</em> 219 (1). IOP Publishing: 12. <a href="https://doi.org/10.1088/0067-0049/219/1/12" class="uri">https://doi.org/10.1088/0067-0049/219/1/12</a>.</p>
+</div>
+<div id="ref-2016arXiv161205560C">
+<p>Chambers, K. C., E. A. Magnier, N. Metcalfe, H. A. Flewelling, M. E. Huber, C. Z. Waters, L. Denneau, et al. 2016. “The Pan-STARRS1 Surveys.” <em>ArXiv E-Prints</em>, December.</p>
+</div>
+<div id="ref-2018MNRAS.479.2374D">
+<p>Dálya, G, G Galgóczi, L Dobos, Z Frei, I S Heng, R Macas, C Messenger, P Raffai, and R S de Souza. 2018. “GLADE: A galaxy catalogue for multimessenger searches in the advanced gravitational-wave detector era.” <em>Monthly Notices of the Royal Astronomical Society</em> 479 (2): 2374–81. <a href="https://doi.org/10.1093/mnras/sty1703" class="uri">https://doi.org/10.1093/mnras/sty1703</a>.</p>
+</div>
+<div id="ref-2001PASP..113..764D">
+<p>Downes, Ronald A, Ronald F Webbink, Michael M Shara, Hans Ritter, Ulrich Kolb, and Hilmar W Duerbeck. 2001. “A Catalog and Atlas of Cataclysmic Variables: The Living Edition.” <em>The Publications of the Astronomical Society of the Pacific</em> 113 (7): 764–68. <a href="https://doi.org/10.1086/320802" class="uri">https://doi.org/10.1086/320802</a>.</p>
+</div>
+<div id="ref-2019arXiv191205614F">
+<p>Flesch, Eric W. 2019. “The Million Quasars (Milliquas) Catalogue, v6.4.” <em>arXiv.org</em>, December, arXiv:1912.05614. <a href="http://arxiv.org/abs/1912.05614v1" class="uri">http://arxiv.org/abs/1912.05614v1</a>.</p>
+</div>
+<div id="ref-flewelling2017">
+<p>Flewelling, H. A., E. A. Magnier, K. C. Chambers, J. N. Heasley, C. Holmberg, M. E. Huber, W. Sweeney, et al. 2016. “The Pan-STARRS1 Database and Data Products.” <em>ArXiv E-Prints</em>, December.</p>
+</div>
+<div id="ref-2018A&A...616A...1G">
+<p>Gaia Collaboration, A. G. A. Brown, A. Vallenari, T. Prusti, J. H. J. de Bruijne, C. Babusiaux, C. A. L. Bailer-Jones, et al. 2018. “Gaia Data Release 2. Summary of the contents and survey properties” 616 (August): A1. <a href="https://doi.org/10.1051/0004-6361/201833051" class="uri">https://doi.org/10.1051/0004-6361/201833051</a>.</p>
+</div>
+<div id="ref-2016A&A...595A...2G">
+<p>Gaia Collaboration, A. G. A. Brown, A. Vallenari, T. Prusti, J. H. J. de Bruijne, F. Mignard, R. Drimmel, et al. 2016. “Gaia Data Release 1. Summary of the astrometric, photometric, and survey properties” 595 (November): A2. <a href="https://doi.org/10.1051/0004-6361/201629512" class="uri">https://doi.org/10.1051/0004-6361/201629512</a>.</p>
+</div>
+<div id="ref-2008AJ....136..735L">
+<p>Lasker, Barry M, Mario G Lattanzi, Brian J McLean, Beatrice Bucciarelli, Ronald Drimmel, Jorge Garcia, Gretchen Greene, et al. 2008. “The Second-Generation Guide Star Catalog: Description and Properties.” <em>The Astronomical Journal</em> 136 (2). IOP Publishing: 735–66. <a href="https://doi.org/10.1088/0004-6256/136/2/735" class="uri">https://doi.org/10.1088/0004-6256/136/2/735</a>.</p>
+</div>
+<div id="ref-magnier2017a">
+<p>Magnier, E. A., K. C. Chambers, H. A. Flewelling, J. C. Hoblitt, M. E. Huber, P. A. Price, W. E. Sweeney, et al. 2016. “Pan-STARRS Data Processing System.” <em>ArXiv E-Prints</em>, December.</p>
+</div>
+<div id="ref-magnier2017c">
+<p>Magnier, E. A., E. F. Schlafly, D. P. Finkbeiner, J. L. Tonry, B. Goldman, S. Röser, E. Schilbach, et al. 2016. “Pan-STARRS Photometric and Astrometric Calibration.” <em>ArXiv E-Prints</em>, December.</p>
+</div>
+<div id="ref-magnier2017b">
+<p>Magnier, E. A., W. E. Sweeney, K. C. Chambers, H. A. Flewelling, M. E. Huber, P. A. Price, C. Z. Waters, et al. 2016. “Pan-STARRS Pixel Analysis : Source Detection &amp; Characterization.” <em>ArXiv E-Prints</em>, December.</p>
+</div>
+<div id="ref-2003A&A...404..301R">
+<p>Ritter, H, and U Kolb. 2003. “Catalogue of cataclysmic binaries, low-mass X-ray binaries and related objects (Seventh edition).” <em>Astronomy and Astrophysics</em> 404 (1). EDP Sciences: 301–3. <a href="https://doi.org/10.1051/0004-6361:20030330" class="uri">https://doi.org/10.1051/0004-6361:20030330</a>.</p>
+</div>
+<div id="ref-2006AJ....131.1163S">
+<p>Skrutskie, M. F., R. M. Cutri, R. Stiening, M. D. Weinberg, S. Schneider, J. M. Carpenter, C. Beichman, et al. 2006. “The Two Micron All Sky Survey (2MASS)” 131 (February): 1163–83. <a href="https://doi.org/10.1086/498708" class="uri">https://doi.org/10.1086/498708</a>.</p>
+</div>
+<div id="ref-2018PASP..130l8001T">
+<p>Tachibana, Yutaro, and A. A. Miller. 2018. “A Morphological Classification Model to Identify Unresolved PanSTARRS1 Sources: Application in the ZTF Real-time Pipeline” 130 (994): 128001. <a href="https://doi.org/10.1088/1538-3873/aae3d9" class="uri">https://doi.org/10.1088/1538-3873/aae3d9</a>.</p>
+</div>
+<div id="ref-2010A&A...518A..10V">
+<p>Véron-Cetty, M P, and P Véron. 2010. “A catalogue of quasars and active nuclei: 13th edition.” <em>Astronomy and Astrophysics</em> 518 (July). EDP Sciences: A10. <a href="https://doi.org/10.1051/0004-6361/201014188" class="uri">https://doi.org/10.1051/0004-6361/201014188</a>.</p>
+</div>
+</div>
+<section class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>https://ned.ipac.caltech.edu/Library/Distances/<a href="#fnref1" class="footnote-back">↩</a></p></li>
+</ol>
+</section>
+
+</div>
+</div>
+{% endblock %}

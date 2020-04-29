@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% block content %}
+
+<div class="row">
+<div class="col-sm">
+
+
+<h4 id="lasairlsst">Lasair-LSST</h4>
+<p>
+While we have released Lasair 2.0 as a prototype broker based on the ZTF alert stream, 
+we have started an intensive planning and technical reviews of the requirements for LSST. 
+We are basing our future requirements on two key LSST documents:
+<a href=https://lse-163.lsst.io/>Data Products Definition Document (Juric et al. 2019)</a> 
+and <a href=https://dmtn-102.lsst.io/DMTN-102.pdf>LSST Alerts: Key Numbers (Graham et al.)</a>.
+</p><p>
+We envisage the following major differences between Lasair-ZTF and Lasair-LSST :
+<ul>
+<li>the increase in rate of the number of alerts, by a factor 50
+<li>the multi-colour filter nature of LSST of ugrizy,
+<li>the different surveys : deep drilling fields, wide-fast deep (which may end up splitting the 
+Milky Way from the extragalactic sky), and any additional approved mini-surveys (e.g. target of 
+opportunity observations of gravitational wave sky maps).
+<li>access to forced photometry and the timescales for that access
+a deep image of the whole survey footprint which has photometric redshifts and 
+accurate star-galaxy separation for all objects
+<li>expected large increase in the user base
+<li>provision to link pubic spectroscopic data to the LSST transients. Both the information 
+derived from the spectra such as type and redshift, but also the data itself.
+</ul><p>
+Given these differences, within Lasair we are reviewing the database architecture and how the 
+lightcurve data are annotated, stored and made available to users. We have developed detailed 
+Science Requirements from the perspective of expert users within the UK and are working 
+particularly with the LSST Science Collaborations (DESC and TVS) to review these. 
+Our main focus is to provide a broker that will allow users to find their transients and 
+eruptive variables of choice and to run filters or analysis code on them. This may be on the 
+Lasair computing platform (the UK's IRIS system) but we will also provide means to bulk 
+download lightcurve data for users to work with locally on their own machines.
+</p><p>
+This work is intensifying as of April 2020, and we look forward to working with our 
+international colleagues across the LSST community and within the LSST Science 
+Collaborations to define Lasair's functionality for LSST. With this in mind, we are 
+drafting our broker proposal for the June call.
+</p>
+</div>
+</div>
+{% endblock %}

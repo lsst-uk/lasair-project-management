@@ -18,10 +18,8 @@ from django.contrib.auth import views as authviews
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from lasair import views, services, candidates, objects, watchlists, myqueries, comments, skymap
+from lasair import views, services, candidates, objects, watchlists, myqueries, comments, cs_comments, skymap
 import lasair.settings
-if lasair.settings.WEB_DOMAIN == 'lasair-dev':
-    from lasair import cs_comments
 
 from django.contrib import admin
 #admin.autodiscover()
@@ -29,6 +27,8 @@ from django.contrib import admin
 urlpatterns = [
     path('',                        views.index,                name='index'),
     path('about',                   views.about,                name='about'),
+    path('sherlock',  TemplateView.as_view(template_name='sherlock.html')),
+    path('lasairlsst',  TemplateView.as_view(template_name='lasairlsst.html')),
     path('cand/<int:candid>/',      candidates.cand,            name='cand'),
 
     path('objlist/',                objects.objlist,            name='objlist'),
@@ -48,6 +48,7 @@ urlpatterns = [
 
     path('comment/',                comments.new_comment,       name='new_comment'),
     path('delete_comment/<int:comment_id>/',    comments.delete_comment,    name='delete_comment'),
+    path('cs_comment/',             cs_comments.new_comment,    name='new_comment'),
 
     path('coverage/',               views.coverage,             name='coverage'),
     path('status/',                 views.status,               name='status'),
@@ -65,7 +66,3 @@ urlpatterns = [
     path('signup/',                  views.signup,              name='signup'),
     path('admin/',                   admin.site.urls),
 ]
-
-if lasair.settings.WEB_DOMAIN == 'lasair-dev':
-    urlpatterns.append(
-        path('cs_comment/',             cs_comments.new_comment,    name='new_comment'))
