@@ -276,7 +276,7 @@ class Consumer(threading.Thread):
                 msg = streamReader.poll(decode=True, timeout=settings.KAFKA_TIMEOUT)
             except alertConsumer.EopError as e:
                 print(self.threadID, e)
-                break
+                continue
 
             nalert += 1
             if nalert%500 == 0:
