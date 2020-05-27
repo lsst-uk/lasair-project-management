@@ -58,12 +58,15 @@ date = date_nid.nid_to_date(nid)
 url = 'https://monitor.alerts.ztf.uw.edu/api/datasources/proxy/7/api/v1/query?query='
 urltail = 'sum(kafka_log_log_value{ name="LogEndOffset" , night = "%s", program = "MSIP" }) - sum(kafka_log_log_value{ name="LogStartOffset", night = "%s", program="MSIP" })' % (date, date)
 
-urlquote = url + urllib.parse.quote(urltail)
-resultjson = requests.get(urlquote, 
-    auth=(settings.GRAFANA_USERNAME, settings.GRAFANA_PASSWORD))
-result = json.loads(resultjson.text)
-alertsstr = result['data']['result'][0]['value'][1]
-today_candidates_ztf = int(alertsstr)
+try:
+    urlquote = url + urllib.parse.quote(urltail)
+    resultjson = requests.get(urlquote, 
+        auth=(settings.GRAFANA_USERNAME, settings.GRAFANA_PASSWORD))
+    result = json.loads(resultjson.text)
+    alertsstr = result['data']['result'][0]['value'][1]
+    today_candidates_ztf = int(alertsstr)
+except:
+     today_candidates_ztf = -1
 
 update_time = datetime.datetime.utcnow().isoformat()
 update_time = update_time.split('.')[0]
