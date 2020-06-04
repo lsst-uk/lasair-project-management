@@ -37,7 +37,10 @@ def new_myquery(request):
             active      = int(request.POST.get('active'))
         except:
             active = 0
-        public      = request.POST.get('public')
+        try:
+            public      = int(request.POST.get('public'))
+        except:
+            public = 0
 
         mq = Myqueries(user=request.user, name=name, description=description, 
                 public=public, active=active, selected=selected, conditions=conditions, tables=tables)
