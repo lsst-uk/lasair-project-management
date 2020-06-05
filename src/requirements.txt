@@ -2,7 +2,7 @@ backports.ssl-match-hostname==3.4.0.2
 chardet==2.2.1
 configobj==4.7.2
 decorator==3.4.0
-Django==1.11.7
+Django==1.11.29
 iniparse==0.4
 javapackages==1.0.0
 kitchen==1.1.1
