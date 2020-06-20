@@ -8,66 +8,26 @@ var surveys = [
         "format": "jpeg"
      },
      {
+        "id": "P/DECaLS/DR5/color/",
+        "url": "http://alasky.u-strasbg.fr/DECaLS/DR5/color/",
+        "name": "DECaLS DR5",
+        "maxOrder": 11,
+        "frame": "equatorial",
+        "format": "jpeg"
+     },
+     {
+        "id": "P/HSC/DR2/CDS_P_HSC_DR2_wide_color-i-r-g",
+        "url": "http://alasky.u-strasbg.fr/HSC/DR2/CDS_P_HSC_DR2_wide_color-i-r-g",
+        "name": "HSC DR2 wide color",
+        "maxOrder": 12,
+        "frame": "equatorial",
+        "format": "jpeg"
+     },
+     {
         "id": "P/CONSTELLATIONS6",
         "url": "http://darts.isas.jaxa.jp/pub/judo2/HiPS/Constellations2",
         "name": "Constellations",
         "maxOrder": 6,
-        "frame": "equatorial",
-        "format": "png"
-     },
-     {
-        "id": "P/1602.07710v1/HIPS00101",
-        "url": "http://alasky.unistra.fr/pub/arxiv.1602.07710v1/HIPS_0001_001",
-        "name": "2MASS galaxy density 4 to 43 Mpc (Antolini+)",
-        "maxOrder": 3,
-        "frame": "equatorial",
-        "format": "png"
-     },
-     {
-        "id": "P/1602.07710v1/HIPS0102",
-        "url": "http://alasky.unistra.fr/pub/arxiv.1602.07710v1/HIPS_001_002",
-        "name": "2MASS galaxy density 43 to 85 Mpc (Antolini+)",
-        "maxOrder": 3,
-        "frame": "equatorial",
-        "format": "png"
-     },
-     {
-        "id": "P/1602.07710v1/HIPS0203",
-        "url": "http://alasky.unistra.fr/pub/arxiv.1602.07710v1/HIPS_002_003",
-        "name": "2MASS galaxy density 85 to 128 Mpc (Antolini+)",
-        "maxOrder": 3,
-        "frame": "equatorial",
-        "format": "png"
-     },
-     {
-        "id": "P/1602.07710v1/HIPS0304",
-        "url": "http://alasky.unistra.fr/pub/arxiv.1602.07710v1/HIPS_003_004",
-        "name": "2MASS galaxy density 128 to 170 Mpc (Antolini+)",
-        "maxOrder": 3,
-        "frame": "equatorial",
-        "format": "png"
-     },
-     {
-        "id": "P/1602.07710v1/HIPS0405",
-        "url": "http://alasky.unistra.fr/pub/arxiv.1602.07710v1/HIPS_004_005",
-        "name": "2MASS galaxy density 128 to 170 Mpc (Antolini+)",
-        "maxOrder": 3,
-        "frame": "equatorial",
-        "format": "png"
-     },
-     {
-        "id": "P/1602.07710v1/HIPS0507",
-        "url": "http://alasky.unistra.fr/pub/arxiv.1602.07710v1/HIPS_005_007",
-        "name": "2MASS galaxy density 170 to 300 Mpc (Antolini+)",
-        "maxOrder": 3,
-        "frame": "equatorial",
-        "format": "png"
-     },
-     {
-        "id": "P/1602.07710v1/HIPS071",
-        "url": "http://alasky.unistra.fr/pub/arxiv.1602.07710v1/HIPS_007_01",
-        "name": "2MASS galaxy density 300 to 420 Mpc (Antolini+)",
-        "maxOrder": 3,
         "frame": "equatorial",
         "format": "png"
      },

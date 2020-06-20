@@ -120,11 +120,15 @@ You must be signed in to post comments.
 <hr/>
 <h4>AladinLite</h4>
 <!-- insert this snippet where you want Aladin Lite viewer to appear and after the loading of jQuery -->
+
 <div class="row">
   <div class ="col-sm-12">
-Image layer is PanSTARRS DR1; use the layers icon to change it &nbsp;(<img src=/lasair/static/img/layers.png>). You can also overlay PanSTARRS and/or Gaia DR2 catalog.
+Control the base layer here:
 <p>
-    <div id="aladin-lite-div" style="width:400px;height:400px;"></div>
+<div class="row">
+  <div id="SV-layerBox"> </div><br/>
+</div>
+    <div id="aladin-lite-div" style="width:500px;height:500px;"></div>
   </div>
 </div>
 
@@ -173,13 +177,18 @@ $(document).ready(function()
 ); 
 </script>
 
-<script type="text/javascript" src="//aladin.u-strasbg.fr/AladinLite/api/v2/latest/aladin.min.js" charset="utf-8"></script>
+<!-- <script type="text/javascript" src="//aladin.u-strasbg.fr/AladinLite/api/v2/latest/aladin.min.js" charset="utf-8"></script> -->
+<script src="/lasair/static/js/surveys.js"></script>
+<script src="/lasair/static/js/aladin.js"></script>
+
 <script type="text/javascript">
-    var aladin = A.aladin('#aladin-lite-div', {survey: "P/PanSTARRS/DR1/color-z-zg-g", fov:0.01, target: "{{ data.objectData.ramean }}, {{ data.objectData.decmean }}"});
+    var aladin = A.aladin('#aladin-lite-div', {survey: "P/PanSTARRS/DR1/color-z-zg-g", fov:0.01, target: "{{ data.objectData.ramean }}, {{ data.objectData.decmean }}", showGotoControl:false});
+    aladin.showLayerBox();
     $('input[name=survey]').change(function() {
         aladin.setImageSurvey($(this).val());
     });
 
+/*
     var hipsCats = {
         'ps1': A.catalogHiPS('https://axel.u-strasbg.fr/HiPSCatService/II/349/ps1', {name: 'PanSTARRS DR1 sources', shape: 'circle', sourceSize: 8, color: '#6baed6', onClick: 'showTable', name: '          PanSTARRS DR1'}),
         'gdr2': A.catalogHiPS('https://axel.u-strasbg.fr/HiPSCatService/I/345/gaia2', {name: 'Gaia DR2 sources', shape: 'circle', sourceSize: 8, color: '#d66bae', onClick: 'showTable', name: 'Gaia DR2'})
@@ -188,6 +197,7 @@ $(document).ready(function()
     hipsCats['gdr2'].hide();
     aladin.addCatalog(hipsCats['ps1']);
     aladin.addCatalog(hipsCats['gdr2']);
+*/
 
 
     var pd = "{{ json_data }}";
