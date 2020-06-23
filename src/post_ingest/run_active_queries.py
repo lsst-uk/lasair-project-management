@@ -77,8 +77,12 @@ def run_query(query, status, msl, active, email, topic):
         delta = delta.days + delta.seconds/86400.0
         print('   --- previous entry %.4f days ago' % delta)
             
-        allrecords = (recent + digest)[:1000]
+        if recent[0] == digest[0]: 
+            print('repeat from last time:', recent[0])
+            recent.pop(0)  # if this is the same as last time
 
+    if len(recent) > 0:
+        allrecords = (recent + digest)[:1000]
         if active == 1:
             # send a message at most every 24 hours
             if delta > 1.0:
