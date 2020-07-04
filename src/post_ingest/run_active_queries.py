@@ -38,8 +38,8 @@ def run_query(query, status, msl, active, email, topic):
         0, 1000, True, days_ago_candidates, days_ago_objects)
 
     cursor = msl.cursor(buffered=True, dictionary=True)
-    n = 0
     recent = []
+    allrecent = []
     try:
         cursor.execute(sqlquery_real)
 
@@ -50,16 +50,14 @@ def run_query(query, status, msl, active, email, topic):
             recorddict = dict(record)
             now_number = datetime.datetime.utcnow()
             recorddict['UTC'] = now_number.strftime("%Y-%m-%d %H:%M:%S")
-            #print(recorddict)
-            recent.append(recorddict)
-            n += 1
+            allrecent.append(recorddict)
     except Exception as e:
         print("Query failed for %s" % topic)
         print(e)
         print(sqlquery_real)
+    print('   --- %d satisfy query' % len(allrecent))
 
-    #print(recent)
-    if len(recent) > 0:
+    if len(allrecent) > 0:
         filename = '/data/ztf/streams/%s' % topic
         try:
             file = open(filename, 'r')
@@ -75,11 +73,20 @@ def run_query(query, status, msl, active, email, topic):
         now_number = datetime.datetime.utcnow()
         delta = (now_number - last_entry_number)
         delta = delta.days + delta.seconds/86400.0
-        print('   --- previous entry %.4f days ago' % delta)
-            
-        if recent[0] == digest[0]: 
-            print('repeat from last time:', recent[0])
-            recent.pop(0)  # if this is the same as last time
+
+# only objects in last 24 hours
+        last_day_objects = []
+        for out in digest:
+            out_number = datetime.datetime.strptime(out['UTC'], "%Y-%m-%d %H:%M:%S")
+            delta = (now_number - last_entry_number)
+            delta = delta.days + delta.seconds/86400.0
+            if delta < 1.0:
+                last_day_objects.append(out['objectId'])
+        print('   --- %d yesterday' % len(last_day_objects))
+
+        for out in allrecent:
+            if 'objectId' in out and not out['objectId'] in last_day_objects:
+                recent.append(out)
 
     if len(recent) > 0:
         allrecords = (recent + digest)[:1000]
@@ -118,7 +125,7 @@ def run_query(query, status, msl, active, email, topic):
         file = open(filename, 'w')
         file.write(digestdict_text)
         file.close()
-    return n
+    return len(recent)
 
 def find_queries(status):
     jdnow = (time.time()/86400 + 2440587.5);
