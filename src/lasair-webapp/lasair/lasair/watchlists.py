@@ -55,10 +55,13 @@ def watchlists_home(request):
                 wl = Watchlists(user=request.user, name=name, description=description, active=0, prequel_where='', radius=default_radius)
                 wl.save()
                 for cone in cone_list:
+                    name = cone[0].encode('ascii', 'ignore').decode()
+                    if name != cone[0]:
+                        message += 'Non-ascii characters removed from name %s --> %s<br/>' % (cone[0], name)
                     if len(cone) == 3:
-                        wlc = WatchlistCones(wl=wl, name=cone[0], ra=cone[1], decl=cone[2])
+                        wlc = WatchlistCones(wl=wl, name=name, ra=cone[1], decl=cone[2])
                     else:
-                        wlc = WatchlistCones(wl=wl, name=cone[0], ra=cone[1], decl=cone[2], radius=cone[3])
+                        wlc = WatchlistCones(wl=wl, name=name, ra=cone[1], decl=cone[2], radius=cone[3])
                     wlc.save()
                 message += '\nWatchlist created successfully with %d sources' % len(cone_list)
         else:
