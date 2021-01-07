@@ -6,7 +6,7 @@ Django==1.11.7
 iniparse==0.4
 javapackages==1.0.0
 kitchen==1.1.1
-lxml==3.2.1
+lxml==4.6.2
 MySQL-python==1.2.5
 perf==0.1
 pycurl==7.19.0
