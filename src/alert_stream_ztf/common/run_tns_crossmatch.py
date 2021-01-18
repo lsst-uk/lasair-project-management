@@ -85,7 +85,7 @@ def run_tns_crossmatch(radius):
             if arcsec > radius:
                 continue
             n_hits += 1
-#            content = 'In TNS as <a href=https://wis-tns.weizmann.ac.il/object/%s>%s%s</a> at %.1f arcsec, discovered %s (MJD %.2f) by %s' % (tns_name, tns_prefix, tns_name, arcsec, disc_date, mjd, discover)
+#            content = 'In TNS as <a href=https://www.wis-tns.org/object/%s>%s%s</a> at %.1f arcsec, discovered %s (MJD %.2f) by %s' % (tns_name, tns_prefix, tns_name, arcsec, disc_date, mjd, discover)
 
             content = 'In TNS as <a href=https://wis-tns.weizmann.ac.il/object/%s>%s%s</a> (%.1f arcsec separation from ZTF coordinates), discovered (MJD %.2f): '
             content = content % (tns_name, tns_prefix, tns_name, arcsec, mjd)

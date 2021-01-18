@@ -153,7 +153,7 @@ def pollTNS(page=0, resultSize=50, inLastNumberDays=None):
 
     try:
         response = requests.get(
-            url="http://wis-tns.weizmann.ac.il/search",
+            url="http://www.wis-tns.org/search",
             params={
                 "page": page,
                 "name": "",

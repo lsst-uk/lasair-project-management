@@ -33,7 +33,7 @@ urlpatterns = [
 
     path('objlist/',                objects.objlist,            name='objlist'),
     path('streams/',                objects.streams,            name='streams'),
-    path('streamdigest/<slug:topic>/',   objects.streamdigest,           name='streamdigest'),
+    path('streamdigest/<topic>/',   objects.streamdigest,           name='streamdigest'),
     path('object/<slug:objectId>/',      objects.objhtml,                name='objhtml'),
     path('object/<slug:objectId>/json/', objects.objjson,                name='objjson'),
 
