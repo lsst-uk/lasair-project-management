@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.context_processors import csrf
 from django.db import connection
@@ -91,6 +92,10 @@ def show_myquery(request, mq_id):
                 myquery.public  = 0
 
             myquery.save()
+            topic = queries.topic_name(myquery.user.id, myquery.name)
+            filename = '/mnt/lasair-head-data/ztf/streams/%s' % topic
+            if os.path.exists(filename):
+                os.remove(filename)
             message += str(myquery.active) + 'query updated'
 
     if request.user.is_authenticated:
