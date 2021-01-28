@@ -1,3 +1,4 @@
+import os
 import time
 import json
 from common import settings
@@ -122,7 +123,8 @@ def run_query(query, status, msl, active, email, topic):
         digestdict = {'last_entry': last_entry_text, 'digest':allrecords}
         digestdict_text = json.dumps(digestdict, default=datetime_converter)
 
-        file = open(filename, 'w')
+        file = open(filename, 'a')
+        os.chmod(filename, 0O666)
         file.write(digestdict_text)
         file.close()
     return len(recent)
