@@ -2,7 +2,7 @@
 """Get the TNS list.  Max size of request is 1000 rows.
 
 Usage:
-  %s [--pageSize=<n>] [--pageNumber=<n>] [--inLastNumberOfDays=<n>]
+  %s [--pageSize=<n>] [--pageNumber=<n>] [--inLastNumberOfDays=<n>] [--userId=<userId>] [--userName=<userName>]
   %s (-h | --help)
   %s --version
 
@@ -12,6 +12,8 @@ Options:
   --pageSize=<n>               Request page size [default: 50].
   --pageNumber=<n>             Request page number [default: 0].
   --inLastNumberOfDays=<n>     Get everything in the specified number of days.
+  --userId=<userId>            Use this userId for authorized access to TNS.
+  --userName=<userName>        Use this userName for authorized access to TNS.
 
 """
 
@@ -142,7 +144,7 @@ def insertTNS(conn, tnsEntry):
     return insertId
 
 
-def pollTNS(page=0, resultSize=50, inLastNumberDays=None):
+def pollTNS(page=0, resultSize=50, inLastNumberDays=None, header = None):
 
     from datetime import datetime, date, time, timedelta
     if inLastNumberDays:
@@ -153,6 +155,7 @@ def pollTNS(page=0, resultSize=50, inLastNumberDays=None):
 
     try:
         response = requests.get(
+            headers = header,
             url="http://www.wis-tns.org/search",
             params={
                 "page": page,
@@ -231,6 +234,10 @@ def getTNSData(opts):
 #    database = config['databases']['local']['database']
 #    hostname = config['databases']['local']['hostname']
 
+    header = None
+    if options.userId is not None and options.userName is not None:
+        header = {'User-Agent': json.dumps({'tns_marker': {'tns_id': int(options.userId), 'type': 'user', 'name': options.userName}})}
+
     conn = dbConnect(hostname, username, password, database)
     if not conn:
         print("Cannot connect to the database")
@@ -240,14 +247,17 @@ def getTNSData(opts):
     if options.inLastNumberOfDays:
         inLastNumberOfDays = int(options.inLastNumberOfDays)
 
-    status_code, content = pollTNS(page = int(options.pageNumber), resultSize = int(options.pageSize), inLastNumberDays = inLastNumberOfDays)
+    status_code, content = pollTNS(page = int(options.pageNumber), resultSize = int(options.pageSize), inLastNumberDays = inLastNumberOfDays, header = header)
 
 #    csvEntries = csv.DictReader(content.splitlines(), delimiter=',')
 #    data = csvEntries
     data = csv.DictReader(content.splitlines(), delimiter=',')
     rowsAdded = 0
     for row in data:
-        name = row['Name'].strip().split()
+        try:
+            name = row['Name'].strip().split()
+        except KeyError as e:
+            continue
 
         if len(name) != 2:
             prefix = 'SN'

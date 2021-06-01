@@ -2,10 +2,10 @@
 
 # Intermittently poll the TNS for missed objects.
 
-if [ $# -ne 5 ]
+if [ $# -ne 7 ]
 then
    echo "Usage: `basename $0` <python> <pythonpath> <codebase> <logfile> <pages>"
-   echo "E.g. `basename $0` /home/roy/anaconda3/envs/sherlock/bin/python    /home/roy/lasair/src/alert_stream_ztf/common  /home/roy/lasair /data/ztf/logs/poll_tns_periodic.log 10"
+   echo "E.g. `basename $0` /home/roy/anaconda3/envs/sherlock/bin/python    /home/roy/lasair/src/alert_stream_ztf/common  /home/roy/lasair /data/ztf/logs/poll_tns_periodic.log 10 9999 roywilliams"
    exit 1
 fi
 
@@ -14,6 +14,8 @@ export PYTHONPATH=$2
 export CODEBASE=$3
 export LOGFILE=$4
 export PAGES=$5
+export USERID=$6
+export USERNAME=$7
 
 # Don't allow more than 60 pages.
 if [ $PAGES -ge 60 ]
@@ -24,6 +26,6 @@ fi
 echo '=============================' >> $LOGFILE
 echo date >> $LOGFILE
 for ((i=0;i<PAGES;i++)); do
-  $PYTHON $CODEBASE/src/post_ingest/poll_tns.py --pageSize=500 --pageNumber=$i >> $LOGFILE 2>&1
+  $PYTHON $CODEBASE/src/post_ingest/poll_tns.py --pageSize=500 --pageNumber=$i --userId=$USERID --userName=$USERNAME >> $LOGFILE 2>&1
 done
 
