@@ -1,9 +1,0 @@
-version: 1
-
-databases:
-    local:
-        username: USERNAME
-        password: PASSWORD
-        hostname: HOSTNAME
-        database: DATABASE
-

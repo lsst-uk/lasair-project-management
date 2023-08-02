@@ -1,6 +1,10 @@
-# lasair
+
+# Lasair project management
 Event handling site for LSST:UK
 
+This repo has no code, it has the tickets that drive project management.
+
+As agreed at 08/SEP/22 Lasair SE process meeting, this is the sole repo for Lasair project management activities.
 
 Copyright 2022 The University of Edinburgh and Queen's University Belfast
 
@@ -15,5 +19,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
 
 
